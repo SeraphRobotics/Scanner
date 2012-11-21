@@ -10,7 +10,7 @@ QT += \
     xml \
     script
 
-TARGET = SeraphPrint
+TARGET = SeraphScan
 TEMPLATE = app
 
 SOURCES += \

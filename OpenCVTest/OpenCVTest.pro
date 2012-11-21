@@ -17,9 +17,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-INCLUDEPATH += C:\\OpenCV-2.4\\mybuild\\install\\include
+INCLUDEPATH += C:\\opencv-2.4\\mybuild\\install\\include
 
-LIBS += -LC:\\OpenCV-2.4\\mybuild\\install\\lib \
+LIBS += -LC:\\opencv-2.4\\mybuild\\install\\lib \
     -lopencv_core243.dll \
     -lopencv_highgui243.dll \
     -lopencv_imgproc243.dll \
