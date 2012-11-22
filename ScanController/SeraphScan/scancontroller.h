@@ -5,7 +5,10 @@
 #include <QString>
 #include <QObject>
 #include <QTimer>
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include "scandata.h"
 
 class ScanController: public QObject
 {
@@ -35,6 +38,7 @@ private:
 
 private:
     VirtualPrinter* vm_;
+    ScanData* SD_;
     int camNumber_;
     QString axis_;
     bool ready_;
@@ -45,6 +49,8 @@ private:
     QTimer* timer_;
     QMap<QString,int> axes_;
     QVector<float> xvector_;
+    cv::VideoCapture capwebcam;
+    cv::Mat matOriginal;
 
 
 };

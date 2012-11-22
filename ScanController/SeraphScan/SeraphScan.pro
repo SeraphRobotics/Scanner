@@ -17,13 +17,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     scancontroller.cpp \
-    mastercontrolunit.cpp
+    mastercontrolunit.cpp \
+    scandata.cpp
 
 
 HEADERS += \
     mainwindow.h \
     scancontroller.h \
-    mastercontrolunit.h
+    mastercontrolunit.h \
+    scandata.h
 
 
 FORMS += \
@@ -41,5 +43,20 @@ OTHER_FILES += SeraphScanner.config
 
 # OTHER_FILES should be referenced in include.pro.
 
+INCLUDEPATH += C:\\OpenCV-2.4\\mybuild\\install\\include
 
+LIBS += -LC:\\OpenCV-2.4\\mybuild\\install\\lib \
+    -lopencv_calib3d243.dll\
+    -lopencv_contrib243.dll\
+    -lopencv_core243.dll \
+    -lopencv_features2d243.dll \
+    -lopencv_flann243.dll \
+    -lopencv_gpu243.dll \
+    -lopencv_highgui243.dll \
+    -lopencv_imgproc243.dll \
+    -lopencv_legacy243.dll \
+    -lopencv_ml243.dll\
+    -lopencv_objdetect243.dll \
+    -lopencv_ts243 \
+    -lopencv_video243.dll
 

@@ -5,8 +5,7 @@
 ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
     axis_(""),ready_(0),scandistance_(0),
     stepsize_(0),scanspeed_(0),position_(0),xvector_(QVector<float>(3,0))
-{
-
+{    
     timer_ = new QTimer();
     connect(timer_,SIGNAL(timeout()),this,SLOT(ScanStep()));
     connect(this,SIGNAL(scanComplete()),timer_,SLOT(stop()));
@@ -24,6 +23,13 @@ void ScanController::loadVM(VirtualPrinter* vm)
 void ScanController::setCamera(int c)
 {
     camNumber_ = c;
+
+    capwebcam.open(c);
+
+    if (capwebcam.isOpened()==false){
+        qDebug()<<"Error: capwebcam not accessed succesfully";
+        return;
+    }
     isReady();
 }
 
@@ -36,10 +42,15 @@ void ScanController::setAxis(QString Axis)
 
 bool ScanController::isReady()
 {
-    if((camNumber_<0)||(axis_=="")||(scandistance_==0)||(stepsize_==0)||(scanspeed_==0)){//||(vm_==NULL)
+    if((capwebcam.isOpened()==false)||(axis_=="")||(scandistance_==0)||(stepsize_==0)||(scanspeed_==0)){//||(vm_==NULL)
         ready_=false;
+        qDebug()<<QString("Isnt ready Webcam:") +QString::number((int)capwebcam.isOpened())+
+                  QString(", Axis:")+QString(axis_)+QString(", ScanDistance:")+
+                  QString::number(scandistance_)+QString(", StepSize:")+
+                  QString::number(stepsize_)+QString(", scanspeed:")+QString::number(scanspeed_);
     }else{
         ready_=true;
+        qDebug()<<"ready";
     }
 
     return ready_;
@@ -63,6 +74,7 @@ void ScanController::setScan(float scandistance, float stepsize, float scanspeed
 void ScanController::StartScan()
 {
     if(ready_){
+        SD_ = new ScanData();
         timer_->start();
         emit scanRunning(true);
     }
@@ -95,14 +107,17 @@ void ScanController::ScanStep()
 
 
     if((ready_)&&(position_<scandistance_)){
-
- //       vm_->move(xvector_[0], xvector_[1], xvector_[2], scanspeed_);
-        //qDebug()<<QString("Position is now ")+QString::number(position_);
         emit update(position_);
         emit updateStatus(QString("Position is now ")+QString::number(position_));
         ///CAPTURE DATA////
+        capwebcam.read(matOriginal);
+        if(matOriginal.empty()==true){
+            qDebug()<<"ERROR READING WEBCAM";
+        }
+        QImage qimgOriginal((uchar*)matOriginal.data,matOriginal.cols,matOriginal.rows,matOriginal.step,QImage::Format_RGB888);
+        SD_->addImage(position_,qimgOriginal);
     }else{
-        //qDebug()<<QString("DONE");
+        qDebug()<<QString("DONE");
         emit scanComplete();
         clearState();
     }
