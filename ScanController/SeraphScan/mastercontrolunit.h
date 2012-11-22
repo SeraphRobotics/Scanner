@@ -16,11 +16,12 @@ public:
     void connectToVM(QString filestr, QString Port);
     void makeConnections();
 
-
 signals:
     
 public slots:
     void startScan();
+    void scanState(bool b);
+
 
 
 

@@ -1,4 +1,5 @@
 #include "mastercontrolunit.h"
+#include <QtAlgorithms>
 
 MasterControlUnit::MasterControlUnit(QObject *parent) :
     QObject(parent)
@@ -40,6 +41,19 @@ void MasterControlUnit::makeConnections(){
     connect(SC_,SIGNAL(scanComplete()),MW_,SLOT(on_startStopButton_clicked()));
     connect(SC_,SIGNAL(scanRunning(bool)),MW_,SLOT(setScanState(bool)));
     connect(MW_,SIGNAL(start()),this,SLOT(startScan()));
+    connect(SC_,SIGNAL(scanRunning(bool)),this,SLOT(scanState(bool)));
 
+}
+
+
+void MasterControlUnit::scanState(bool b){
+    if(!b){
+      ScanData* sd = SC_->getScanData();
+      QList<float> l = sd->getXRange();
+      qSort(l.begin(),l.end());
+      float lastx = l.last();
+      QImage img = sd->getImageFromX(lastx);
+      MW_->setImage(img);
+    }
 }
 

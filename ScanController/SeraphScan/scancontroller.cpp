@@ -122,3 +122,7 @@ void ScanController::ScanStep()
         clearState();
     }
 }
+
+ScanData* ScanController::getScanData(){
+    return SD_;
+}

@@ -17,6 +17,10 @@ MainWindow::~MainWindow()
 }
 
 
+void MainWindow::setImage(QImage q){
+    ui->label->setPixmap(QPixmap::fromImage(q));
+}
+
 void MainWindow::appendText(QString txt)
 {
     ui->statusTextEdit->appendPlainText(QString("\n")+txt);

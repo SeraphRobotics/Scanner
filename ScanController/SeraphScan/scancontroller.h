@@ -20,6 +20,7 @@ public:
     void setAxis(QString Axis);
     bool isReady();
     void setScan(float stepdistance, float stepsize, float scanspeed);
+    ScanData* getScanData();
 
 public slots:
     void StartScan();

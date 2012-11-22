@@ -15,6 +15,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
+
 signals:
     void start();
     void stop();
@@ -22,6 +24,7 @@ signals:
 public slots:
     void appendText(QString txt);
     void setScanState(bool started);
+    void setImage(QImage q);
 
 
 private slots:
