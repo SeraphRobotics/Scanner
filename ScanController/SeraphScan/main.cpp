@@ -28,9 +28,10 @@ int main(int argc, char *argv[])
 
     mcu.loadObjects(&w,&sc);
 
-    QString filestr = "";
-    QString port = "";
+    QString filestr = "C:\\Users\\'Jeffrey Lipton'\\Documents\\GitHub\\Scanner\\ScanController\\SeraphScan\\media\\SeraphScan.config";
+    QString port = "3";
 
+    mcu.connectToVM(filestr,port);
 
     w.show();
     w.appendText(QString("TESTING123"));

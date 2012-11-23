@@ -25,10 +25,10 @@ void MasterControlUnit::startScan(){
 }
 
 void MasterControlUnit::connectToVM(QString filestr, QString port){
-//    VM_.setComPort(port);
-//    QDomDocument document;
-//    document.setContent(filestr);
-//    VM_.loadConfig(document);
+    VM_->setComPort(port);
+    QDomDocument document;
+    document.setContent(filestr);
+    VM_->loadConfig(document);
     SC_->loadVM(VM_);
 
 

@@ -107,8 +107,10 @@ void ScanController::ScanStep()
 
 
     if((ready_)&&(position_<scandistance_)){
-        emit update(position_);
-        emit updateStatus(QString("Position is now ")+QString::number(position_));
+        qDebug()<<"Start Move";
+       // vm_->move(xvector_[0],xvector_[1],xvector_[2],scanspeed_);
+
+        vm_->eInterface.getMotor(0)->moveRelative(1,1,0.1);
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);
         if(matOriginal.empty()==true){
@@ -116,6 +118,10 @@ void ScanController::ScanStep()
         }
         QImage qimgOriginal((uchar*)matOriginal.data,matOriginal.cols,matOriginal.rows,matOriginal.step,QImage::Format_RGB888);
         SD_->addImage(position_,qimgOriginal);
+
+        emit update(position_);
+        emit updateStatus(QString("Position is now ")+QString::number(position_));
+
     }else{
         qDebug()<<QString("DONE");
         emit scanComplete();

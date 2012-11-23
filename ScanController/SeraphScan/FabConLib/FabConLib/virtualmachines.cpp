@@ -102,13 +102,10 @@ QScriptEngine* VMPrototype::makeEngine(){
 void VMPrototype::loadConfig(QDomDocument document) {
     QDomElement root = document.documentElement();
 
-    frequency_ = 30;
-    idtostatemap_.clear();
-    idtostatemap_[0]=1;
-    idtostatemap_[1]=2;
-    idtostatemap_[2]=3;
-    idtostatemap_[3]=4;
-    statesize_ = 5;
+//    frequency_ = 30;
+//    idtostatemap_.clear();
+//    idtostatemap_[0]=1;
+//    statesize_ = 2;
 
 
 

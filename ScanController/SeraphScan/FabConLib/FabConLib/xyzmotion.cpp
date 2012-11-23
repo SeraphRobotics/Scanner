@@ -203,15 +203,35 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
     if (0==acceleration_ || 0==frequency_ || 0==speed || 0==dist) {return NPath(statesize_);}
     double dist_a = speed*speed/acceleration_/2.0;
     double dist_v =0;
-    int xindex = idToStateIndex_[axismap_["x"].actuatorID];
-    int yindex = idToStateIndex_[axismap_["y"].actuatorID];
-    int zindex = idToStateIndex_[axismap_["z"].actuatorID];
-    double xscale = axismap_["x"].revPerDist;
-    double yscale = axismap_["y"].revPerDist;
-    double zscale = axismap_["z"].revPerDist;
-    double norm_x = x/dist;
-    double norm_y = y/dist;
-    double norm_z = z/dist;
+
+    int numAxes = axismap_.keys().size();
+    QList<DOF> DOFs;
+
+    foreach(QString s,axismap_.keys()){
+        DOF dof;
+        dof.index=idToStateIndex_[axismap_[s].actuatorID];
+        dof.name = s;
+        dof.range = axismap_[s].range;
+        dof.scale = axismap_[s].revPerDist;
+        if(s.toLower()=="x"){
+            dof.norm= x/dist;
+        }else if(s.toLower()=="y"){
+            dof.norm= y/dist;
+        }else if(s.toLower()=="z"){
+            dof.norm=z/dist;
+        }
+        DOFs.append(dof);
+    }
+    //EAch axis has Name(QString,axis), index(int,idToSTateIndex_/axis, scale(double axis), norm (double, axes, x/y/z).
+//    int xindex = idToStateIndex_[axismap_["x"].actuatorID];
+//    int yindex = idToStateIndex_[axismap_["y"].actuatorID];
+//    int zindex = idToStateIndex_[axismap_["z"].actuatorID];
+//    double xscale = axismap_["x"].revPerDist;
+//    double yscale = axismap_["y"].revPerDist;
+//    double zscale = axismap_["z"].revPerDist;
+//    double norm_x = x/dist;
+//    double norm_y = y/dist;
+//    double norm_z = z/dist;
     double coef=0;
     double timesteps=0;
     double dt=0;
@@ -220,6 +240,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
     //    double D=0;
 
     State tempState(statesize_,0.0);
+    DOF tempDOF;
     coef = acceleration_/2.0/frequency_/frequency_;
     dt = 1.0/frequency_;
 
@@ -232,26 +253,41 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         x1 = acceleration_/2.0*t1*t1;
         for (int i=0; i <= timesteps; i++) {
             tempState[0] = 1.0/frequency_;
-            tempState[xindex] = xscale*norm_x*coef*i*i;
-            tempState[yindex] = yscale*norm_y*coef*i*i;
-            tempState[zindex] = zscale*norm_z*coef*i*i;
+            QList<DOF>::const_iterator j;
+            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+                tempDOF = *j;//(*j);
+                tempState[tempDOF.index] = tempDOF.norm*tempDOF.scale*coef*i*i;
+            }
+//            tempState[xindex] = xscale*norm_x*coef*i*i;
+//            tempState[yindex] = yscale*norm_y*coef*i*i;
+//            tempState[zindex] = zscale*norm_z*coef*i*i;
             np.addState(State(tempState));
         }
 
         // deceleration
         for (int i=0; i < timesteps+1; i++) {
             tempState[0] = 1.0/frequency_;
-            tempState[xindex] = norm_x*xscale*(x1+v1*i*dt-coef*i*i);//(2.0*i-1.0);
-            tempState[yindex] = norm_y*yscale*(x1+v1*i*dt-coef*i*i);//(2.0*i-1.0);
-            tempState[zindex] = norm_z*zscale*(x1+v1*i*dt-coef*i*i);//(2.0*i-1.0);
+            QList<DOF>::const_iterator j;
+            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+                tempDOF = (*j);
+                tempState[tempDOF.index] = tempDOF.norm*tempDOF.scale*(x1+v1*i*dt-coef*i*i);
+            }
+//            tempState[xindex] = norm_x*xscale*(x1+v1*i*dt-coef*i*i);//(2.0*i-1.0);
+//            tempState[yindex] = norm_y*yscale*(x1+v1*i*dt-coef*i*i);//(2.0*i-1.0);
+//            tempState[zindex] = norm_z*zscale*(x1+v1*i*dt-coef*i*i);//(2.0*i-1.0);
             np.addState(State(tempState));
         }
 
         // make sure to end on the target point
         tempState[0] = 1.0/frequency_;
-        tempState[xindex] = xscale*x;
-        tempState[yindex] = yscale*y;
-        tempState[zindex] = zscale*z;
+        QList<DOF>::const_iterator j;
+        for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+            tempDOF = (*j);
+            tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*dist;
+        }
+//        tempState[xindex] = xscale*x;
+//        tempState[yindex] = yscale*y;
+//        tempState[zindex] = zscale*z;
         np.addState(State(tempState));
 
     } else {
@@ -266,34 +302,54 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
 
         for (int i=0; i <= timesteps; i++) {
             tempState[0] = 1.0/frequency_;
-            tempState[xindex] = xscale*norm_x*coef*i*i;
-            tempState[yindex] = yscale*norm_y*coef*i*i;
-            tempState[zindex] = zscale*norm_z*coef*i*i;
+            QList<DOF>::const_iterator j;
+            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+                tempDOF = (*j);
+                tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*coef*i*i;
+            }
+//            tempState[xindex] = xscale*norm_x*coef*i*i;
+//            tempState[yindex] = yscale*norm_y*coef*i*i;
+//            tempState[zindex] = zscale*norm_z*coef*i*i;
             np.addState(State(tempState));
         }
 
         // coast state;
         double x2=x1+dist_v;
         tempState[0] = dist_v/speed;
-        tempState[xindex] = x2*norm_x*xscale;
-        tempState[yindex] = x2*norm_y*yscale;
-        tempState[zindex] = x2*norm_z*zscale;
+        QList<DOF>::const_iterator k;
+        for (k = DOFs.constBegin(); k != DOFs.constEnd(); ++k){
+            tempDOF = (*k);
+            tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*x2;
+        }
+//        tempState[xindex] = x2*norm_x*xscale;
+//        tempState[yindex] = x2*norm_y*yscale;
+//        tempState[zindex] = x2*norm_z*zscale;
         np.addState(State(tempState));
 
 
         //Ramp down
         for (int i=1; i < timesteps; i++) {
             tempState[0] = 1.0/frequency_;
-            tempState[xindex] = norm_x*xscale*(x2+speed*i*dt-coef*i*i);//(2.0*i-1.0);
-            tempState[yindex] = norm_y*yscale*(x2+speed*i*dt-coef*i*i);//(2.0*i-1.0);
-            tempState[zindex] = norm_z*zscale*(x2+speed*i*dt-coef*i*i);//(2.0*i-1.0);
+            QList<DOF>::const_iterator j;
+            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+                tempDOF = (*j);
+                tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*(x2+speed*i*dt-coef*i*i);
+            }
+//            tempState[xindex] = norm_x*xscale*(x2+speed*i*dt-coef*i*i);//(2.0*i-1.0);
+//            tempState[yindex] = norm_y*yscale*(x2+speed*i*dt-coef*i*i);//(2.0*i-1.0);
+//            tempState[zindex] = norm_z*zscale*(x2+speed*i*dt-coef*i*i);//(2.0*i-1.0);
             np.addState(State(tempState));
 
         }
         tempState[0] = 1.0/frequency_;
-        tempState[xindex] = xscale*x;
-        tempState[yindex] = yscale*y;
-        tempState[zindex] = zscale*z;
+        QList<DOF>::const_iterator j;
+        for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+            tempDOF = (*j);
+            tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*dist;
+        }
+//        tempState[xindex] = xscale*x;
+//        tempState[yindex] = yscale*y;
+//        tempState[zindex] = zscale*z;
         np.addState(State(tempState));
         np.addState(State(tempState));
 

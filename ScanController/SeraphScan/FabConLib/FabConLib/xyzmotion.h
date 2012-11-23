@@ -10,14 +10,29 @@
 #include <QDomNode>
 
 /**
- * A struct for representing hte properties of a machine axis
+ * A struct for representing the properties of a machine axis
  */
 struct axis{
     QString name;
     double range;
-    double revPerDist;
+    double revPerDist; //
     int actuatorID;
 };
+
+
+/**
+ * A Struct for the XYZmotion to use that is used for path planning.
+ * EAch axis has Name(QString,axis), index(int,idToSTateIndex_/axis,
+ * scale(double axis), norm (double, axes, x/y/z).
+ **/
+struct DOF{
+    QString name;
+    int index;
+    double scale;
+    double norm;
+    double range;
+};
+
 
 class XYZMotion: public QObject
 {
