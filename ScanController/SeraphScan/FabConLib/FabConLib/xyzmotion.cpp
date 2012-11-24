@@ -194,8 +194,50 @@ NPath XYZMotion::pathAlong(XDFLPath path,double speed) {
     return np;
 }
 
+bool XYZMotion::defineDOFs(){
+    if ( ( !axismap_.empty() ) && ( !idToStateIndex_.empty() ) ){
+        DOFs_.clear();
+        foreach(QString s,axismap_.keys()){
+            DOF dof;
+            dof.index=idToStateIndex_[axismap_[s].actuatorID];
+            dof.name = s;
+            dof.range = axismap_[s].range;
+            dof.scale = axismap_[s].revPerDist;
+            DOFs_.append(dof);
+            return true;
+        }
+    }else{
+        return false;
+    }
+}
+
+bool XYZMotion::defineDOFs(double x, double y, double z){
+    if(!defineDOFs()){return false;}
+
+    double dist = sqrt(x*x+y*y+z*z);
+    QList<DOF>::const_iterator j;
+    for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
+        DOF dof = (*j);
+        if(dof.name.toLower()=="x"){
+            dof.norm= x/dist;
+        }else if(dof.name.toLower()=="y"){
+            dof.norm= y/dist;
+        }else if(dof.name.toLower()=="z"){
+            dof.norm=z/dist;
+        }
+    }
+}
+
+QList<DOF> XYZMotion::getDOFs(){
+    return QList<DOF>(DOFs_);
+}
+
+QMap<QString,axis> XYZMotion::getAxes(){
+    return QMap<QString,axis>(axismap_);
+}
+
 NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
-    // see http://people.mech.kuleuven.be/~bruyninc/blender/doc/interpolation-api.html#trapezoidal-velocity
+    // http://people.mech.kuleuven.be/~bruyninc/blender/doc/interpolation-api.html#trapezoidal-velocity
     // dx_i = x_i/dist*a^2/(v^2*f^2)*(2i-1)
 
     NPath np(statesize_,false);
@@ -204,9 +246,9 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
     double dist_a = speed*speed/acceleration_/2.0;
     double dist_v =0;
 
-    int numAxes = axismap_.keys().size();
+    defineDOFs(x,y,z);
+/*
     QList<DOF> DOFs;
-
     foreach(QString s,axismap_.keys()){
         DOF dof;
         dof.index=idToStateIndex_[axismap_[s].actuatorID];
@@ -222,16 +264,17 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         }
         DOFs.append(dof);
     }
-    //EAch axis has Name(QString,axis), index(int,idToSTateIndex_/axis, scale(double axis), norm (double, axes, x/y/z).
-//    int xindex = idToStateIndex_[axismap_["x"].actuatorID];
-//    int yindex = idToStateIndex_[axismap_["y"].actuatorID];
-//    int zindex = idToStateIndex_[axismap_["z"].actuatorID];
-//    double xscale = axismap_["x"].revPerDist;
-//    double yscale = axismap_["y"].revPerDist;
-//    double zscale = axismap_["z"].revPerDist;
-//    double norm_x = x/dist;
-//    double norm_y = y/dist;
-//    double norm_z = z/dist;
+    EAch axis has Name(QString,axis), index(int,idToSTateIndex_/axis, scale(double axis), norm (double, axes, x/y/z).
+    int xindex = idToStateIndex_[axismap_["x"].actuatorID];
+    int yindex = idToStateIndex_[axismap_["y"].actuatorID];
+    int zindex = idToStateIndex_[axismap_["z"].actuatorID];
+    double xscale = axismap_["x"].revPerDist;
+    double yscale = axismap_["y"].revPerDist;
+    double zscale = axismap_["z"].revPerDist;
+    double norm_x = x/dist;
+    double norm_y = y/dist;
+    double norm_z = z/dist;
+*/
     double coef=0;
     double timesteps=0;
     double dt=0;
@@ -254,7 +297,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         for (int i=0; i <= timesteps; i++) {
             tempState[0] = 1.0/frequency_;
             QList<DOF>::const_iterator j;
-            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+            for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
                 tempDOF = *j;//(*j);
                 tempState[tempDOF.index] = tempDOF.norm*tempDOF.scale*coef*i*i;
             }
@@ -268,7 +311,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         for (int i=0; i < timesteps+1; i++) {
             tempState[0] = 1.0/frequency_;
             QList<DOF>::const_iterator j;
-            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+            for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
                 tempDOF = (*j);
                 tempState[tempDOF.index] = tempDOF.norm*tempDOF.scale*(x1+v1*i*dt-coef*i*i);
             }
@@ -281,7 +324,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         // make sure to end on the target point
         tempState[0] = 1.0/frequency_;
         QList<DOF>::const_iterator j;
-        for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+        for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
             tempDOF = (*j);
             tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*dist;
         }
@@ -303,7 +346,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         for (int i=0; i <= timesteps; i++) {
             tempState[0] = 1.0/frequency_;
             QList<DOF>::const_iterator j;
-            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+            for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
                 tempDOF = (*j);
                 tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*coef*i*i;
             }
@@ -317,7 +360,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         double x2=x1+dist_v;
         tempState[0] = dist_v/speed;
         QList<DOF>::const_iterator k;
-        for (k = DOFs.constBegin(); k != DOFs.constEnd(); ++k){
+        for (k = DOFs_.constBegin(); k != DOFs_.constEnd(); ++k){
             tempDOF = (*k);
             tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*x2;
         }
@@ -331,7 +374,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         for (int i=1; i < timesteps; i++) {
             tempState[0] = 1.0/frequency_;
             QList<DOF>::const_iterator j;
-            for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+            for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
                 tempDOF = (*j);
                 tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*(x2+speed*i*dt-coef*i*i);
             }
@@ -343,7 +386,7 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
         }
         tempState[0] = 1.0/frequency_;
         QList<DOF>::const_iterator j;
-        for (j = DOFs.constBegin(); j != DOFs.constEnd(); ++j){
+        for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
             tempDOF = (*j);
             tempState[tempDOF.index] = tempDOF.scale*tempDOF.norm*dist;
         }
@@ -360,20 +403,36 @@ NPath XYZMotion::pathTo(double x, double y, double z, double speed) {
 }
 
 State XYZMotion::positionToState(double x,double y,double z) {
+/*
     int xindex = idToStateIndex_[axismap_["x"].actuatorID];
     double xscale = axismap_["x"].revPerDist;
     int yindex = idToStateIndex_[axismap_["y"].actuatorID];
     double yscale = axismap_["y"].revPerDist;
     int zindex = idToStateIndex_[axismap_["z"].actuatorID];
     double zscale = axismap_["z"].revPerDist;
-    State temp(statesize_,0.0);
     temp[xindex] = x*xscale;
     temp[yindex] = y*yscale;
     temp[zindex] = z*zscale;
-    return temp;
+*/
+    State tempState(statesize_,0.0);
+    DOF tempDOF;
+    QList<DOF>::const_iterator j;
+    for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
+        tempDOF = (*j);
+        if (tempDOF.name.toLower()=="x"){
+            tempState[tempDOF.index] = tempDOF.scale*x;
+        }else if (tempDOF.name.toLower()=="y"){
+            tempState[tempDOF.index] = tempDOF.scale*y;
+        }else if (tempDOF.name.toLower()=="z"){
+            tempState[tempDOF.index] = tempDOF.scale*z;
+        }
+
+    }
+    return tempState;
 }
 
 QVector<double> XYZMotion::positionFromState(State* state) {
+/*
     int xindex = idToStateIndex_[axismap_["x"].actuatorID];
     double xscale = axismap_["x"].revPerDist;
     int yindex = idToStateIndex_[axismap_["y"].actuatorID];
@@ -384,6 +443,20 @@ QVector<double> XYZMotion::positionFromState(State* state) {
     v[0] = state->at(xindex)/xscale;
     v[1] = state->at(yindex)/yscale;
     v[2] = state->at(zindex)/zscale;
+*/
+    QVector<double> v(3,0);
+    DOF tempDOF;
+    QList<DOF>::const_iterator j;
+    for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
+        tempDOF = (*j);
+        if (tempDOF.name.toLower()=="x"){
+            v[0] = state->at(tempDOF.index)/tempDOF.scale;
+        }else if (tempDOF.name.toLower()=="y"){
+            v[1] = state->at(tempDOF.index)/tempDOF.scale;
+        }else if (tempDOF.name.toLower()=="z"){
+            v[2] = state->at(tempDOF.index)/tempDOF.scale;
+        }
+    }
     return v;
 }
 
@@ -392,10 +465,19 @@ double XYZMotion::distanceFromState(State* state) {
     return sqrt(v.at(0)*v.at(0)+v.at(1)*v.at(1)+v.at(2)*v.at(2));
 }
 
-QList<double> XYZMotion::buildSpace(){
-    QList<double> a;
-    a[0]=axismap_["x"].range;
-    a[1]=axismap_["y"].range;
-    a[2]=axismap_["z"].range;
-    return a;
+QVector<double> XYZMotion::buildSpace(){
+    QVector<double> v(3,0);
+    DOF tempDOF;
+    QList<DOF>::const_iterator j;
+    for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
+        tempDOF = (*j);
+        if (tempDOF.name.toLower()=="x"){
+            v[0] = tempDOF.range;
+        }else if (tempDOF.name.toLower()=="y"){
+            v[1] = tempDOF.range;
+        }else if (tempDOF.name.toLower()=="z"){
+            v[2] = tempDOF.range;
+        }
+    }
+    return v;
 }

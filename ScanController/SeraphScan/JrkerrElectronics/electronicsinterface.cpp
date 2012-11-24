@@ -75,7 +75,10 @@ QString ElectronicsInterface::initialize(QDomNode node, QString portLocation) {
 
         // Load the settings for the printer
         result = loadSettings(node);
-        if (result.compare("") != 0) {return result;}
+        if (result.compare("") != 0) {
+            qDebug()<<"Load Setttings: "<<result;
+            return result;
+        }
 
         // Check if a valid port location was passed; if not, load the one from the loadSettings command
         if (""==portLocation && ""!=COM_PORT) {
@@ -89,13 +92,19 @@ QString ElectronicsInterface::initialize(QDomNode node, QString portLocation) {
         if (numModulesFound < NUM_MODULES ) { //|| !error_string.isNull())
             ss << "Found " << numModulesFound << " modules but need " << NUM_MODULES << " modules.";
             ss << " Error string from NmcInit is "<<error_string;
+
+            qDebug() << "Found " << numModulesFound << " modules but need " << NUM_MODULES << " modules.";
+            qDebug() << " Error string from NmcInit is "<<error_string;
             return result;
         }
 
         // Initialize all motors.
         foreach (Motor* m, motors_) {
             result = m->initialize();
-            if (result !="") {return result;}
+            if (result !="") {
+                qDebug()<<result;
+                return result;
+            }
         }
         createCoodinatedMotion();// make the cmotion_ instance if motors_.size()>=3
         initialized_ = true;
@@ -111,8 +120,10 @@ QString ElectronicsInterface::loadSettings(QDomNode node) {
     bool haskids;
 
     temp=node.nodeName();
-    if (!("electronics" == temp)) {
+    if (!("electronics" == temp.toLower())) {
         ss << "\nBad node passed to load settings expected 'electronics' found '" <<temp <<"'\n";
+        qDebug() << "\nBad node passed to load settings expected 'electronics' found '" <<temp <<"'\n";
+
         return result;
     }
 

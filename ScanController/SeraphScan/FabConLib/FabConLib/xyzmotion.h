@@ -113,12 +113,21 @@ public:
     /**
      * returns the build space of the system
      */
-    QList<double> buildSpace();
+    QVector<double> buildSpace();
+
+    QList<DOF> getDOFs();
+
+    QMap<QString,axis> getAxes();
+
+private:
+    bool defineDOFs();
+    bool defineDOFs(double x,double y,double z);
 
 private:
     void accelerateAlong(NPath* np, QList<FabPoint> accel_list, double dist_a, bool deccel);
     double acceleration_;
     QMap<QString,axis> axismap_;
+    QList<DOF> DOFs_;
     QMap<int,int> idToStateIndex_;
     int statesize_;
     int frequency_;

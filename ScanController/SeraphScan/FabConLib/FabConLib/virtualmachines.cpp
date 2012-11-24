@@ -134,7 +134,7 @@ void VMPrototype::loadConfig(QDomDocument document) {
     initialized_ = true;
 }
 
-
+void VMPrototype::waitMove(){return;}
 
 
 
@@ -147,9 +147,11 @@ void VirtualPrinter::loadConfig(QDomDocument document) {
     QDomElement root = document.documentElement();
     QDomNode electronics = root.namedItem("electronics");
 
+    qDebug()<<"Node:"<<electronics.nodeName();
     // ELECTRONICS INTERFACE
     eInterface.initialize(electronics,comPort_);
     initialized_  = eInterface.isInitialized();
+    qDebug()<<"Electronics: "<< QString(initialized_ ? "initialized" : "not initialized");
     idtostatemap_ = eInterface.getCoordinatedMotion()->getIdToStateIndexMap();
     frequency_ = eInterface.getCoordinatedMotion()->getFrequency();
     statesize_ = eInterface.getCoordinatedMotion()->getNumberOfAxes()+1;
@@ -202,6 +204,35 @@ QString VirtualPrinter::getErrors(){
 
     return returnstring;
 }
+
+
+bool VirtualPrinter::move(double x, double y, double z, double speed){
+    QMap<QString,axis> axes = xyzmotion->getAxes();
+    if (3<=axes.keys().size()){
+        return VMPrototype::move(x,y,z,speed);
+    }
+    double d = sqrt(x*x+y*y+z*z);
+    foreach(QString s,axes.keys()){
+        Motor* m = eInterface.getMotor(axes[s].actuatorID);
+        double scale = axes[s].revPerDist;
+        double to_move=0;
+        if (s.toLower()=="x"){
+            to_move=x;
+        }else if (s.toLower()=="y"){
+            to_move=y;
+        }else if (s.toLower()=="z"){
+            to_move=z;
+        }
+        m->moveRelative(scale*to_move,scale*to_move/d,scale*xyzmotion->getAcceleration());
+    }
+    return true;
+}
+void VirtualPrinter::waitMove(){
+    foreach(Motor* m,eInterface.getMotors()){
+        m->waitMove();
+    }
+}
+
 
 bool VirtualPrinter::executeNPath(NPath path) {
 //    State test = path.getState(0);
@@ -303,6 +334,8 @@ void TestPrinter::resetPosition(){
 //    n.addState(laststate_);
     totalprintcommands_.append(n);
 }
+
+void TestPrinter::waitMove(){return;}
 
 
 QString runScript(VirtualPrinter *vm, QString script_) {

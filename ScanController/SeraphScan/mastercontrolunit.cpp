@@ -1,5 +1,6 @@
 #include "mastercontrolunit.h"
 #include <QtAlgorithms>
+#include <QDebug>
 
 MasterControlUnit::MasterControlUnit(QObject *parent) :
     QObject(parent)
@@ -8,8 +9,10 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
 }
 
 void MasterControlUnit::loadObjects(MainWindow* MW,ScanController* SC){
+    //This should simply load the important objects and start the process.
     MW_=MW;
     SC_=SC;
+    ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
     SC_->setScan(100,1,1);
     SC_->setCamera(0);
     SC_->setAxis("x");
@@ -19,6 +22,7 @@ void MasterControlUnit::loadObjects(MainWindow* MW,ScanController* SC){
 
 void MasterControlUnit::startScan(){
     if (!(SC_->isReady())){
+        ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
         SC_->setScan(100,1,1);
         SC_->StartScan();
     }
@@ -26,8 +30,18 @@ void MasterControlUnit::startScan(){
 
 void MasterControlUnit::connectToVM(QString filestr, QString port){
     VM_->setComPort(port);
+
+    // Open file at filestr and use as config for VM
     QDomDocument document;
-    document.setContent(filestr);
+    QFile configFile(filestr);
+    if (!configFile.open(QFile::ReadOnly)) {
+        qDebug() << "Failed to open config file.";
+        //QMessageBox::warning(this,tr("Config Error"),tr("Cound not open config file"));
+        return;
+    }
+    qDebug()<<"Opened Config File";
+    document.setContent(&configFile);
+    configFile.close();
     VM_->loadConfig(document);
     SC_->loadVM(VM_);
 
@@ -47,6 +61,8 @@ void MasterControlUnit::makeConnections(){
 
 
 void MasterControlUnit::scanState(bool b){
+
+    //When Done scanning, post the last image to the Main Window.
     if(!b){
       ScanData* sd = SC_->getScanData();
       QList<float> l = sd->getXRange();

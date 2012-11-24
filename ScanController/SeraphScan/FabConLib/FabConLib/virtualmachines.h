@@ -65,6 +65,8 @@ class VMPrototype:public QObject
 
         virtual void resetPosition();
 
+        virtual void waitMove();
+
     public:
 
         ElectronicsInterface eInterface;// this should be private. Its only here to alow for loadconfig thread to work
@@ -102,7 +104,8 @@ public slots:
     bool forceStop();
     void resetPosition();
 
-
+    bool move(double x, double y, double z, double speed);
+    void waitMove();
 //public:
 //    ElectronicsInterface eInterface; //TODO: this should be private. Nothing above VM should access it.
 };
@@ -123,7 +126,7 @@ public slots:
     State currentState();
     void dumpstates();
     void resetPosition();
-
+    void waitMove();
 private:
     QList<NPath> totalprintcommands_;
 };
