@@ -17,11 +17,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-INCLUDEPATH += C:\\opencv-2.4\\mybuild\\install\\include
+INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
 
-LIBS += -LC:\\opencv-2.4\\mybuild\\install\\lib \
-    -lopencv_core243.dll \
-    -lopencv_highgui243.dll \
-    -lopencv_imgproc243.dll \
-    -lopencv_features2d243.dll \
-    -lopencv_calib3d243.dll
+LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
+    -lopencv_core245.dll \
+    -lopencv_highgui245.dll \
+    -lopencv_imgproc245.dll \
+    -lopencv_features2d245.dll \
+    -lopencv_calib3d245.dll
