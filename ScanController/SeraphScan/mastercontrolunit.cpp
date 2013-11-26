@@ -13,8 +13,8 @@ void MasterControlUnit::loadObjects(MainWindow* MW,ScanController* SC){
     MW_=MW;
     SC_=SC;
     ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
-    SC_->setScan(100,1,1);
-    SC_->setCamera(0);
+    SC_->setScan(200,1,1);
+    SC_->setCamera(1);
     SC_->setAxis("x");
     makeConnections();
 }
@@ -23,7 +23,7 @@ void MasterControlUnit::loadObjects(MainWindow* MW,ScanController* SC){
 void MasterControlUnit::startScan(){
     if (!(SC_->isReady())){
         ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
-        SC_->setScan(100,1,1);
+        SC_->setScan(200,1,1);
         SC_->StartScan();
     }
 }
