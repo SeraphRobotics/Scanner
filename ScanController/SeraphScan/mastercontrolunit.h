@@ -2,8 +2,8 @@
 #define MASTERCONTROLUNIT_H
 
 #include <QObject>
-#include "mainwindow.h"
 #include <QDomDocument>
+#include "mainwindow.h"
 #include "scancontroller.h"
 #include <QTimer>
 
@@ -13,9 +13,8 @@ class MasterControlUnit : public QObject
     Q_OBJECT
 public:
     explicit MasterControlUnit(QObject *parent = 0);
-    void loadObjects(MainWindow* MW,ScanController* SC);
+    void loadObjects(MainWindow* MW);
     void connectToVM(QString filestr, QString Port);
-    void makeConnections();
 
 signals:
     
@@ -26,6 +25,7 @@ public slots:
 
 private slots:
     void updateDebug();
+    void makeConnections();
 
 public:
     QString debug;
