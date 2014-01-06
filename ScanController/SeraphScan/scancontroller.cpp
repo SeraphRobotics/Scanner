@@ -48,17 +48,23 @@ void ScanController::setAxis(QString Axis)
 
 bool ScanController::isReady()
 {
+    QString db;
+    QTextStream ss(&debug);
     // ready only if webcam works, vm ready, and values are set
     if((capwebcam.isOpened()==false)||(vm_->isInitialized()==false)||(axis_=="")||(scandistance_==0)||(stepsize_==0)||(scanspeed_==0)){//||(vm_==NULL)
         ready_=false;
-        qDebug()<<QString("Not ready")+QString("VM is")+QString(vm_->isInitialized() ? "Initialized":"Not Initialized")+
-                  QString(", Webcam:") +QString(capwebcam.isOpened() ? "is opened":"is not opened")+
-                  QString(", Axis: ")+QString(axis_)+QString(", ScanDistance:")+
-                  QString::number(scandistance_)+QString(", StepSize:")+
-                  QString::number(stepsize_)+QString(", scanspeed:")+QString::number(scanspeed_);
+        db=QString("\nNot ready: ")+QString("VM is ")+QString(vm_->isInitialized() ? "Initialized":"Not Initialized")+
+                  QString(", Webcam: ") +QString(capwebcam.isOpened() ? "is opened":"is not opened")+
+                  QString(", Axis: ")+QString(axis_)+QString(", ScanDistance: ")+
+                  QString::number(scandistance_)+QString(", StepSize: ")+
+                  QString::number(stepsize_)+QString(", scanspeed: ")+QString::number(scanspeed_);
+        qDebug()<<db;
+        ss<<db;
     }else{
         ready_=true;
-        qDebug()<<"ready";
+        db="ready";
+        qDebug()<<db;
+        ss<<db;
     }
     return ready_;
 }
@@ -128,7 +134,11 @@ void ScanController::ScanStep()
         emit updateStatus(QString("Position is now ")+QString::number(position_));
 
     }else{
-        qDebug()<<QString("DONE");
+        QString db = QString("DONE");
+        QTextStream ss(&debug);
+        qDebug()<<db;
+        ss<<db;
+
         StopScan();
         clearState();
         emit scanComplete();

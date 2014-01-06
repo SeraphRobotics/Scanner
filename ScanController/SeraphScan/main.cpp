@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     mcu.connectToVM(filestr,port);
 
     w.show();
-    w.appendText(QString("TESTING123"));
+    w.appendText(QString("Program Launched"));
 
 
     return a.exec();

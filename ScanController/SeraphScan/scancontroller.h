@@ -37,6 +37,9 @@ private:
     void clearState();
 
 
+public:
+    QString debug;
+
 private:
     VirtualPrinter* vm_;
     ScanData* SD_;

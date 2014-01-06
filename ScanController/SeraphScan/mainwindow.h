@@ -25,10 +25,12 @@ public slots:
     void appendText(QString txt);
     void setScanState(bool started);
     void setImage(QImage q);
+    void scanCompleted();
 
 
 private slots:
     void on_startStopButton_clicked();
+
 
 private:
     Ui::MainWindow *ui;

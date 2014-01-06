@@ -3,6 +3,7 @@
 #include "iostream"
 #include <QMessageBox>
 #include <QDebug>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,6 +25,13 @@ void MainWindow::setImage(QImage q){
 void MainWindow::appendText(QString txt)
 {
     ui->statusTextEdit->appendPlainText(QString("\n")+txt);
+}
+
+
+void MainWindow::scanCompleted(){
+    setScanState(false);
+    QString message="SCAN COMPLETE" + QDateTime::currentDateTime().toString(Qt::ISODate);
+    ui->statusTextEdit->appendPlainText(message);
 }
 
 void MainWindow::setScanState(bool started){

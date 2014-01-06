@@ -4,7 +4,8 @@
 #include <QObject>
 #include "mainwindow.h"
 #include <QDomDocument>
-#include"scancontroller.h"
+#include "scancontroller.h"
+#include <QTimer>
 
 
 class MasterControlUnit : public QObject
@@ -23,12 +24,18 @@ public slots:
     void scanState(bool b);
 
 
+private slots:
+    void updateDebug();
+
+public:
+    QString debug;
 
 
 private:
     MainWindow* MW_;
     ScanController* SC_;
     VirtualPrinter* VM_;
+    QTimer* timer_;
 };
 
 #endif // MASTERCONTROLUNIT_H
