@@ -106,8 +106,6 @@ void ScanController::StartScan()
 void ScanController::StopScan()
 {
     timer_->stop();
-//    vm_->move(-position_,0,0,scanspeed_);
-//    vm_->waitMove();
     emit scanRunning(false);
 }
 

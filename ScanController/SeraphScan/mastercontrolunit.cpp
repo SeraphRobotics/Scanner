@@ -17,11 +17,6 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
 void MasterControlUnit::loadObjects(MainWindow* MW){
     //This should simply load the important objects and start the process.
     MW_=MW;
-//    SC_=SC;
-//    ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
-//    //SC_->setScan(200,1,1);
-//    SC_->setCamera(1);
-//    SC_->setAxis("x");
     makeConnections();
 }
 
