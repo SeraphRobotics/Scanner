@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
 
     mcu.connectToVM(filestr,port);
 
-    mw.show();
     mw.appendText(QString("Program Launched"));
 
+    mw.show();
     return a.exec();
 }

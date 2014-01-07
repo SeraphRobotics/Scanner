@@ -29,7 +29,7 @@ void MasterControlUnit::loadObjects(MainWindow* MW){
 void MasterControlUnit::startScan(){
     if (!(SC_->isReady())){
         ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
-        SC_->setScan(20,1,1);
+        SC_->setScan(380,1,1);
         SC_->StartScan();
     }
 }
@@ -43,15 +43,19 @@ void MasterControlUnit::connectToVM(QString filestr, QString port){
     QDomDocument document;
     QFile configFile(filestr);
     if (!configFile.open(QFile::ReadOnly)) {
+        // Failed to open config file and update debugging
         db="Failed to open config file.";
         qDebug() <<db;
         ss<<db;
-        //QMessageBox::warning(this,tr("Config Error"),tr("Cound not open config file"));
         return;
     }
+
+
     db="Opened Config File";
     qDebug()<<db;
     ss<<db;
+
+    //Load the config to the VM_, vm connects and the vm is loaed to the scan controller
     document.setContent(&configFile);
     configFile.close();
     VM_->loadConfig(document);

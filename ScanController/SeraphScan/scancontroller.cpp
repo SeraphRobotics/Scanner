@@ -36,6 +36,17 @@ void ScanController::setCamera(int c)
         qDebug()<<"Error: capwebcam not accessed succesfully";
         return;
     }
+
+    //ERROR: THIS IS CONFIG SETTINGS< SHOULD BE IN A CONFIGURATION
+    //check if camera set properly
+    bool state=true;
+    state = state && capwebcam.set(CV_CAP_PROP_FRAME_WIDTH,1920);
+    state = state && capwebcam.set(CV_CAP_PROP_FRAME_HEIGHT,1080);
+
+    if(!state){
+        qDebug()<<"Error setting capture sizes)";
+    }
+
     isReady();
 }
 
@@ -95,6 +106,8 @@ void ScanController::StartScan()
 void ScanController::StopScan()
 {
     timer_->stop();
+//    vm_->move(-position_,0,0,scanspeed_);
+//    vm_->waitMove();
     emit scanRunning(false);
 }
 
@@ -120,6 +133,7 @@ void ScanController::ScanStep()
 
     if((ready_)&&(position_<scandistance_)){
         qDebug()<<"Start Move";
+        vm_->xyzmotion->setAcceleration(100);
         vm_->move(xvector_[0],xvector_[1],xvector_[2],scanspeed_);
         vm_->waitMove();
         ///CAPTURE DATA////
@@ -127,7 +141,9 @@ void ScanController::ScanStep()
         if(matOriginal.empty()==true){
             qDebug()<<"ERROR READING WEBCAM";
         }
-        QImage qimgOriginal((uchar*)matOriginal.data,matOriginal.cols,matOriginal.rows,matOriginal.step,QImage::Format_RGB888);
+        cv::Mat dest;
+        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
+        QImage qimgOriginal((uchar*)dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
         SD_->addImage(position_,qimgOriginal);
 
         emit update(position_);
