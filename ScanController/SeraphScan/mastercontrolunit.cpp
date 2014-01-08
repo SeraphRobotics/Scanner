@@ -24,7 +24,7 @@ void MasterControlUnit::loadObjects(MainWindow* MW){
 void MasterControlUnit::startScan(){
     if (!(SC_->isReady())){
         ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
-        SC_->setScan(380,1,1);
+        SC_->setScan(300,1,18);
         SC_->StartScan();
     }
 }

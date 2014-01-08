@@ -10,7 +10,7 @@ ScanData::ScanData(QObject *parent) :
     folderLocation_ = QDir(QFileInfo(settings.fileName()).absolutePath()+QDir::separator()+id_.toString());
 
 
-    qDebug()<<"folderLocation is " + folderLocation_.absolutePath();
+//    qDebug()<<"folderLocation is " + folderLocation_.absolutePath();
 
     if (!folderLocation_.exists()){
         folderLocation_.mkdir(folderLocation_.absolutePath());
@@ -26,7 +26,7 @@ void ScanData::addImage(float x, QImage img)
     bool worked;
     worked = img.save(s);
 
-    qDebug()<<QString(worked? "Worked" : "Didnt Work")+ QString("\tLocation: ")+s;
+//    qDebug()<<QString(worked? "Worked" : "Didnt Work")+ QString("\tLocation: ")+s;
 }
 
 

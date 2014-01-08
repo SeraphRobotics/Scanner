@@ -208,9 +208,15 @@ QString VirtualPrinter::getErrors(){
 
 bool VirtualPrinter::move(double x, double y, double z, double speed){
     QMap<QString,axis> axes = xyzmotion->getAxes();
+
+    // If more than three axes, used the default move command
     if (3<=axes.keys().size()){
         return VMPrototype::move(x,y,z,speed);
     }
+
+    //ERRROR this is a kludge
+    //if less than three axes, command a each motor to move independantly
+
     double d = sqrt(x*x+y*y+z*z);
     foreach(QString s,axes.keys()){
         Motor* m = eInterface.getMotor(axes[s].actuatorID);
@@ -223,7 +229,9 @@ bool VirtualPrinter::move(double x, double y, double z, double speed){
         }else if (s.toLower()=="z"){
             to_move=z;
         }
-        m->moveRelative(scale*to_move,scale*to_move/d,scale*xyzmotion->getAcceleration());
+        //Each motor moves its distance at a scalled speed and acceleration
+
+        m->moveRelative(scale*to_move,scale*to_move/d*speed,scale*xyzmotion->getAcceleration());
     }
     return true;
 }
