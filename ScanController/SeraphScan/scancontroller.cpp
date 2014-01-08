@@ -87,6 +87,7 @@ void ScanController::setScan(float scandistance, float stepsize, float  framerat
     stepsize_=stepsize;
     framerate_=framerate;
     timer_->setInterval((int)(framerate_));
+
     isReady();
 }
 
@@ -114,11 +115,8 @@ void ScanController::StartScan()
 void ScanController::StopScan()
 {
     timer_->stop();
-    Motor* m = vm_->eInterface.getMotor(axes_[axis_]);
-    if(m->moving()){
-        QVector<double> pos = vm_->currentPosition();
-        vm_->moveTo(pos[0],pos[1],pos[2],0);
-    }
+    //THIS IS A TEMP SOLUTION, WE NEED A NON-FORCED STOP
+    vm_->forceStop();
     emit scanRunning(false);
 }
 
@@ -134,8 +132,9 @@ void ScanController::clearState(){
 
 void ScanController::ScanStep()
 {
-
-    position_= vm_->currentPosition()[axes_[axis_]];
+    QVector<double> pos = vm_->currentPosition();
+    qDebug()<<pos;
+    position_= pos[axes_[axis_]];
 
     if((ready_)&&(position_<scandistance_)){
         ///CAPTURE DATA////

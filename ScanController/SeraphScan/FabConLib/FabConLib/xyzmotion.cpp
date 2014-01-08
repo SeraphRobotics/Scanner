@@ -53,6 +53,7 @@ void XYZMotion::setFrequency(int frequency) {
 void XYZMotion::setIdMap(QMap<int,int> map) {
     idToStateIndex_ = map;
     statesize_ = map.keys().size()+1;
+    defineDOFs();
 }
 
 void XYZMotion::accelerateAlong(NPath* np, QList<FabPoint> accel_list, double dist_a,bool decel) {
@@ -204,8 +205,8 @@ bool XYZMotion::defineDOFs(){
             dof.range = axismap_[s].range;
             dof.scale = axismap_[s].revPerDist;
             DOFs_.append(dof);
-            return true;
         }
+        return true;
     }else{
         return false;
     }
@@ -432,21 +433,11 @@ State XYZMotion::positionToState(double x,double y,double z) {
 }
 
 QVector<double> XYZMotion::positionFromState(State* state) {
-/*
-    int xindex = idToStateIndex_[axismap_["x"].actuatorID];
-    double xscale = axismap_["x"].revPerDist;
-    int yindex = idToStateIndex_[axismap_["y"].actuatorID];
-    double yscale = axismap_["y"].revPerDist;
-    int zindex = idToStateIndex_[axismap_["z"].actuatorID];
-    double zscale = axismap_["z"].revPerDist;
-    QVector<double> v(3,0);
-    v[0] = state->at(xindex)/xscale;
-    v[1] = state->at(yindex)/yscale;
-    v[2] = state->at(zindex)/zscale;
-*/
+
     QVector<double> v(3,0);
     DOF tempDOF;
     QList<DOF>::const_iterator j;
+
     for (j = DOFs_.constBegin(); j != DOFs_.constEnd(); ++j){
         tempDOF = (*j);
         if (tempDOF.name.toLower()=="x"){
