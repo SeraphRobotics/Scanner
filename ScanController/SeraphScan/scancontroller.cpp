@@ -86,7 +86,7 @@ void ScanController::setScan(float scandistance, float stepsize, float  framerat
     scandistance_=scandistance;
     stepsize_=stepsize;
     framerate_=framerate;
-    timer_->setInterval((int)(framerate_));
+    timer_->setInterval((int)(1000/framerate_));
 
     isReady();
 }
