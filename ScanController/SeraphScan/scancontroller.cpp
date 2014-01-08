@@ -4,7 +4,7 @@
 
 ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
     axis_(""),ready_(0),scandistance_(0),
-    stepsize_(0),scanspeed_(0),position_(0),xvector_(QVector<float>(3,0))
+    stepsize_(0),framerate_(0),position_(0),xvector_(QVector<float>(3,0))
 {    
     timer_ = new QTimer();
     vm_ = new VirtualPrinter();
@@ -62,13 +62,13 @@ bool ScanController::isReady()
     QString db;
     QTextStream ss(&debug);
     // ready only if webcam works, vm ready, and values are set
-    if((capwebcam.isOpened()==false)||(vm_->isInitialized()==false)||(axis_=="")||(scandistance_==0)||(stepsize_==0)||(scanspeed_==0)){//||(vm_==NULL)
+    if((capwebcam.isOpened()==false)||(vm_->isInitialized()==false)||(axis_=="")||(scandistance_==0)||(stepsize_==0)||(framerate_==0)){//||(vm_==NULL)
         ready_=false;
         db=QString("\nNot ready: ")+QString("VM is ")+QString(vm_->isInitialized() ? "Initialized":"Not Initialized")+
                   QString(", Webcam: ") +QString(capwebcam.isOpened() ? "is opened":"is not opened")+
                   QString(", Axis: ")+QString(axis_)+QString(", ScanDistance: ")+
                   QString::number(scandistance_)+QString(", StepSize: ")+
-                  QString::number(stepsize_)+QString(", scanspeed: ")+QString::number(scanspeed_);
+                  QString::number(stepsize_)+QString(", scanspeed: ")+QString::number(framerate_);
         qDebug()<<db;
         ss<<db;
     }else{
@@ -81,16 +81,12 @@ bool ScanController::isReady()
 }
 
 
-void ScanController::setScan(float scandistance, float stepsize, float scanspeed)
+void ScanController::setScan(float scandistance, float stepsize, float  framerate)
 {
     scandistance_=scandistance;
     stepsize_=stepsize;
-    scanspeed_=scanspeed;
-    if (!((stepsize==0) || (scanspeed==0)))
-    {
-        timer_->setInterval((int)(stepsize/scanspeed)+1);
-    }
-
+    framerate_=framerate;
+    timer_->setInterval((int)(framerate_));
     isReady();
 }
 
@@ -98,6 +94,18 @@ void ScanController::StartScan()
 {
     if(ready_){
         SD_ = new ScanData();
+
+        xvector_[0]=0;
+        xvector_[1]=0;
+        xvector_[2]=0;
+        xvector_[axes_[axis_]]=scandistance_;
+        qDebug()<<"Start Move";
+        vm_->xyzmotion->setAcceleration(100);
+
+        float speed = framerate_*stepsize_;
+
+        vm_->move(xvector_[0],xvector_[1],xvector_[2],speed);
+
         timer_->start();
         emit scanRunning(true);
     }
@@ -106,6 +114,11 @@ void ScanController::StartScan()
 void ScanController::StopScan()
 {
     timer_->stop();
+    Motor* m = vm_->eInterface.getMotor(axes_[axis_]);
+    if(m->moving()){
+        QVector<double> pos = vm_->currentPosition();
+        vm_->moveTo(pos[0],pos[1],pos[2],0);
+    }
     emit scanRunning(false);
 }
 
@@ -113,7 +126,7 @@ void ScanController::clearState(){
     ready_=false;
     scandistance_=0;
     stepsize_=0;
-    scanspeed_=0;
+    framerate_=0;
     position_=0;
 
 }
@@ -122,18 +135,9 @@ void ScanController::clearState(){
 void ScanController::ScanStep()
 {
 
-    xvector_[0]=0;
-    xvector_[1]=0;
-    xvector_[2]=0;
-    xvector_[axes_[axis_]]=stepsize_;
-    position_+=stepsize_;
-
+    position_= vm_->currentPosition()[axes_[axis_]];
 
     if((ready_)&&(position_<scandistance_)){
-        qDebug()<<"Start Move";
-        vm_->xyzmotion->setAcceleration(100);
-        vm_->move(xvector_[0],xvector_[1],xvector_[2],scanspeed_);
-        vm_->waitMove();
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);
         if(matOriginal.empty()==true){

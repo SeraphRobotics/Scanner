@@ -16,15 +16,17 @@ class ScanController: public QObject
 public:
     explicit ScanController(QObject *parent = 0);
     void loadVM(VirtualPrinter* vm);
-    void setCamera(int c);
-    void setAxis(QString Axis);
     bool isReady();
-    void setScan(float stepdistance, float stepsize, float scanspeed);
     ScanData* getScanData();
 
 public slots:
     void StartScan();
     void StopScan();
+    void setScan(float scandistance, float stepsize, float framerate);
+    void setCamera(int c);
+    void setAxis(QString Axis);
+
+private slots:
     void ScanStep();
 
 signals:
@@ -32,6 +34,7 @@ signals:
     void updateStatus(QString s);
     void scanRunning(bool s);
     void scanComplete();
+
 
 private:
     void clearState();
@@ -48,7 +51,7 @@ private:
     bool ready_;
     float scandistance_;
     float stepsize_;
-    float scanspeed_;
+    float framerate_;
     float position_;
     QTimer* timer_;
     QMap<QString,int> axes_;
