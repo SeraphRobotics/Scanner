@@ -53,6 +53,7 @@ private:
     float stepsize_;
     float framerate_;
     float position_;
+    float targetposition_;
     QTimer* timer_;
     QMap<QString,int> axes_;
     QVector<float> xvector_;

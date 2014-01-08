@@ -4,7 +4,7 @@
 
 ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
     axis_(""),ready_(0),scandistance_(0),
-    stepsize_(0),framerate_(0),position_(0),xvector_(QVector<float>(3,0))
+    stepsize_(0),framerate_(0),position_(0),targetposition_(0),xvector_(QVector<float>(3,0))
 {    
     timer_ = new QTimer();
     vm_ = new VirtualPrinter();
@@ -86,7 +86,7 @@ void ScanController::setScan(float scandistance, float stepsize, float  framerat
     scandistance_=scandistance;
     stepsize_=stepsize;
     framerate_=framerate;
-    timer_->setInterval((int)(1000/framerate_));
+    timer_->setInterval(1);
 
     isReady();
 }
@@ -108,6 +108,7 @@ void ScanController::StartScan()
         vm_->move(xvector_[0],xvector_[1],xvector_[2],speed);
 
         timer_->start();
+        targetposition_+=stepsize_;
         emit scanRunning(true);
     }
 }
@@ -132,25 +133,33 @@ void ScanController::clearState(){
 
 void ScanController::ScanStep()
 {
-    QVector<double> pos = vm_->currentPosition();
-    qDebug()<<pos;
-    position_= pos[axes_[axis_]];
+    if(!ready_){
+        qDebug()<<"NOT READY";
+        return;
+    }
 
-    if((ready_)&&(position_<scandistance_)){
+    QVector<double> pos = vm_->currentPosition();
+    position_= pos[axes_[axis_]];
+    float tolerance=0.1;
+    float error=position_-targetposition_;
+    qDebug()<<"error: "<<error<<"\ttaget:"<<targetposition_;
+    if(fabs(error)<tolerance){
+        targetposition_+=stepsize_;
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);
         if(matOriginal.empty()==true){
             qDebug()<<"ERROR READING WEBCAM";
         }
-        cv::Mat dest;
-        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
-        QImage qimgOriginal((uchar*)dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
-        SD_->addImage(position_,qimgOriginal);
+//        cv::Mat dest;
+//        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
+//        QImage qimgOriginal((uchar*)dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
+//        SD_->addImage(position_,qimgOriginal);
 
-        emit update(position_);
-        emit updateStatus(QString("Position is now ")+QString::number(position_));
+//        emit update(position_);
+//        emit updateStatus(QString("Position is now ")+QString::number(position_));
+    }
 
-    }else{
+    if(position_>scandistance_){
         QString db = QString("DONE");
         QTextStream ss(&debug);
         qDebug()<<db;
