@@ -8,6 +8,7 @@ ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
 {    
     timer_ = new QTimer();
     vm_ = new VirtualPrinter();
+    SD_ = new ScanData();
     connect(timer_,SIGNAL(timeout()),this,SLOT(ScanStep()));
     connect(this,SIGNAL(scanComplete()),timer_,SLOT(stop()));
 
@@ -94,8 +95,6 @@ void ScanController::setScan(float scandistance, float stepsize, float  framerat
 void ScanController::StartScan()
 {
     if(ready_){
-        SD_ = new ScanData();
-
         xvector_[0]=0;
         xvector_[1]=0;
         xvector_[2]=0;

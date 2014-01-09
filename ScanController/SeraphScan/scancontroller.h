@@ -46,6 +46,7 @@ public:
 private:
     VirtualPrinter* vm_;
     ScanData* SD_;
+    QTimer* timer_;
     int camNumber_;
     QString axis_;
     bool ready_;
@@ -54,7 +55,6 @@ private:
     float framerate_;
     float position_;
     float targetposition_;
-    QTimer* timer_;
     QMap<QString,int> axes_;
     QVector<float> xvector_;
     cv::VideoCapture capwebcam;

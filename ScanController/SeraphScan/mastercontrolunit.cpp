@@ -11,7 +11,6 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
     SC_ = new ScanController();
     SC_->setCamera(1);
     SC_->setAxis("x");
-//    QTimer::singleShot(0,this,SLOT(makeConnections()));
 }
 
 void MasterControlUnit::loadObjects(MainWindow* MW){
