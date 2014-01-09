@@ -155,11 +155,13 @@ void ScanController::ScanStep()
 //        QImage qimgOriginal((uchar*)dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
 //        SD_->addImage(position_,qimgOriginal);
 
-//        emit update(position_);
-//        emit updateStatus(QString("Position is now ")+QString::number(position_));
+        emit update(position_);
+        emit updateStatus(QString("Position is now ")+QString::number(position_));
     }
+    //If the error is greated than the distance between targets, increate the target
+    if(fabs(error)>stepsize_){targetposition_+=stepsize_;}
 
-    if(position_>scandistance_){
+    if(targetposition_>scandistance_){
         QString db = QString("DONE");
         QTextStream ss(&debug);
         qDebug()<<db;
