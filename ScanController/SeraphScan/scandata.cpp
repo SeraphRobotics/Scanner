@@ -2,7 +2,7 @@
 #include <QSettings>
 
 ScanData::ScanData(QObject *parent) :
-    QObject(parent),extension_(".jpeg")
+    QObject(parent),extension_("JPEG")
 {
 
     id_ = QUuid::createUuid();
@@ -10,35 +10,48 @@ ScanData::ScanData(QObject *parent) :
     folderLocation_ = QDir(QFileInfo(settings.fileName()).absolutePath()+QDir::separator()+id_.toString());
 
 
-//    qDebug()<<"folderLocation is " + folderLocation_.absolutePath();
-
     if (!folderLocation_.exists()){
         folderLocation_.mkdir(folderLocation_.absolutePath());
     }
     qDebug()<<QString("folderLocation ")+QString(folderLocation_.exists() ? "exists" : "doesnt exist");
 }
 
-void ScanData::addImage(float x, QImage img)
+
+
+void ScanData::addImage(float x, QPixmap img)
 {
-    xs_.append(x);
-    QString s = folderLocation_.absolutePath()+QDir::separator()+QString::number(x)+extension_;
+    image_map_[x]=img;
 
-    bool worked;
-    worked = img.save(s);
-
-//    qDebug()<<QString(worked? "Worked" : "Didnt Work")+ QString("\tLocation: ")+s;
 }
 
 
 
-QImage ScanData::getImageFromX(float x)
+QPixmap ScanData::getImageFromX(float x)
 {
-    const QString s = folderLocation_.absolutePath()+QDir::separator()+QString::number(x)+extension_;
-    QImage img(s);
-    return img;
+
+    if(image_map_.keys().contains(x)){
+        return image_map_[x];
+    }else{
+        return QPixmap();
+    }
+
 }
 QList<float> ScanData::getXRange()
 {
-    return QList<float>(xs_);
+    return image_map_.keys();
 }
 
+void ScanData::writeToDisk(){
+    qDebug()<<"\ncalled";
+    bool worked=true;
+    QList<float> keys = getXRange();
+    for(int i=0;i<keys.size();i++){
+        float x = keys.at(i);
+        QString s = folderLocation_.absolutePath()+QDir::separator()+QString::number(x)+QString(".")+extension_;
+        worked = worked && image_map_[x].save(s);
+
+    }
+
+    qDebug()<<QString(worked? "Worked" : "Didnt Work");
+
+}

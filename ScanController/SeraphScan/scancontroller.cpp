@@ -118,6 +118,7 @@ void ScanController::StopScan()
     timer_->stop();
     //THIS IS A TEMP SOLUTION, WE NEED A NON-FORCED STOP
     vm_->forceStop();
+    SD_->writeToDisk();
     emit scanRunning(false);
 }
 
@@ -150,16 +151,16 @@ void ScanController::ScanStep()
         if(matOriginal.empty()==true){
             qDebug()<<"ERROR READING WEBCAM";
         }
-//        cv::Mat dest;
-//        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
-//        QImage qimgOriginal((uchar*)dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
-//        SD_->addImage(position_,qimgOriginal);
+        cv::Mat dest;
+        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
+        QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888));
+        SD_->addImage(position_,m);
 
         emit update(position_);
         emit updateStatus(QString("Position is now ")+QString::number(position_));
     }
     //If the error is greated than the distance between targets, increate the target
-    if(fabs(error)>stepsize_){targetposition_+=stepsize_;}
+    if(error>stepsize_){targetposition_+=stepsize_;}
 
     if(targetposition_>scandistance_){
         QString db = QString("DONE");

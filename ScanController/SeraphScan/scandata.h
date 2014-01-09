@@ -2,7 +2,7 @@
 #define SCANDATA_H
 
 #include <QObject>
-#include <QImage>
+#include <QPixmap>
 #include <QUuid>
 #include <QtCore>
 
@@ -11,20 +11,21 @@ class ScanData : public QObject
     Q_OBJECT
 public:
     explicit ScanData(QObject *parent = 0);
-    void addImage(float x, QImage img);
-    QImage getImageFromX(float x);
+    QPixmap getImageFromX(float x);
     QList<float> getXRange();
 
 signals:
     
 public slots:
+    void addImage(float x, QPixmap img);
+    void writeToDisk();
 
 
 private:
     QDir folderLocation_;
     QUuid id_;
     QString extension_;
-    QList<float> xs_;
+    QMap<float,QPixmap> image_map_;
 
 };
 

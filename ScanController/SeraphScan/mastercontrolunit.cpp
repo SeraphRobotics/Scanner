@@ -80,10 +80,12 @@ void MasterControlUnit::scanState(bool b){
     if(!b){
       ScanData* sd = SC_->getScanData();
       QList<float> l = sd->getXRange();
-      qSort(l.begin(),l.end());
-      float lastx = l.last();
-      QImage img = sd->getImageFromX(lastx);
-      MW_->setImage(img);
+      if(!l.isEmpty()){
+         qSort(l.begin(),l.end());
+        float lastx = l.last();
+//        QImage img = sd->getImageFromX(lastx);
+//        MW_->setImage(img);
+      }
     }
 }
 
