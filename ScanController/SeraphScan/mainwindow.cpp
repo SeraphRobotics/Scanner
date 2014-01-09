@@ -18,8 +18,8 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::setImage(QImage q){
-    ui->label->setPixmap(QPixmap::fromImage(q));
+void MainWindow::setImage(QPixmap q){
+    ui->label->setPixmap(q);
 }
 
 void MainWindow::appendText(QString txt)

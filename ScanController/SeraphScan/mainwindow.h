@@ -24,7 +24,7 @@ signals:
 public slots:
     void appendText(QString txt);
     void setScanState(bool started);
-    void setImage(QImage q);
+    void setImage(QPixmap q);
     void scanCompleted();
 
 
