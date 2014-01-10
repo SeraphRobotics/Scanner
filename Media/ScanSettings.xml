@@ -1,0 +1,7 @@
+<scan>
+	<camera>1</camera>
+	<axis>x</axis>
+	<length>300</length>
+	<resolution unit="mm">1</resolution>
+	<framerate>10</framerate>
+</scan>

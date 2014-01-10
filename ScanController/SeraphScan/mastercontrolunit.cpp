@@ -9,8 +9,6 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
     timer_ = new QTimer();
     timer_->setInterval(100);
     SC_ = new ScanController();
-    SC_->setCamera(1);
-    SC_->setAxis("x");
     makeConnections();
 }
 
@@ -22,10 +20,88 @@ MasterControlUnit::~MasterControlUnit(){
 
 void MasterControlUnit::startScan(){
     if (!(SC_->isReady())){
-        ///ERROR, TODO: CONFIGURATION INFO, SHOULD NOT BE HERE
-        SC_->setScan(300,1,10);
         SC_->StartScan();
+    }else{
+        emit error("Scan not ready");
     }
+}
+
+void MasterControlUnit::loadScanConfig(QString filestr){
+    QString db;
+    QDomDocument document;
+    QFile configFile(filestr);
+    if (!configFile.open(QFile::ReadOnly)) {
+        db="Failed to open config file.";
+        qDebug() <<db;
+        emit error(db);
+        return;
+    }
+
+
+    db="Opened Config File";
+    qDebug()<<db;
+    emit update(db);
+
+    document.setContent(&configFile);
+    configFile.close();
+
+    QDomElement scan = document.documentElement();
+//    QDomNode scan = root.namedItem("scan");
+
+
+    if (!("scan" == scan.nodeName().toLower())) {
+        db = QString("\n Bad file passed, no scan settings found, found: ")+scan.nodeName();
+        qDebug() << db;
+        emit error(db);
+        return;
+    }
+
+    if (!scan.hasChildNodes()) {
+        db = QString("\n No settings in scan");
+        emit error(db);
+        return;
+    }
+
+
+    QString axis("");
+    int camera =0;
+    float length=0;
+    float resolution=0;
+    float framerate=0;
+
+    QDomNodeList scanChildren = scan.childNodes();
+    for (unsigned int i = 0; i < scanChildren.length(); i++) {
+        QDomNode schild = scanChildren.at(i);
+        QDomElement el;
+        QString name = schild.nodeName().toLower();
+        if (!schild.isElement()) {
+            continue;
+        }
+        if ("camera"==name) {
+            el=schild.toElement();
+            camera = el.text().toUInt();
+        }else if ("axis"==name) {
+            el=schild.toElement();
+            axis = el.text();
+        }else if ("length"==name) {
+            el=schild.toElement();
+            length = el.text().toFloat();
+        }else if ("resolution"==name) {
+            el=schild.toElement();
+            resolution = el.text().toFloat();
+        }else if ("framerate"==name) {
+            el=schild.toElement();
+            framerate = el.text().toFloat();
+        }
+    }
+    if((0==camera)||(0.1==length)||(0.01>resolution)||(0.1>framerate)||axis.isEmpty()){
+        emit error("Settings invalid");
+        return;
+    }
+
+    SC_->setScan(length,resolution,framerate);
+    SC_->setCamera(camera);
+    SC_->setAxis(axis);
 }
 
 void MasterControlUnit::connectToVM(QString filestr, QString port){
@@ -40,14 +116,14 @@ void MasterControlUnit::connectToVM(QString filestr, QString port){
         // Failed to open config file and update debugging
         db="Failed to open config file.";
         qDebug() <<db;
-        ss<<db;
+        emit error(db);
         return;
     }
 
 
     db="Opened Config File";
     qDebug()<<db;
-    ss<<db;
+    emit update(db);
 
     //Load the config to the VM_, vm connects and the vm is loaed to the scan controller
     document.setContent(&configFile);
@@ -92,10 +168,9 @@ void MasterControlUnit::scanState(bool b){
 }
 
 void MasterControlUnit::updateDebug(){
-    QString debug_update = debug+SC_->debug;
+    QString debug_update = SC_->debug;
     if(!debug_update.isEmpty()){
         emit error(debug_update);
-        debug.clear();
         SC_->debug.clear();
     }
 }

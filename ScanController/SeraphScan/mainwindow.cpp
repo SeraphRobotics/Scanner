@@ -22,9 +22,10 @@ void MainWindow::setup(){
 
     QString filestr = "SeraphScanner.config";
     QString port = "COM3";
-
+    QString scanSettings="ScanSettings.xml";
 
     mcu_->connectToVM(filestr,port);
+    mcu_->loadScanConfig(scanSettings);
 }
 MainWindow::~MainWindow()
 {
@@ -61,6 +62,8 @@ void MainWindow::setScanState(bool started){
         ui->statusTextEdit->clear();
     }else{
         ui->startStopButton->setText("Start");
+        ui->startStopButton->hide();
+        ui->statusTextEdit->hide();
     }
 }
 

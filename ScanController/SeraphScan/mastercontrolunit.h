@@ -14,9 +14,11 @@ public:
     explicit MasterControlUnit(QObject *parent = 0);
     ~MasterControlUnit();
     void connectToVM(QString filestr, QString Port);
+    void loadScanConfig(QString filestr);
 
 signals:
     void error(QString);
+    void update(QString);
     void image(QPixmap);
 
 public slots:
