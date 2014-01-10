@@ -92,9 +92,11 @@ void ScanController::setScan(float scandistance, float stepsize, float  framerat
 void ScanController::StartScan()
 {
     if(ready_){
-//        QVector<double> pos = vm_->currentPosition();
-//        position_= pos[axes_[axis_]];
-//        emit updateStatus(QString("Start Position: ")+QString::number(position_));
+        vm_->resetPosition();
+
+        QVector<double> pos = vm_->currentPosition();
+        position_= pos[axes_[axis_]];
+        emit updateStatus(QString("Start Position: ")+QString::number(position_));
 
 
         xvector_[0]=0;
@@ -108,7 +110,7 @@ void ScanController::StartScan()
         vm_->move(xvector_[0],xvector_[1],xvector_[2],speed);
 
         timer_->start();
-        targetposition_=0;//stepsize_;
+        targetposition_=position_+stepsize_;
         emit scanRunning(true);
     }else{
         emit error(QString("not ready"));
