@@ -105,6 +105,8 @@ void ScanController::StartScan()
         timer_->start();
         targetposition_+=0;//stepsize_;
         emit scanRunning(true);
+    }else{
+        emit error(QString("not ready"));
     }
 }
 
@@ -112,7 +114,7 @@ void ScanController::StopScan()
 {
     timer_->stop();
     //THIS IS A TEMP SOLUTION, WE NEED A NON-FORCED STOP
-    vm_->forceStop();
+    vm_->stop();
     SD_->writeToDisk();
     emit scanRunning(false);
 }
@@ -164,7 +166,7 @@ void ScanController::ScanStep()
         QString db = QString("DONE");
         emit updateStatus(db);
         StopScan();
-        clearState();
+//        clearState();
         emit scanComplete();
     }
 }

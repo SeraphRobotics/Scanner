@@ -1,5 +1,7 @@
 #include "motor.h"
 #include "QTextStream"
+#include <math.h>
+#include <QDebug>
 
 Motor::Motor(){}
 
@@ -102,8 +104,11 @@ int Motor::getID()
 
 bool Motor::moveAbsolute(double position, double velocity, double acceleration)
 {
-
-    if(!initialized_){return false;}
+    qDebug()<<"Motor move called";
+    if(!initialized_){
+        qDebug()<<"not initialized";
+        return false;
+    }
     //if reversed then switches position
     if(isReversed_)
     {
@@ -118,13 +123,16 @@ bool Motor::moveAbsolute(double position, double velocity, double acceleration)
         && acceleration >= MIN_COMMANDED_ACCELERATION
         && acceleration <= MAX_COMMANDED_ACCELERATION)){
         error_="Tried to issue a movement command with arguments that are out of bounds.";
+        qDebug()<<error_;
+        qDebug()<<"accel: "<<acceleration<<"Bounds ("<<MIN_COMMANDED_ACCELERATION<<","<<MAX_COMMANDED_ACCELERATION<<")";
+        qDebug()<<"vel: "<<velocity<<"Bounds ("<<MIN_COMMANDED_VELOCITY<<","<<MAX_COMMANDED_VELOCITY<<")";
+        qDebug()<<"pos: "<<position<<"Bounds ("<<MIN_COMMANDED_POSITION<<","<<MAX_COMMANDED_POSITION<<")";
         return false;
     }
 
    //sets the commanded position to the given position
     commandedPosition_ = position;
-
-    return ServoLoadTraj
+    bool status=ServoLoadTraj
             (
                     ADDRESS,
                     LOAD_POS | LOAD_VEL | LOAD_ACC | ENABLE_SERVO | START_NOW,
@@ -133,17 +141,29 @@ bool Motor::moveAbsolute(double position, double velocity, double acceleration)
                     (int)(acceleration * COUNTS_PER_REV / (TICKS_PER_SECOND * TICKS_PER_SECOND) * 65536), //Translate U/(second^2) to count/(ticks^2) * 2^16.
                     0, //pwm (no effect if not in pwm mode)
                     &error_) == 1;
+
+    qDebug()<<"Servo load traj: "<<status;
+    return status;
 }
 
 bool Motor::moveRelative(double positionDelta, double velocity, double acceleration)
 {
-    return moveAbsolute(getPosition()+positionDelta, velocity, acceleration);
+    return moveAbsolute(getPosition()+positionDelta, fabs(velocity), acceleration);
 }
 
-bool Motor::stop()
+bool Motor::foreceStop()
 {
     return cleanUp();
 }
+
+void Motor::stop()
+{
+    if(initialized_)
+    {
+        qDebug()<<QString("Result: ")<<ServoStopMotor(ADDRESS, AMP_ENABLE | STOP_SMOOTH | ADV_FEATURE,&error_);
+    }
+}
+
 
 bool Motor::setGroup(byte groupAddress, bool isLeader)
 {

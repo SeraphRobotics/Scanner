@@ -71,6 +71,10 @@ void VMPrototype::resetPosition(){
     return;
 }
 
+void VMPrototype::stop(){
+    return;
+}
+
 
 QScriptEngine* VMPrototype::makeEngine(){
 
@@ -230,7 +234,7 @@ bool VirtualPrinter::move(double x, double y, double z, double speed){
             to_move=z;
         }
         //Each motor moves its distance at a scalled speed and acceleration
-
+        qDebug()<<"moving";
         m->moveRelative(scale*to_move,scale*to_move/d*speed,scale*xyzmotion->getAcceleration());
     }
     return true;
@@ -275,6 +279,16 @@ bool VirtualPrinter::forceStop(){
     eInterface.forceStop();
     initialized_ = false;
     return true;
+}
+
+void VirtualPrinter::stop(){
+    QList<Motor*> ms = eInterface.getMotors();
+    QListIterator<Motor*> motors(ms);
+    while(motors.hasNext()){
+        Motor* m = motors.next();
+        m->stop();
+    }
+//    eInterface.getCoordinatedMotion()->stop();
 }
 
 void VirtualPrinter::resetPosition(){

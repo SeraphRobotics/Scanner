@@ -90,6 +90,11 @@ bool CoordinatedMotion::moveAlongPath(NPath states){
     return moveAlongPath(states,0);
 }
 
+
+void CoordinatedMotion::stop(){
+    NP::ClearStates();
+}
+
 bool CoordinatedMotion::moveAlongPath(NPath states,int startPointIndex){
     if(states.numberOfStates() == 0) {return false;}
     if(!validateNPath(states)){

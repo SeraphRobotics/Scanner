@@ -97,6 +97,8 @@ public slots:// THis is uneeded
      */
     QString getErrors();
 
+    void stop();
+
 
 private:
     QMap<int,Motor*> motors_; // the integer id of the state variable and the corresponding motor instance

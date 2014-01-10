@@ -186,9 +186,9 @@ public slots: // these are slots for when the item is added to javascipt interfa
       Stops the motor
       @return true iff the motor command to stop was sent in successfully
      */
-    bool stop();
+    bool foreceStop();
 
-
+    void stop();
 
     QString getErrors();
 

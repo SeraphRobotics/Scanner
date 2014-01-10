@@ -63,6 +63,8 @@ class VMPrototype:public QObject
 
         bool forceStop();
 
+        virtual void stop();
+
         virtual void resetPosition();
 
         virtual void waitMove();
@@ -102,6 +104,7 @@ public slots:
     bool executeRelativeNPath(NPath path);
     State currentState();
     bool forceStop();
+    void stop();
     void resetPosition();
 
     bool move(double x, double y, double z, double speed);

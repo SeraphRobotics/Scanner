@@ -18,6 +18,7 @@ int SetPathParams(int statesize, int freq, int nbuf,
 float InitPath(QString* error_string);
 int DlPathPoints(QString* error_string);
 int AddStates(HzPath statelist);
+void ClearStates();
 int DlSev(QString* error_string, int pointcount, byte tempId, long int pointBuffer[]);
 int GetNextPoints(int stateVariableIndex,long int pointBuffer[],int bufferLength);
 int StartPathMode(QString* error_string);

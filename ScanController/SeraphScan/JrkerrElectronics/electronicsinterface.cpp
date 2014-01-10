@@ -62,7 +62,7 @@ void ElectronicsInterface::resetPosition(){
 
 void ElectronicsInterface::forceStop(){
     foreach(Motor* m,getMotors()){
-        m->stop();
+        m->foreceStop();
     }
 
     initialized_=false;

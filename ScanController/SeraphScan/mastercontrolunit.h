@@ -28,6 +28,8 @@ public slots:
 
 private slots:
     void makeConnections();
+    void test();
+    void test2();
 
 public:
     QString debug;

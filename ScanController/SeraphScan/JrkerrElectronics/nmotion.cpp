@@ -315,6 +315,9 @@ int AddStates(HzPath statelist){
 
 }
 
+void ClearStates(){
+    states_.clear();
+}
 
 //---------------------------------------------------------------------------
 //Initializes the coordinated path after all of the segments have been added.

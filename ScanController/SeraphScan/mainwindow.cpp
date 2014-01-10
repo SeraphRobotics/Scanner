@@ -58,8 +58,8 @@ void MainWindow::setScanState(bool started){
         ui->statusTextEdit->clear();
     }else{
         ui->startStopButton->setText("Start");
-        ui->startStopButton->hide();
-        ui->statusTextEdit->hide();
+//        ui->startStopButton->hide();
+//        ui->statusTextEdit->hide();
     }
 }
 
