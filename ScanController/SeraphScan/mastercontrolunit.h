@@ -27,7 +27,6 @@ public slots:
 
 
 private slots:
-    void updateDebug();
     void makeConnections();
 
 public:
@@ -37,7 +36,6 @@ public:
 private:
     ScanController* SC_;
     VirtualPrinter* VM_;
-    QTimer* timer_;
 };
 
 #endif // MASTERCONTROLUNIT_H

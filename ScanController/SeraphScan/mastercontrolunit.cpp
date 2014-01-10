@@ -6,15 +6,12 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
     QObject(parent)
 {
     VM_ = new VirtualPrinter();
-    timer_ = new QTimer();
-    timer_->setInterval(100);
     SC_ = new ScanController();
     makeConnections();
 }
 
 MasterControlUnit::~MasterControlUnit(){
     delete VM_;
-    delete timer_;
     delete SC_;
 }
 
@@ -183,16 +180,12 @@ void MasterControlUnit::makeConnections(){
 
     connect(this->parent(),SIGNAL(start()),SC_,SLOT(StartScan()));
     connect(this->parent(),SIGNAL(stop()),SC_,SLOT(StopScan()));
-
     connect(this->parent(),SIGNAL(start()),this,SLOT(startScan()));
+
     connect(SC_,SIGNAL(scanRunning(bool)),this->parent(),SLOT(setScanState(bool)));
     connect(SC_,SIGNAL(updateStatus(QString)),this->parent(),SLOT(appendText(QString)));
-
-
     connect(SC_,SIGNAL(scanRunning(bool)),this,SLOT(scanState(bool)));
-
-    connect(timer_,SIGNAL(timeout()),this,SLOT(updateDebug()));
-    timer_->start();
+    connect(SC_,SIGNAL(error(QString)),this->parent(),SLOT(appenndText(QString)));
 }
 
 
@@ -211,10 +204,3 @@ void MasterControlUnit::scanState(bool b){
     }
 }
 
-void MasterControlUnit::updateDebug(){
-    QString debug_update = SC_->debug;
-    if(!debug_update.isEmpty()){
-        emit error(debug_update);
-        SC_->debug.clear();
-    }
-}

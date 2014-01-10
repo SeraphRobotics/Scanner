@@ -34,6 +34,7 @@ signals:
     void updateStatus(QString s);
     void scanRunning(bool s);
     void scanComplete();
+    void error(QString s);
 
 
 private:

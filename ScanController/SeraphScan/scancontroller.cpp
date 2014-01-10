@@ -34,7 +34,7 @@ void ScanController::setCamera(int c)
     capwebcam.open(c);
 
     if (capwebcam.isOpened()==false){
-        qDebug()<<"Error: capwebcam not accessed succesfully";
+        emit error(QString("Error: capwebcam not accessed succesfully"));
         return;
     }
 
@@ -45,9 +45,8 @@ void ScanController::setCamera(int c)
     state = state && capwebcam.set(CV_CAP_PROP_FRAME_HEIGHT,1080);
 
     if(!state){
-        qDebug()<<"Error setting capture sizes)";
+        emit error(QString("Error setting capture sizes)"));
     }
-
     isReady();
 }
 
@@ -61,7 +60,6 @@ void ScanController::setAxis(QString Axis)
 bool ScanController::isReady()
 {
     QString db;
-    QTextStream ss(&debug);
     // ready only if webcam works, vm ready, and values are set
     if((capwebcam.isOpened()==false)||(vm_->isInitialized()==false)||(axis_=="")||(scandistance_==0)||(stepsize_==0)||(framerate_==0)){//||(vm_==NULL)
         ready_=false;
@@ -71,12 +69,11 @@ bool ScanController::isReady()
                   QString::number(scandistance_)+QString(", StepSize: ")+
                   QString::number(stepsize_)+QString(", scanspeed: ")+QString::number(framerate_);
         qDebug()<<db;
-        ss<<db;
+        emit error(db);
     }else{
         ready_=true;
         db="ready";
-        qDebug()<<db;
-        ss<<db;
+        emit updateStatus(db);
     }
     return ready_;
 }
@@ -99,15 +96,14 @@ void ScanController::StartScan()
         xvector_[1]=0;
         xvector_[2]=0;
         xvector_[axes_[axis_]]=scandistance_;
-        qDebug()<<"Start Move";
-        vm_->xyzmotion->setAcceleration(100);
 
+        //vm_->xyzmotion->setAcceleration(100);
         float speed = framerate_*stepsize_;
 
         vm_->move(xvector_[0],xvector_[1],xvector_[2],speed);
 
         timer_->start();
-        targetposition_+=stepsize_;
+        targetposition_+=0;//stepsize_;
         emit scanRunning(true);
     }
 }
@@ -134,21 +130,24 @@ void ScanController::clearState(){
 void ScanController::ScanStep()
 {
     if(!ready_){
-        qDebug()<<"NOT READY";
+        emit error(QString("Scanner not ready"));
         return;
     }
 
     QVector<double> pos = vm_->currentPosition();
     position_= pos[axes_[axis_]];
     float tolerance=0.1;
-    float error=position_-targetposition_;
-    qDebug()<<"error: "<<error<<"\ttaget:"<<targetposition_;
-    if(fabs(error)<tolerance){
+    float p_error=position_-targetposition_;
+
+//    qDebug()<<"error: "<<error<<"\ttaget:"<<targetposition_;
+
+    if(fabs(p_error)<tolerance){
         targetposition_+=stepsize_;
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);
         if(matOriginal.empty()==true){
-            qDebug()<<"ERROR READING WEBCAM";
+
+            emit error(QString("Error reading camera at position:")+QString::number(position_));
         }
         cv::Mat dest;
         cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
@@ -159,14 +158,11 @@ void ScanController::ScanStep()
         emit updateStatus(QString("Position is now ")+QString::number(position_));
     }
     //If the error is greated than the distance between targets, increate the target
-    if(error>stepsize_){targetposition_+=stepsize_;}
+    if(p_error>stepsize_){targetposition_+=stepsize_;}
 
     if(targetposition_>scandistance_){
         QString db = QString("DONE");
-        QTextStream ss(&debug);
-        qDebug()<<db;
-        ss<<db;
-
+        emit updateStatus(db);
         StopScan();
         clearState();
         emit scanComplete();
