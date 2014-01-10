@@ -6,6 +6,8 @@
 		<length>300</length>
 		<resolution unit="mm">1</resolution>
 		<framerate>10</framerate>
+		<width>1920</width>
+		<height>1080</height>
 	</scanner>
 	<printer>
 		<comport>COM3</comport>
