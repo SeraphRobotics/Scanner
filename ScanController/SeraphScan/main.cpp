@@ -20,17 +20,7 @@ int main(int argc, char *argv[])
     // This is the list of values the application is storing:
     //   config_dir
 
-    MasterControlUnit mcu;
     MainWindow mw;
-    mcu.loadObjects(&mw);
-
-    QString filestr = "SeraphScanner.config";
-    QString port = "COM3";
-
-
-    mcu.connectToVM(filestr,port);
-
-    mw.appendText(QString("Program Launched"));
 
     mw.show();
     return a.exec();

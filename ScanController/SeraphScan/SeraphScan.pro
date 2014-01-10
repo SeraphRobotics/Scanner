@@ -7,8 +7,10 @@
 QT += \
     core \
     gui \
-    xml \
+    xml\
     script
+
+CONFIG +=GUI
 
 TARGET = SeraphScan
 TEMPLATE = app

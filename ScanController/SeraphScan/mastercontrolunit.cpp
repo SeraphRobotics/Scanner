@@ -11,14 +11,14 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
     SC_ = new ScanController();
     SC_->setCamera(1);
     SC_->setAxis("x");
-}
-
-void MasterControlUnit::loadObjects(MainWindow* MW){
-    //This should simply load the important objects and start the process.
-    MW_=MW;
     makeConnections();
 }
 
+MasterControlUnit::~MasterControlUnit(){
+    delete VM_;
+    delete timer_;
+    delete SC_;
+}
 
 void MasterControlUnit::startScan(){
     if (!(SC_->isReady())){
@@ -58,16 +58,19 @@ void MasterControlUnit::connectToVM(QString filestr, QString port){
 
 
 }
+
 void MasterControlUnit::makeConnections(){
-    connect(MW_,SIGNAL(start()),SC_,SLOT(StartScan()));
-    connect(MW_,SIGNAL(stop()),SC_,SLOT(StopScan()));
-    connect(SC_,SIGNAL(updateStatus(QString)),MW_,SLOT(appendText(QString)));
 
-    //connect(SC_,SIGNAL(scanComplete()),MW_,SLOT(on_startStopButton_clicked()));
+    connect(this->parent(),SIGNAL(start()),SC_,SLOT(StartScan()));
+    connect(this->parent(),SIGNAL(stop()),SC_,SLOT(StopScan()));
 
-    connect(SC_,SIGNAL(scanRunning(bool)),MW_,SLOT(setScanState(bool)));
-    connect(MW_,SIGNAL(start()),this,SLOT(startScan()));
+    connect(this->parent(),SIGNAL(start()),this,SLOT(startScan()));
+    connect(SC_,SIGNAL(scanRunning(bool)),this->parent(),SLOT(setScanState(bool)));
+    connect(SC_,SIGNAL(updateStatus(QString)),this->parent(),SLOT(appendText(QString)));
+
+
     connect(SC_,SIGNAL(scanRunning(bool)),this,SLOT(scanState(bool)));
+
     connect(timer_,SIGNAL(timeout()),this,SLOT(updateDebug()));
     timer_->start();
 }
@@ -83,7 +86,7 @@ void MasterControlUnit::scanState(bool b){
         qSort(l.begin(),l.end());
         float lastx = l.last();
         QPixmap img = sd->getImageFromX(lastx);
-        MW_->setImage(img);
+        emit image(img);
       }
     }
 }
@@ -91,7 +94,7 @@ void MasterControlUnit::scanState(bool b){
 void MasterControlUnit::updateDebug(){
     QString debug_update = debug+SC_->debug;
     if(!debug_update.isEmpty()){
-        MW_->appendText(debug_update);
+        emit error(debug_update);
         debug.clear();
         SC_->debug.clear();
     }

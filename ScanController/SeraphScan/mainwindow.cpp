@@ -10,11 +10,31 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),started_(0)
 {
     ui->setupUi(this);
-}
 
+    QTimer::singleShot(250,this,SLOT(setup()));
+
+}
+void MainWindow::setup(){
+    mcu_=new MasterControlUnit(this);
+    connect(mcu_,SIGNAL(error(QString)),this,SLOT(appendText(QString)));
+    connect(mcu_,SIGNAL(image(QPixmap)),this,SLOT(setImage(QPixmap)));
+
+
+    QString filestr = "SeraphScanner.config";
+    QString port = "COM3";
+
+
+    mcu_->connectToVM(filestr,port);
+}
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event){
+//    qDebug()<<"quiting";
+//    QTimer::singleShot(250,qApp,SLOT(quit()));
+    QMainWindow::closeEvent(event);
 }
 
 

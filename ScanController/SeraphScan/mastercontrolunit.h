@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QDomDocument>
-#include "mainwindow.h"
 #include "scancontroller.h"
 #include <QTimer>
 
@@ -13,11 +12,13 @@ class MasterControlUnit : public QObject
     Q_OBJECT
 public:
     explicit MasterControlUnit(QObject *parent = 0);
-    void loadObjects(MainWindow* MW);
+    ~MasterControlUnit();
     void connectToVM(QString filestr, QString Port);
 
 signals:
-    
+    void error(QString);
+    void image(QPixmap);
+
 public slots:
     void startScan();
     void scanState(bool b);
@@ -32,7 +33,6 @@ public:
 
 
 private:
-    MainWindow* MW_;
     ScanController* SC_;
     VirtualPrinter* VM_;
     QTimer* timer_;
