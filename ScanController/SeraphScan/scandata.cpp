@@ -8,12 +8,6 @@ ScanData::ScanData(QObject *parent) :
     id_ = QUuid::createUuid();
     QSettings settings;
     folderLocation_ = QDir(QFileInfo(settings.fileName()).absolutePath()+QDir::separator()+id_.toString());
-
-
-    if (!folderLocation_.exists()){
-        folderLocation_.mkdir(folderLocation_.absolutePath());
-    }
-    qDebug()<<QString("folderLocation ")+QString(folderLocation_.exists() ? "exists" : "doesnt exist");
 }
 
 
@@ -43,12 +37,19 @@ QList<float> ScanData::getXRange()
 
 void ScanData::writeToDisk(){
     qDebug()<<"\ncalled";
+
+    if (!folderLocation_.exists()){
+        folderLocation_.mkdir(folderLocation_.absolutePath());
+    }
+    qDebug()<<QString("folderLocation ")+QString(folderLocation_.exists() ? "exists" : "doesnt exist");
+
     bool worked=true;
     QList<float> keys = getXRange();
     for(int i=0;i<keys.size();i++){
         float x = keys.at(i);
         QString s = folderLocation_.absolutePath()+QDir::separator()+QString::number(x)+QString(".")+extension_;
         worked = worked && image_map_[x].save(s);
+        qDebug()<<"image: "<<i<<"\tposition: "<<x;
 
     }
 

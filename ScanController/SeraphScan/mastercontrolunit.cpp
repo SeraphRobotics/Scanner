@@ -7,23 +7,27 @@ MasterControlUnit::MasterControlUnit(QObject *parent) :
 {
     VM_ = new VirtualPrinter();
     SC_ = new ScanController();
+    SD_ = new ScanData();
     makeConnections();
 }
 
 MasterControlUnit::~MasterControlUnit(){
     delete VM_;
     delete SC_;
+    delete SD_;
 }
 
 void MasterControlUnit::startScan(){
     if (SC_->isReady()){
+        delete SD_;
+        SD_=new ScanData();
+        SC_->loadScanData(SD_);
         SC_->StartScan();
     }else{
         QString status = QString("Scan ready: ")+QString(SC_->isReady()?"true":"false");
         emit error(status);
     }
 }
-
 
 
 void MasterControlUnit::loadScanConfig(QString filestr){
@@ -173,6 +177,7 @@ void MasterControlUnit::connectToVM(QString filestr, QString port){
     configFile.close();
     VM_->loadConfig(document);
     SC_->loadVM(VM_);
+    SC_->loadScanData(SD_);
 
 
 
@@ -195,12 +200,11 @@ void MasterControlUnit::scanState(bool b){
 
     //When Done scanning, post the last image to the Main Window.
     if(!b){
-      ScanData* sd = SC_->getScanData();
-      QList<float> l = sd->getXRange();
+      QList<float> l = SD_->getXRange();
       if(!l.isEmpty()){
         qSort(l.begin(),l.end());
         float lastx = l.last();
-        QPixmap img = sd->getImageFromX(lastx);
+        QPixmap img = SD_->getImageFromX(lastx);
         emit image(img);
       }
     }

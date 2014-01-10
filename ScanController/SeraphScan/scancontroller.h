@@ -16,6 +16,7 @@ class ScanController: public QObject
 public:
     explicit ScanController(QObject *parent = 0);
     void loadVM(VirtualPrinter* vm);
+    void loadScanData(ScanData* sd);
     bool isReady();
     ScanData* getScanData();
 
@@ -36,9 +37,6 @@ signals:
     void scanComplete();
     void error(QString s);
 
-
-private:
-    void clearState();
 
 
 private:

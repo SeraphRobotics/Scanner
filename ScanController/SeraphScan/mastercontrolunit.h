@@ -5,7 +5,7 @@
 #include <QDomDocument>
 #include "scancontroller.h"
 #include <QTimer>
-
+#include "scandata.h"
 
 class MasterControlUnit : public QObject
 {
@@ -33,6 +33,7 @@ private slots:
 private:
     ScanController* SC_;
     VirtualPrinter* VM_;
+    ScanData* SD_;
 };
 
 #endif // MASTERCONTROLUNIT_H

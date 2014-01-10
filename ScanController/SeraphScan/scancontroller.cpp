@@ -8,7 +8,6 @@ ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
 {    
     timer_ = new QTimer();
     vm_ = new VirtualPrinter();
-    SD_ = new ScanData();
     connect(timer_,SIGNAL(timeout()),this,SLOT(ScanStep()));
     connect(this,SIGNAL(scanComplete()),timer_,SLOT(stop()));
 
@@ -21,10 +20,12 @@ ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
 
 void ScanController::loadVM(VirtualPrinter* vm)
 {
-    delete vm_;
     vm_ = vm;
-
     isReady();
+}
+
+void ScanController::loadScanData(ScanData* sd){
+    SD_=sd;
 }
 
 void ScanController::setCamera(int c)
@@ -126,17 +127,10 @@ void ScanController::StopScan()
     emit updateStatus("Writing to disk");
     SD_->writeToDisk();
     emit updateStatus("Writing complete");
+    vm_->waitMove();
     emit scanRunning(false);
 }
 
-void ScanController::clearState(){
-    ready_=false;
-    scandistance_=0;
-    stepsize_=0;
-    framerate_=0;
-    position_=0;
-
-}
 
 
 void ScanController::ScanStep()
