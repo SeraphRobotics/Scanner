@@ -1,7 +1,14 @@
-<scan>
-	<camera>1</camera>
-	<axis>x</axis>
-	<length>300</length>
-	<resolution unit="mm">1</resolution>
-	<framerate>10</framerate>
-</scan>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ScanSettings>
+	<scanner>
+		<camera>1</camera>
+		<axis>x</axis>
+		<length>300</length>
+		<resolution unit="mm">1</resolution>
+		<framerate>10</framerate>
+	</scanner>
+	<printer>
+		<comport>COM3</comport>
+		<config>SeraphScanner.config</config>
+	</printer>
+</ScanSettings>

@@ -45,11 +45,13 @@ void MasterControlUnit::loadScanConfig(QString filestr){
     document.setContent(&configFile);
     configFile.close();
 
-    QDomElement scan = document.documentElement();
-//    QDomNode scan = root.namedItem("scan");
+    QDomElement root = document.documentElement();
+    QDomNode scan = root.namedItem("scanner");
+    QDomNode printer = root.namedItem("printer");
 
 
-    if (!("scan" == scan.nodeName().toLower())) {
+    //LOAD SCANNER SETTINGS
+    if (!("scanner" == scan.nodeName().toLower())) {
         db = QString("\n Bad file passed, no scan settings found, found: ")+scan.nodeName();
         qDebug() << db;
         emit error(db);
@@ -102,6 +104,48 @@ void MasterControlUnit::loadScanConfig(QString filestr){
     SC_->setScan(length,resolution,framerate);
     SC_->setCamera(camera);
     SC_->setAxis(axis);
+
+
+    //LOAD PRINTER SETTINGS
+    if (!("printer" == printer.nodeName().toLower())) {
+        db = QString("\n Bad file passed, no printer settings found, found: ")+scan.nodeName();
+        qDebug() << db;
+        emit error(db);
+        return;
+    }
+
+    if (!printer.hasChildNodes()) {
+        db = QString("\n No settings in scan");
+        emit error(db);
+        return;
+    }
+
+
+    QString comport("");
+    QString printerConfigFile("");
+    QDomNodeList printerChildren = printer.childNodes();
+    for (unsigned int i = 0; i < printerChildren.length(); i++) {
+        QDomNode pchild = printerChildren.at(i);
+        QDomElement el;
+        QString name = pchild.nodeName().toLower();
+        if (!pchild.isElement()) {
+            continue;
+        }
+        if ("comport"==name) {
+            el=pchild.toElement();
+            comport = el.text();
+        }else if ("config"==name){
+            el=pchild.toElement();
+            printerConfigFile = el.text();
+        }
+    }
+    if(!(comport.isEmpty()||printerConfigFile.isEmpty())){
+        connectToVM(printerConfigFile,comport);
+    }else{
+        QString message = QString("ERROR: comport or config file not loaded\n\tComport: ")+comport+QString("\n\tConfig: ")+printerConfigFile;
+        emit error(message);
+    }
+
 }
 
 void MasterControlUnit::connectToVM(QString filestr, QString port){

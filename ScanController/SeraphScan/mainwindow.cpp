@@ -20,11 +20,7 @@ void MainWindow::setup(){
     connect(mcu_,SIGNAL(image(QPixmap)),this,SLOT(setImage(QPixmap)));
 
 
-    QString filestr = "SeraphScanner.config";
-    QString port = "COM3";
     QString scanSettings="ScanSettings.xml";
-
-    mcu_->connectToVM(filestr,port);
     mcu_->loadScanConfig(scanSettings);
 }
 MainWindow::~MainWindow()
