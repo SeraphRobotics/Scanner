@@ -16,27 +16,15 @@ MasterControlUnit::~MasterControlUnit(){
 }
 
 void MasterControlUnit::startScan(){
-//    if (SC_->isReady()){
-//        SC_->StartScan();
-//    }else{
-//        QString status = QString("Scan ready: ")+QString(SC_->isReady()?"true":"false");
-//        emit error(status);
-//    }
-
-    VM_->move(100,0,0,10);
-    QTimer::singleShot(2000,this,SLOT(test()));
+    if (SC_->isReady()){
+        SC_->StartScan();
+    }else{
+        QString status = QString("Scan ready: ")+QString(SC_->isReady()?"true":"false");
+        emit error(status);
+    }
 }
 
-void MasterControlUnit::test(){
-    VM_->stop();
-    QTimer::singleShot(100,this,SLOT(test2()));
-}
 
-void MasterControlUnit::test2(){
-    QVector<double> p=VM_->currentPosition();
-    qDebug()<<"Position: "<<p;
-    VM_->move(-p[0],-p[1],-p[2],10);
-}
 
 void MasterControlUnit::loadScanConfig(QString filestr){
     QString db;
@@ -165,7 +153,6 @@ void MasterControlUnit::connectToVM(QString filestr, QString port){
 
     // Open file at filestr and use as config for VM
     QString db;
-    QTextStream ss(&debug);
     QDomDocument document;
     QFile configFile(filestr);
     if (!configFile.open(QFile::ReadOnly)) {

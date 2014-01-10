@@ -85,13 +85,17 @@ void ScanController::setScan(float scandistance, float stepsize, float  framerat
     stepsize_=stepsize;
     framerate_=framerate;
     timer_->setInterval(1);
-
     isReady();
 }
 
 void ScanController::StartScan()
 {
     if(ready_){
+//        QVector<double> pos = vm_->currentPosition();
+//        position_= pos[axes_[axis_]];
+//        emit updateStatus(QString("Start Position: ")+QString::number(position_));
+
+
         xvector_[0]=0;
         xvector_[1]=0;
         xvector_[2]=0;
@@ -103,7 +107,7 @@ void ScanController::StartScan()
         vm_->move(xvector_[0],xvector_[1],xvector_[2],speed);
 
         timer_->start();
-        targetposition_+=0;//stepsize_;
+        targetposition_=0;//stepsize_;
         emit scanRunning(true);
     }else{
         emit error(QString("not ready"));
@@ -113,9 +117,15 @@ void ScanController::StartScan()
 void ScanController::StopScan()
 {
     timer_->stop();
-    //THIS IS A TEMP SOLUTION, WE NEED A NON-FORCED STOP
     vm_->stop();
+
+    // Return to Origin
+    float speed = framerate_*stepsize_;
+    QVector<double> p=vm_->currentPosition();
+    vm_->move(-p[0],-p[1],-p[2],speed);
+    emit updateStatus("Writing to disk");
     SD_->writeToDisk();
+    emit updateStatus("Writing complete");
     emit scanRunning(false);
 }
 
@@ -141,14 +151,13 @@ void ScanController::ScanStep()
     float tolerance=0.1;
     float p_error=position_-targetposition_;
 
-//    qDebug()<<"error: "<<error<<"\ttaget:"<<targetposition_;
+    qDebug()<<"position: "<<position_<<"error: "<<p_error<<"\ttarget:"<<targetposition_;
 
     if(fabs(p_error)<tolerance){
         targetposition_+=stepsize_;
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);
         if(matOriginal.empty()==true){
-
             emit error(QString("Error reading camera at position:")+QString::number(position_));
         }
         cv::Mat dest;
@@ -166,7 +175,6 @@ void ScanController::ScanStep()
         QString db = QString("DONE");
         emit updateStatus(db);
         StopScan();
-//        clearState();
         emit scanComplete();
     }
 }

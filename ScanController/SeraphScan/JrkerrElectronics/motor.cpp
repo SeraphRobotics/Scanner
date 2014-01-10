@@ -1,7 +1,7 @@
 #include "motor.h"
 #include "QTextStream"
 #include <math.h>
-#include <QDebug>
+//#include <QDebug>
 
 Motor::Motor(){}
 
@@ -104,9 +104,9 @@ int Motor::getID()
 
 bool Motor::moveAbsolute(double position, double velocity, double acceleration)
 {
-    qDebug()<<"Motor move called";
+//    qDebug()<<"Motor move called";
     if(!initialized_){
-        qDebug()<<"not initialized";
+//        qDebug()<<"not initialized";
         return false;
     }
     //if reversed then switches position
@@ -123,10 +123,10 @@ bool Motor::moveAbsolute(double position, double velocity, double acceleration)
         && acceleration >= MIN_COMMANDED_ACCELERATION
         && acceleration <= MAX_COMMANDED_ACCELERATION)){
         error_="Tried to issue a movement command with arguments that are out of bounds.";
-        qDebug()<<error_;
-        qDebug()<<"accel: "<<acceleration<<"Bounds ("<<MIN_COMMANDED_ACCELERATION<<","<<MAX_COMMANDED_ACCELERATION<<")";
-        qDebug()<<"vel: "<<velocity<<"Bounds ("<<MIN_COMMANDED_VELOCITY<<","<<MAX_COMMANDED_VELOCITY<<")";
-        qDebug()<<"pos: "<<position<<"Bounds ("<<MIN_COMMANDED_POSITION<<","<<MAX_COMMANDED_POSITION<<")";
+//        qDebug()<<error_;
+//        qDebug()<<"accel: "<<acceleration<<"Bounds ("<<MIN_COMMANDED_ACCELERATION<<","<<MAX_COMMANDED_ACCELERATION<<")";
+//        qDebug()<<"vel: "<<velocity<<"Bounds ("<<MIN_COMMANDED_VELOCITY<<","<<MAX_COMMANDED_VELOCITY<<")";
+//        qDebug()<<"pos: "<<position<<"Bounds ("<<MIN_COMMANDED_POSITION<<","<<MAX_COMMANDED_POSITION<<")";
         return false;
     }
 
@@ -142,7 +142,7 @@ bool Motor::moveAbsolute(double position, double velocity, double acceleration)
                     0, //pwm (no effect if not in pwm mode)
                     &error_) == 1;
 
-    qDebug()<<"Servo load traj: "<<status;
+//    qDebug()<<"Servo load traj: "<<status;
     return status;
 }
 
@@ -160,7 +160,8 @@ void Motor::stop()
 {
     if(initialized_)
     {
-        qDebug()<<QString("Result: ")<<ServoStopMotor(ADDRESS, AMP_ENABLE | STOP_SMOOTH | ADV_FEATURE,&error_);
+        ServoStopMotor(ADDRESS, AMP_ENABLE | STOP_SMOOTH | ADV_FEATURE,&error_);
+//        qDebug()<<QString("Result: ")<<
     }
 }
 
