@@ -74,6 +74,8 @@ void MasterControlUnit::loadScanConfig(QString filestr){
     float length=0;
     float resolution=0;
     float framerate=0;
+    int width=0;
+    int height=0;
 
     QDomNodeList scanChildren = scan.childNodes();
     for (unsigned int i = 0; i < scanChildren.length(); i++) {
@@ -98,9 +100,15 @@ void MasterControlUnit::loadScanConfig(QString filestr){
         }else if ("framerate"==name) {
             el=schild.toElement();
             framerate = el.text().toFloat();
+        }else if ("width"==name) {
+            el=schild.toElement();
+            width = el.text().toUInt();
+        }else if ("height"==name) {
+            el=schild.toElement();
+            height = el.text().toUInt();
         }
     }
-    if((0==camera)||(0.1==length)||(0.01>resolution)||(0.1>framerate)||axis.isEmpty()){
+    if((0==camera)||(0==width)||(0==height)||(0.1==length)||(0.01>resolution)||(0.1>framerate)||axis.isEmpty()){
         emit error("Settings invalid");
         return;
     }
@@ -108,6 +116,8 @@ void MasterControlUnit::loadScanConfig(QString filestr){
     SC_->setScan(length,resolution,framerate);
     SC_->setCamera(camera);
     SC_->setAxis(axis);
+    SC_->setHeight(height);
+    SC_->setWidth(width);
 
 
     //LOAD PRINTER SETTINGS

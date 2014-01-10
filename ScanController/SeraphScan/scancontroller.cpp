@@ -4,7 +4,7 @@
 
 ScanController::ScanController(QObject *parent):QObject(parent),camNumber_(-1),
     axis_(""),ready_(0),scandistance_(0),
-    stepsize_(0),framerate_(0),position_(0),targetposition_(0),xvector_(QVector<float>(3,0))
+    stepsize_(0),framerate_(0),position_(0),targetposition_(0),xvector_(QVector<float>(3,0)),width_(1920),height_(1080)
 {    
     timer_ = new QTimer();
     vm_ = new VirtualPrinter();
@@ -28,6 +28,15 @@ void ScanController::loadScanData(ScanData* sd){
     SD_=sd;
 }
 
+
+void ScanController::setWidth(int w){
+    width_=w;
+}
+
+void ScanController::setHeight(int h){
+    height_=h;
+}
+
 void ScanController::setCamera(int c)
 {
     camNumber_ = c;
@@ -39,11 +48,9 @@ void ScanController::setCamera(int c)
         return;
     }
 
-    //ERROR: THIS IS CONFIG SETTINGS< SHOULD BE IN A CONFIGURATION
-    //check if camera set properly
     bool state=true;
-    state = state && capwebcam.set(CV_CAP_PROP_FRAME_WIDTH,1920);
-    state = state && capwebcam.set(CV_CAP_PROP_FRAME_HEIGHT,1080);
+    state = state && capwebcam.set(CV_CAP_PROP_FRAME_WIDTH,width_);
+    state = state && capwebcam.set(CV_CAP_PROP_FRAME_HEIGHT,height_);
 
     if(!state){
         emit error(QString("Error setting capture sizes)"));

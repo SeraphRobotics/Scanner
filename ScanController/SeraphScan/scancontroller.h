@@ -25,6 +25,8 @@ public slots:
     void StopScan();
     void setScan(float scandistance, float stepsize, float framerate);
     void setCamera(int c);
+    void setWidth(int w);
+    void setHeight(int h);
     void setAxis(QString Axis);
 
 private slots:
@@ -55,6 +57,8 @@ private:
     QVector<float> xvector_;
     cv::VideoCapture capwebcam;
     cv::Mat matOriginal;
+    int width_;
+    int height_;
 
 
 };
