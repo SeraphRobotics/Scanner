@@ -1,4 +1,5 @@
 #include "glscanobject.h"
+#include <QFileInfo>
 
 ///////////// Global functions /////////////////////
 
@@ -60,27 +61,83 @@ void GlScanObject::extractPointCloud(const QStringList &ImagesPath)
 {
     cv::Mat img;
     bool metOne = false;
+    QFileInfo fileInfo;
 
+    /// ////////////////////////////////////////////////////////////////
     //set-up camera parameters
     //TODO - change these to the actual values
-    double xFOV = 43.7;     // horizontal field of view
-    double yFOV = 23.8;     // vertical field of view
-    double f = 3.6;         // focal length
-    double kv;              // ku, kv the inverses
-    double ku;              // of the dimensions of a pixel
-    double u0;              // (u0,v0) the coordinates
-    double v0;              // of the principal point
+    double fu = 1388;                               // (fu,fv) are the focal lengths
+    double fv = 1388;                               // expressed in pixel-related units
+    double u0 = 970;                                // (u0,v0) the coordinates
+    double v0 = 553;                                // of the principal point [pxl]
+    double k1 = 0.102;                              // (k1, k2, k3, k4, k5 ,k6)
+    double k2 = -0.170;                             // radial distortion coefficients
+    double k3 = 0;
+    double k4 = 0;
+    double k5 = 0;
+    double k6 = 0;
+    double p1 = 0;                                  //(p1,p2) tangential distortion coefficients
+    double p2 = 0;                                  //
+    double h = 203.14;                              // the distance the laser and the surface
+    double b = 182.54;                              // distance between camera and laserplate
 
-    cv::Mat coefDist;       // Coef distortion matrix
+    double uOff = 28;                               //  horizontal Offset
+    double vOff = 28;                               //  vertical Offset
 
-    double h = 184.3;       // the distance the laser and the plate
-    double b = 183;         // distance between camera and laser
+    double alpha = 225*CV_PI/180.;
+    double beta  = 0*CV_PI/180.;
+    double gamma = 180*CV_PI/180.;
 
-    double xOff = 28;       //  Offset
+    double z;                                       //  Z
+    double y;                                       //  Y
+    double x;                                       //  X
 
-    double z;               //  Z
-    double y;               //  Y
 
+    // Camera matrix
+    cv::Mat K = (cv::Mat_<double>(4, 4) <<
+                 -fu,     0,         0,      u0,
+                 0,       fv,        0,      v0,
+                 0,       0,         1,      0,
+                 0,       0,         0,      1);
+
+    // Distortion matrix
+    cv::Mat distCoef = (cv::Mat_<double>(8, 1) <<
+                        k1,
+                        k2,
+                        p1,
+                        p2,
+                        k3,
+                        k4,
+                        k5,
+                        k6);
+
+    // Rotation matrices around the X, Y and Z axis
+    cv::Mat RX = (cv::Mat_<double>(4, 4) <<
+                  1,          0,           0,   0,
+                  0, cos(alpha), -sin(alpha),   0,
+                  0, sin(alpha),  cos(alpha),   0,
+                  0,          0,           0,   1);
+
+    cv::Mat RY = (cv::Mat_<double>(4, 4) <<
+                  cos(beta), 0, -sin(beta), 0,
+                  0, 1,          0, 0,
+                  sin(beta), 0,  cos(beta), 0,
+                  0, 0,          0, 1);
+
+    cv::Mat RZ = (cv::Mat_<double>(4, 4) <<
+                  cos(gamma), -sin(gamma), 0, 0,
+                  sin(gamma),  cos(gamma), 0, 0,
+                  0,          0,           1, 0,
+                  0,          0,           0, 1);
+
+    // translation matrix
+    cv::Mat T = (cv::Mat_<double>(4, 4) <<
+                 1,    0,  0,   b,
+                 0,    1,  0,   0,
+                 0,    0,  1,   -h,
+                 0,    0,  0,   1);
+
+    /// /////////////////////////////////////////////////////////////
 
     // Clear the Vector
     m_pointCloud3d->clear();
@@ -88,35 +145,50 @@ void GlScanObject::extractPointCloud(const QStringList &ImagesPath)
     // read the image
     for(int j=0; j<ImagesPath.count(); j++){
         img = cv::imread(ImagesPath[j].toStdString() , CV_LOAD_IMAGE_UNCHANGED);
-
+        fileInfo.setFile(ImagesPath[j]);
         if(img.data == NULL){
             qDebug() << "ERROR : IMG";
             return;
         }
 
-        u0 = img.cols/2;
+        //        u0 = img.cols/2;
+        //        v0 = img.rows/2;
 
         /// ////////////////////////////////////////////
-        cv::blur( img, img, cv::Size( 3, 3), cv::Point(-1,-1));
+        cv::medianBlur ( img, img, 7 );
 
         // Transform the color to GrayScale
-        cvtColor(img, img, CV_BGR2GRAY);
+        cv::cvtColor(img, img, CV_BGR2GRAY);
 
-        int thresholdValue = 90;
+        // Binary transform
+        int thresholdValue = 45;
         cv::threshold(img, img, thresholdValue, 255, 0);
-        //cv::blur( img, img, cv::Size(3,3) );
-
 
         /// ///////////////////////////////
-        for (int v = 0; v < img.rows; v++ ){
-            for (int u = 0; u < img.cols; u++){
+        for (int u = 0; u < img.cols; u++){
+            for (int v = 0; v < img.rows; v++ ){
                 if (img.at<uchar>(v, u) > 0) {
+                    if(!metOne){
+                        // Undistort
+                        double x_dist = (u - u0) / fu;
+                        double y_dist = (v - v0) / fv;
 
-                        z = (u0+xOff) - u;
-                        y = v;
+                        double r = sqrt(pow(x_dist,2) + pow(y_dist,2));
 
-                     if(!metOne){
-                        m_pointCloud3d->push_back(pcl::PointXYZ(j,y,z));
+                        double x_undist = x_dist*(1 + k1*pow(r,2) + k2*pow(r,4)+ k3*pow(r,6))/(1 + k4*pow(r,2) + k5*pow(r,4) + + k6*pow(r,6))
+                                + 2*p1*x_dist*y_dist + p2*(pow(r,2) + 2*pow(x_dist,2));
+                        double y_undist = y_dist*(1 + k1*pow(r,2) + k2*pow(r,4)+ k3*pow(r,6))/(1 + k4*pow(r,2) + k5*pow(r,4) + + k6*pow(r,6))
+                                + p1*(pow(r,2)+2*pow(y_dist,2)) + 2*p2*x_dist*y_dist;
+
+                        double u_undist = fu*x_undist + u0;
+                        double v_undist = fv*y_undist + v0;
+
+                        // Calculate the world coordinates
+                        z = h-((fv*h-(v0-v_undist)*b)/(fv*b+h*(v0-v_undist)))*b ;
+                        y = (u_undist-u0)*sqrt(h*h+b*b)/fu;
+                        x = fileInfo.baseName().toDouble();
+
+                        m_pointCloud3d->push_back(pcl::PointXYZ(x,y,z));
                         metOne = true;
                     }
                 }
@@ -124,10 +196,8 @@ void GlScanObject::extractPointCloud(const QStringList &ImagesPath)
             metOne = false;
         }
     }
-
     // visualize the point cloud
     m_pv->addPointCloud(m_pointCloud3d);
-
 }
 
 void GlScanObject::extractCorners()
@@ -157,7 +227,7 @@ void GlScanObject::extractNormals()
     ne.setSearchMethod(tree);
     ne.setKSearch(4);
     ne.setViewPoint(0,0,1);
-//    ne.setKSearch (20); //20
+    //    ne.setKSearch (20); //20
     ne.compute (*m_normals);
 
 }
