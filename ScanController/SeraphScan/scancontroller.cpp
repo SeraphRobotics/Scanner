@@ -132,10 +132,10 @@ void ScanController::StopScan()
     // Return to Origin
     float speed = framerate_*stepsize_;
     QVector<double> p=vm_->currentPosition();
-    vm_->move(-p[0],-p[1],-p[2],speed);
     emit updateStatus("Writing to disk");
     SD_->writeToDisk();
     emit updateStatus("Writing complete");
+    vm_->move(-p[0],-p[1],-p[2],speed);
     vm_->waitMove();
     emit scanRunning(false);
 }
@@ -148,6 +148,9 @@ void ScanController::ScanStep()
         emit error(QString("Scanner not ready"));
         return;
     }
+    cv::Mat dest;
+    QPixmap m;
+    QImage temp;
 
     QVector<double> pos = vm_->currentPosition();
     position_= pos[axes_[axis_]];
@@ -156,22 +159,26 @@ void ScanController::ScanStep()
 
     qDebug()<<"position: "<<position_<<"error: "<<p_error<<"\ttarget:"<<targetposition_;
 
-    if(fabs(p_error)<tolerance){
+    if((fabs(p_error)<tolerance) || (position_>targetposition_)){
         targetposition_+=stepsize_;
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);
         if(matOriginal.empty()==true){
             emit error(QString("Error reading camera at position:")+QString::number(position_));
         }
-        cv::Mat dest;
-        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
-        QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888));
-        SD_->addImage(position_,m);
 
+        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
+        {
+            temp = QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
+            m = QPixmap::fromImage(temp);
+            SD_->addImage(position_,m);
+        }
         emit update(position_);
         emit updateStatus(QString("Position is now ")+QString::number(position_));
     }
     //If the error is greated than the distance between targets, increate the target
+
+
     if(p_error>stepsize_){targetposition_+=stepsize_;}
 
     if(targetposition_>scandistance_){

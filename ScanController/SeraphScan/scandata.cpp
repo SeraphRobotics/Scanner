@@ -48,8 +48,15 @@ void ScanData::writeToDisk(){
     for(int i=0;i<keys.size();i++){
         float x = keys.at(i);
         QString s = folderLocation_.absolutePath()+QDir::separator()+QString::number(x)+QString(".")+extension_;
-        worked = worked && image_map_[x].save(s);
+        bool saved = false;
+        int counter = 0;
+        while(!saved && (counter<1000)){
+            saved = image_map_[x].save(s);
+            counter++;
+        }
+        worked = worked && saved;
         qDebug()<<"image: "<<i<<"\tposition: "<<x;
+
 
     }
 
