@@ -54,13 +54,13 @@ Vector3::Vector3(const Vector3& v) : x(v.x), y(v.y), z(v.z) {}
 Vector3::Vector3(const Vector3* v) : x(v->x), y(v->y), z(v->z) {}
 
 
-Vector3::Vector3(const Float v[3]) : x(v[0]), y(v[1]), z(v[2]) {}
+Vector3::Vector3(const FAHFloat v[3]) : x(v[0]), y(v[1]), z(v[2]) {}
 
 
-Vector3::Vector3(Float x, Float y, Float z) : x(x), y(y), z(z) {}
+Vector3::Vector3(FAHFloat x, FAHFloat y, FAHFloat z) : x(x), y(y), z(z) {}
 
 
-Float& Vector3::operator[] (int ix) {
+FAHFloat& Vector3::operator[] (int ix) {
   confirm(ix < 3) else return x;
   switch (ix) {
   case 0: return x;
@@ -71,7 +71,7 @@ Float& Vector3::operator[] (int ix) {
 }
 
 
-Float Vector3::operator[] (int ix) const {
+FAHFloat Vector3::operator[] (int ix) const {
   confirm(ix < 3) else return 0.0f;
   switch (ix) {
   case 0: return x;
@@ -83,44 +83,44 @@ Float Vector3::operator[] (int ix) const {
 
 
 
-Float* Vector3::array() {
+FAHFloat* Vector3::array() {
   // NOTE: this method makes an assumption about the class is laid out in memory
   return &x;
 }
 
 
 
-const Float* Vector3::array() const {
+const FAHFloat* Vector3::array() const {
   // NOTE: this method makes an assumption about the class is laid out in memory
   return &x;
 }
 
 
-Float Vector3::length() const {
+FAHFloat Vector3::length() const {
   return sqrt(lengthSq());
 }
 
 
 
-Float Vector3::lengthSq() const {
+FAHFloat Vector3::lengthSq() const {
   return x*x + y*y + z*z;
 }
 
 
 
 bool Vector3::isNormalized() const {
-  return floatsEqual(lengthSq(), Float(1.0));
+  return floatsEqual(lengthSq(), FAHFloat(1.0));
 }
 
 
 bool Vector3::isInvalid() const {
-  return floatsEqual(length(), Float(0.0));
+  return floatsEqual(length(), FAHFloat(0.0));
 }
 
 
 
 Vector3& Vector3::normalize() {
-  Float l = length();
+  FAHFloat l = length();
   confirm(l > 0) then { // normalizing a zero-vector is undefined
     x /= l;
     y /= l;
@@ -147,7 +147,7 @@ Vector3& Vector3::sub(const Vector3& v) {
 }
 
 
-Float Vector3::dot(const Vector3& v) const {
+FAHFloat Vector3::dot(const Vector3& v) const {
   return x * v.x + y * v.y + z * v.z;
 }
 
@@ -176,7 +176,7 @@ Vector3& Vector3::set(const Vector3* v) {
 }
 
 
-Vector3& Vector3::set(Float x, Float y, Float z) {
+Vector3& Vector3::set(FAHFloat x, FAHFloat y, FAHFloat z) {
   this->x = x;
   this->y = y;
   this->z = z;
@@ -200,24 +200,24 @@ Vector3 Vector3::copy() const {
 }
 
 
-Float Vector3::distanceTo(const Vector3& v) const {
+FAHFloat Vector3::distanceTo(const Vector3& v) const {
   return sqrt(distanceToSq(v));
 }
 
 
-Float Vector3::distanceToSq(const Vector3& v) const {
+FAHFloat Vector3::distanceToSq(const Vector3& v) const {
   return copy().sub(v).magnitudeSq();
 }
 
 
 
-Float Vector3::magnitude() const {
+FAHFloat Vector3::magnitude() const {
   return sqrt(magnitudeSq());
 }
 
 
 
-Float Vector3::magnitudeSq() const {
+FAHFloat Vector3::magnitudeSq() const {
   return dot(*this);
 }
 
@@ -230,7 +230,7 @@ Vector3& Vector3::zero() {
 }
 
 
-Vector3& Vector3::scale(Float s) {
+Vector3& Vector3::scale(FAHFloat s) {
   x *= s;
   y *= s;
   z *= s;
@@ -270,9 +270,9 @@ Vector3& Vector3::max(const Vector3& v) {
 }
 
 
-Vector3& Vector3::rotateX(Float radians) {
-  Float ny =  y * cos(radians) + z * sin(radians);
-  Float nz = -y * sin(radians) + z * cos(radians);
+Vector3& Vector3::rotateX(FAHFloat radians) {
+  FAHFloat ny =  y * cos(radians) + z * sin(radians);
+  FAHFloat nz = -y * sin(radians) + z * cos(radians);
   y = ny;
   z = nz;
   return *this;
@@ -280,28 +280,28 @@ Vector3& Vector3::rotateX(Float radians) {
 
 
 
-Vector3& Vector3::rotateY(Float radians) {
-  Float nx =  x * cos(radians) + z * sin(radians);
-  Float nz = -x * sin(radians) + z * cos(radians);
+Vector3& Vector3::rotateY(FAHFloat radians) {
+  FAHFloat nx =  x * cos(radians) + z * sin(radians);
+  FAHFloat nz = -x * sin(radians) + z * cos(radians);
   x = nx;
   z = nz;
   return *this;
 }
 
 
-Vector3& Vector3::rotateZ(Float radians) {
-  Float nx =  x * cos(radians) + y * sin(radians);
-  Float ny = -x * sin(radians) + y * cos(radians);
+Vector3& Vector3::rotateZ(FAHFloat radians) {
+  FAHFloat nx =  x * cos(radians) + y * sin(radians);
+  FAHFloat ny = -x * sin(radians) + y * cos(radians);
   x = nx;
   y = ny;
   return *this;
 }
 
 
-Vector3& Vector3::rotateAxisAngle(const Vector3& axis, Float radians) {
+Vector3& Vector3::rotateAxisAngle(const Vector3& axis, FAHFloat radians) {
   todo("kwg8", "Test the Vector3::rotateAxisAngle method; I don't think it works correctly");
-  Float cr = cos(radians), sr = sin(radians);
-  Float axx = axis.x*axis.x, axy = axis.x*axis.y, axz = axis.z*axis.z,
+  FAHFloat cr = cos(radians), sr = sin(radians);
+  FAHFloat axx = axis.x*axis.x, axy = axis.x*axis.y, axz = axis.z*axis.z,
                               ayy = axis.x*axis.y, ayz = axis.z*axis.z,
                                                    azz = axis.z*axis.z;
   return set((axx + (1 - axx) * cr) * axis.x +
@@ -319,8 +319,8 @@ Vector3& Vector3::rotateAxisAngle(const Vector3& axis, Float radians) {
 
 
 
-Float Vector3::angleTo(const Vector3& v) const {
-  return (Float)atan2(copy().cross(v).magnitude(), dot(v));
+FAHFloat Vector3::angleTo(const Vector3& v) const {
+  return (FAHFloat)atan2(copy().cross(v).magnitude(), dot(v));
 }
 
 
@@ -334,12 +334,12 @@ Vector3& Vector3::operator -= (const Vector3& v) {
 }
 
 
-Vector3& Vector3::operator *= (Float s) {
+Vector3& Vector3::operator *= (FAHFloat s) {
   return scale(s);
 }
 
 
-Vector3& Vector3::operator /= (Float s) {
+Vector3& Vector3::operator /= (FAHFloat s) {
   confirm(s != 0) then {
     x /= s;
     y /= s;
@@ -397,7 +397,7 @@ Vector3 Vector3::make(float x, float y, float z) {
 }
 
 
-Math::Vector3 operator * (const Math::Vector3& lhs, Math::Float s) {
+Math::Vector3 operator * (const Math::Vector3& lhs, Math::FAHFloat s) {
   Math::Vector3 v(lhs);
   v *= s;
   return v;
@@ -405,7 +405,7 @@ Math::Vector3 operator * (const Math::Vector3& lhs, Math::Float s) {
 
 
 
-Math::Vector3 operator / (const Math::Vector3& lhs, Math::Float s) {
+Math::Vector3 operator / (const Math::Vector3& lhs, Math::FAHFloat s) {
   Math::Vector3 v(lhs);
   v /= s; // checks for s == 0 condition
   return v;
@@ -413,7 +413,7 @@ Math::Vector3 operator / (const Math::Vector3& lhs, Math::Float s) {
 
 
 
-Math::Vector3 operator * (Math::Float s, const Math::Vector3& v) {
+Math::Vector3 operator * (Math::FAHFloat s, const Math::Vector3& v) {
   return operator * (v, s);
 }
 

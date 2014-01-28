@@ -141,7 +141,7 @@ Vector3 LoopInXYPlane::max() const {
 
 
 
-Float LoopInXYPlane::areaEstimate() const {
+FAHFloat LoopInXYPlane::areaEstimate() const {
   Vector3 v;
   v.set(max()).sub(min());
   return v.x * v.y;
@@ -161,7 +161,7 @@ void LoopInXYPlane::addFirst(const Vector3& point) {
 
 
 
-Float LoopInXYPlane::getAverageZCoordinate() const {
+FAHFloat LoopInXYPlane::getAverageZCoordinate() const {
   Vector3 v(0.0f, 0.0f, 0.0f);
   int i;
   for (i = 0; i < points.size(); ++i) {
@@ -181,7 +181,7 @@ bool LoopInXYPlane::pointInside(const Vector3& point) const {
   newPt.z=0;
   // Perform the ray-intersection test: cast a ray from the given point
   // out to infinity and count the number of segments it intersects.
-  Line test_line(newPt, max().scale((Float)2.0));
+  Line test_line(newPt, max().scale((FAHFloat)2.0));
   int intersections = 0;
   for (int i = 1; i < points.size() + 1; ++i) {
     Line current_segment(points[i-1], points[i%points.size()]);
@@ -337,7 +337,7 @@ bool LoopInXYPlane::contains(const LoopInXYPlane& other) const {
 }
 
 
-void LoopInXYPlane::expand(Float amount,
+void LoopInXYPlane::expand(FAHFloat amount,
                            QVector<LoopInXYPlane>* expanded_loops) const {
   LoopInXYPlane simplified;
   simplified.points += points;
@@ -393,7 +393,7 @@ void LoopInXYPlane::simplify() {
 
 
 
-void LoopInXYPlane::simplifyAndExpand(Float amount, QVector<LoopInXYPlane>* expanded_loops) {
+void LoopInXYPlane::simplifyAndExpand(FAHFloat amount, QVector<LoopInXYPlane>* expanded_loops) {
   simplify();
 
   // Don't need to do anything if not expanding

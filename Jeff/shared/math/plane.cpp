@@ -62,8 +62,8 @@ Vector3 Plane::pointOnPlane() const {
 
 bool Plane::intersectLine(const Line& line, Vector3* intersection) const {
   Vector3 abc(a,b,c);
-  Float numer = d + abc.dot(line.a);
-  Float denom = -abc.dot(line.ray());
+  FAHFloat numer = d + abc.dot(line.a);
+  FAHFloat denom = -abc.dot(line.ray());
 
   if (denom == 0) {
     // parallel to the plane
@@ -78,15 +78,15 @@ bool Plane::intersectLine(const Line& line, Vector3* intersection) const {
 
 bool Plane::intersectSegment(const Line& segment, Vector3* intersection) const {
   Vector3 abc(a,b,c);
-  Float numer = d + abc.dot(segment.a);
-  Float denom = -abc.dot(segment.ray());
+  FAHFloat numer = d + abc.dot(segment.a);
+  FAHFloat denom = -abc.dot(segment.ray());
 
   if (denom == 0) {
     // parallel to the plane
     return false;
   }
 
-  Float t = numer / denom;
+  FAHFloat t = numer / denom;
 
   // check to make sure it falls between the segment's endpoints
   if (t < 0 || t > 1) return false;
@@ -111,7 +111,7 @@ Vector3 Plane::intersectLine(const Line& line) const {
 
 
 Plane::RelativeLocation Plane::relativeLocationOfPoint(const Vector3& point) const {
-  Float f = a*point[0] + b*point[1] + c*point[2] + d;
+  FAHFloat f = a*point[0] + b*point[1] + c*point[2] + d;
   if (f < 0) {
     return kBelow;
   } else if (floatsEqual(f, 0.0)) {

@@ -10,11 +10,13 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-struct FAHVector3{
-    float x;
-    float y;
-    float z;
-};
+#include "shared/fabathome-constants.h"
+
+//struct FAHVector3{
+//    float x;
+//    float y;
+//    float z;
+//};
 
 //QDebug operator<<(QDebug dbg,FAHVector3 v );
 

@@ -9,7 +9,7 @@ HEADERS += ../shared/math/vector3.h \
     ../shared/math/quaternion.h \
     ../shared/math/quaternion.h \
     ../shared/math/structs.h \
-    ../shared/math/float.h
+    ../shared/math/FAHfloat.h
 
 SOURCES += ../shared/math/microntolerance.cpp \
     ../shared/math/vector3.cpp \

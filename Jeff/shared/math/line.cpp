@@ -73,7 +73,7 @@ bool Line::hasLength() const {
 }
 
 
-Float Line::length() const {
+FAHFloat Line::length() const {
   return b.copy().sub(a).length();
 }
 
@@ -152,13 +152,13 @@ Line Line::intersectLineWithLine(const Line& other) const {
 }
 
 
-Line& Line::changeLength(Float amount) {
+Line& Line::changeLength(FAHFloat amount) {
   confirm(hasLength()) else {
     // can't do anything if there is no length, since we can't find a
     // direction in which to extend the line
     return *this;
   }
-  amount /= Float(2.0);
+  amount /= FAHFloat(2.0);
   Vector3 v(ray());
   v.normalize();
   a.sub(v.copy().scale(amount)); // a += norm(b-a) * amount/2
@@ -181,13 +181,13 @@ bool Line::intersectSegmentWithSegment2DXY(
   // http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
   //http://workshop.evolutionzone.com/2007/09/10/code-2d-line-intersection/
 
-  Float ua = (other.b.x - other.a.x)*(a.y - other.a.y)
+  FAHFloat ua = (other.b.x - other.a.x)*(a.y - other.a.y)
            - (other.b.y - other.a.y)*(a.x - other.a.x);
-  Float ub = (b.x - a.x)*(a.y - other.a.y) - (b.y - a.y)*(a.x - other.a.x);
-  Float denom = (other.b.y - other.a.y)*(b.x - a.x)
+  FAHFloat ub = (b.x - a.x)*(a.y - other.a.y) - (b.y - a.y)*(a.x - other.a.x);
+  FAHFloat denom = (other.b.y - other.a.y)*(b.x - a.x)
               - (other.b.x - other.a.x)*(b.y - a.y);
 
-  if (denom == Float(0.0)) {
+  if (denom == FAHFloat(0.0)) {
     return false; // no intersection; parallel or coincident lines
   }
 
@@ -209,20 +209,20 @@ bool Line::intersectSegmentWithSegment2DXY(
 
 
 
-Float Line::evaluate2DLineXY(
+FAHFloat Line::evaluate2DLineXY(
         const Vector3& point) const {
-  Float dx = b.x - a.x, dy = b.y - a.y;
+  FAHFloat dx = b.x - a.x, dy = b.y - a.y;
   // y - y0 = m(x - x0)
   // y - m(x - x0) - y0 = 0
-  if (dx == Float(0.0)) {
+  if (dx == FAHFloat(0.0)) {
     // this is an exactly vertical line
-    Float difference = point.x - a.x;
+    FAHFloat difference = point.x - a.x;
     if (floatsEqual(difference, 0.0)) {
       return point.y - /* Float(0.0) -*/ a.y;
-    } else if (difference > Float(0.0)) {
-      return /* point.y */- dy * Float(+1e10) /* - a.y */;
+    } else if (difference > FAHFloat(0.0)) {
+      return /* point.y */- dy * FAHFloat(+1e10) /* - a.y */;
     } else { //if (difference < Float(0.0)) {
-      return /* point.y */- dy * Float(-1e10) /* - a.y */;
+      return /* point.y */- dy * FAHFloat(-1e10) /* - a.y */;
     }
   } else {
     return (point.y - (dy / dx) * (point.x - a.x) - a.y);
@@ -230,20 +230,20 @@ Float Line::evaluate2DLineXY(
 }
 
 
-Float Line::segmentDistanceTo2DXY(const Vector3& point) const {
-  Float A = point.x - a.x;
-  Float B = point.y - a.y;
-  Float C = b.x - a.x;
-  Float D = b.y - a.y;
-  Float dot = A*C + B*D;
-  Float len_sq = C*C + D*D;
-  Float param = dot / len_sq;
+FAHFloat Line::segmentDistanceTo2DXY(const Vector3& point) const {
+  FAHFloat A = point.x - a.x;
+  FAHFloat B = point.y - a.y;
+  FAHFloat C = b.x - a.x;
+  FAHFloat D = b.y - a.y;
+  FAHFloat dot = A*C + B*D;
+  FAHFloat len_sq = C*C + D*D;
+  FAHFloat param = dot / len_sq;
 
-  Float xx, yy;
-  if (param < (Float)0.0) {
+  FAHFloat xx, yy;
+  if (param < (FAHFloat)0.0) {
     xx = a.x;
     yy = a.y;
-  } else if (param > (Float)1.0) {
+  } else if (param > (FAHFloat)1.0) {
     xx = b.x;
     yy = b.y;
   } else {
@@ -251,29 +251,29 @@ Float Line::segmentDistanceTo2DXY(const Vector3& point) const {
     yy = a.y + param * D;
   }
 
-  Float dx = point.x - xx;
-  Float dy = point.y - yy;
+  FAHFloat dx = point.x - xx;
+  FAHFloat dy = point.y - yy;
 
   return sqrt(dx*dx + dy*dy);
 }
 
 
 
-Float Line::lineDistanceTo2DXY(const Vector3& point) const {
-  Float A = point.x - a.x;
-  Float B = point.y - a.y;
-  Float C = b.x - a.x;
-  Float D = b.y - a.y;
-  Float dot = A*C + B*D;
-  Float len_sq = C*C + D*D;
-  Float param = dot / len_sq;
+FAHFloat Line::lineDistanceTo2DXY(const Vector3& point) const {
+  FAHFloat A = point.x - a.x;
+  FAHFloat B = point.y - a.y;
+  FAHFloat C = b.x - a.x;
+  FAHFloat D = b.y - a.y;
+  FAHFloat dot = A*C + B*D;
+  FAHFloat len_sq = C*C + D*D;
+  FAHFloat param = dot / len_sq;
 
-  Float xx, yy; // closest point on line
+  FAHFloat xx, yy; // closest point on line
   xx = a.x + param * C;
   yy = a.y + param * D;
 
-  Float dx = point.x - xx;
-  Float dy = point.y - yy;
+  FAHFloat dx = point.x - xx;
+  FAHFloat dy = point.y - yy;
 
   return sqrt(dx*dx + dy*dy);
 }

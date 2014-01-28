@@ -31,7 +31,7 @@
 #pragma once
 
 
-#include "float.h"
+#include "FAHfloat.h"
 #include "structs.h"
 #include "vector3.h"
 
@@ -41,7 +41,7 @@ namespace Math {
  * 4-dimensional object representing a rotation about an axis in 3d space
  */
 struct Quaternion {
-  Float w, x, y, z;
+  FAHFloat w, x, y, z;
 
   /**
    * Does nothing
@@ -63,24 +63,24 @@ struct Quaternion {
    * a number of radians specified by 'angle'.
    * The input axis must be normalized.
    */
-  explicit Quaternion(const Vector3& axis, Float angle);
+  explicit Quaternion(const Vector3& axis, FAHFloat angle);
 
   /**
    * Defines this quaternion as a rotation about the given axis by
    * a number of radians specified by 'angle'.
    * The input axis must be normalized.
    */
-  explicit Quaternion(const Vector3* axis, Float angle);
+  explicit Quaternion(const Vector3* axis, FAHFloat angle);
 
   /**
    * Explicitly defines the values of this quaternion
    */
-  explicit Quaternion(Float w, Float x, Float y, Float z);
+  explicit Quaternion(FAHFloat w, FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Explicitly defines the values of this quaternion
    */
-  explicit Quaternion(const Float wxyz[4]);
+  explicit Quaternion(const FAHFloat wxyz[4]);
 
   /**
    * Copies the input quaternion
@@ -97,29 +97,29 @@ struct Quaternion {
    * a number of radians specified by 'angle'.
    * The input axis must be normalized.
    */
-  Quaternion& set(const Vector3& axis, Float angle);
+  Quaternion& set(const Vector3& axis, FAHFloat angle);
 
   /**
    * Defines this quaternion as a rotation about the given axis by
    * a number of radians specified by 'angle'.
    * The input axis must be normalized.
    */
-  Quaternion& set(const Vector3* axis, Float angle);
+  Quaternion& set(const Vector3* axis, FAHFloat angle);
 
   /**
    * Explicitly defines the values of this quaternion
    */
-  Quaternion& set(Float w, Float x, Float y, Float z);
+  Quaternion& set(FAHFloat w, FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Explicitly defines the values of this quaternion
    */
-  Quaternion& set(const Float wxyz[4]);
+  Quaternion& set(const FAHFloat wxyz[4]);
 
   /**
    * Defines this quaternion using a rotation about the x/y/z axes
    */
-  Quaternion& setEuler(Float x, Float y, Float z);
+  Quaternion& setEuler(FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Defines this quaternion using a rotation about the x/y/z axes
@@ -158,12 +158,12 @@ struct Quaternion {
   /**
    * Returns the length of this quaternion
    */
-  Float magnitude() const;
+  FAHFloat magnitude() const;
 
   /**
    * Returns the square of the length of this quaternion
    */
-  Float magnitudeSq() const;
+  FAHFloat magnitudeSq() const;
 
   /**
    * Scales this quaternion to have unit magnitude

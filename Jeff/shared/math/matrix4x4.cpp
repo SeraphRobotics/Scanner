@@ -50,25 +50,25 @@ Matrix4x4::Matrix4x4(const Matrix4x4* m) {
 }
 
 
-Matrix4x4::Matrix4x4(const Float v[16]) {
+Matrix4x4::Matrix4x4(const FAHFloat v[16]) {
 }
 
 
 Matrix4x4& Matrix4x4::zero() {
-  _11 = Float(0);  _12 = Float(0);  _13 = Float(0);  _14 = Float(0);
-  _21 = Float(0);  _22 = Float(0);  _23 = Float(0);  _24 = Float(0);
-  _31 = Float(0);  _32 = Float(0);  _33 = Float(0);  _34 = Float(0);
-  _41 = Float(0);  _42 = Float(0);  _43 = Float(0);  _44 = Float(0);
+  _11 = FAHFloat(0);  _12 = FAHFloat(0);  _13 = FAHFloat(0);  _14 = FAHFloat(0);
+  _21 = FAHFloat(0);  _22 = FAHFloat(0);  _23 = FAHFloat(0);  _24 = FAHFloat(0);
+  _31 = FAHFloat(0);  _32 = FAHFloat(0);  _33 = FAHFloat(0);  _34 = FAHFloat(0);
+  _41 = FAHFloat(0);  _42 = FAHFloat(0);  _43 = FAHFloat(0);  _44 = FAHFloat(0);
   return *this;
 }
 
 
 Matrix4x4& Matrix4x4::identity() {
   zero();
-  _11 = Float(1.0);
-  _22 = Float(1.0);
-  _33 = Float(1.0);
-  _44 = Float(1.0);
+  _11 = FAHFloat(1.0);
+  _22 = FAHFloat(1.0);
+  _33 = FAHFloat(1.0);
+  _44 = FAHFloat(1.0);
   return *this;
 }
 
@@ -80,19 +80,19 @@ Matrix4x4 Matrix4x4::copy() const {
 
 
 Matrix4x4& Matrix4x4::set(const Matrix4x4& m) {
-  return set(static_cast<const Float*>(&m._11));
+  return set(static_cast<const FAHFloat*>(&m._11));
 }
 
 
 Matrix4x4& Matrix4x4::set(const Matrix4x4* m) {
   confirm (m) then {
-    set(static_cast<const Float*>(&m->_11));
+    set(static_cast<const FAHFloat*>(&m->_11));
   }
   return *this;
 }
 
 
-Matrix4x4& Matrix4x4::set(const Float v[16]) {
+Matrix4x4& Matrix4x4::set(const FAHFloat v[16]) {
   confirm (v) then {
     _11 = v[0x0];  _12 = v[0x1];  _13 = v[0x2];  _14 = v[0x3];
     _21 = v[0x4];  _22 = v[0x5];  _23 = v[0x6];  _24 = v[0x7];
@@ -103,25 +103,25 @@ Matrix4x4& Matrix4x4::set(const Float v[16]) {
 }
 
 
-Float* Matrix4x4::array() {
-  return static_cast<Float*>(&_11);
+FAHFloat* Matrix4x4::array() {
+  return static_cast<FAHFloat*>(&_11);
 }
 
 
-Float* Matrix4x4::operator [] (int ix) {
+FAHFloat* Matrix4x4::operator [] (int ix) {
   confirm (ix >= 0 && ix < 4) else return 0;
   return m[ix];
 }
 
 
-const Float* Matrix4x4::operator [] (int ix) const {
+const FAHFloat* Matrix4x4::operator [] (int ix) const {
   confirm (ix >= 0 && ix < 4) else return 0;
   return m[ix];
 }
 
 
 Matrix4x4& Matrix4x4::mul(const Matrix4x4& m) {
-  Float v[16] = {
+  FAHFloat v[16] = {
     _11*m._11 + _12*m._21 + _13*m._31 + _14*m._41,
     _11*m._12 + _12*m._22 + _13*m._32 + _14*m._42,
     _11*m._13 + _12*m._23 + _13*m._33 + _14*m._43,
@@ -155,7 +155,7 @@ void Matrix4x4::transformInPlace(Vector3* v) const {
   // This is the 4th component of the resulting transformation.  The input vector's
   // 4th component is assumed to be 1.0 coming in, and the resulting vector is
   // normalized such that it would have a component of 1.0.
-  Float w = _14 * v->x + _24 * v->y + _34 * v->z + _44;
+  FAHFloat w = _14 * v->x + _24 * v->y + _34 * v->z + _44;
   v->set(
     (_11 * v->x + _21 * v->y + _31 * v->z + _41) / w,
     (_12 * v->x + _22 * v->y + _32 * v->z + _42) / w,
@@ -173,30 +173,30 @@ Matrix4x4& Matrix4x4::translation(const Vector3& v) {
 }
 
 
-Matrix4x4& Matrix4x4::rotationX(Float a) {
+Matrix4x4& Matrix4x4::rotationX(FAHFloat a) {
   identity();
-  const Float cos_a = cos(a);
-  const Float sin_a = sin(a);
+  const FAHFloat cos_a = cos(a);
+  const FAHFloat sin_a = sin(a);
   _22 = cos_a;  _23 = -sin_a;
   _32 = sin_a;  _33 =  cos_a;
   return *this;
 }
 
 
-Matrix4x4& Matrix4x4::rotationY(Float a) {
+Matrix4x4& Matrix4x4::rotationY(FAHFloat a) {
   identity();
-  const Float cos_a = cos(a);
-  const Float sin_a = sin(a);
+  const FAHFloat cos_a = cos(a);
+  const FAHFloat sin_a = sin(a);
   _11 =  cos_a;  _13 = sin_a;
   _31 = -sin_a;  _33 = cos_a;
   return *this;
 }
 
 
-Matrix4x4& Matrix4x4::rotationZ(Float a) {
+Matrix4x4& Matrix4x4::rotationZ(FAHFloat a) {
   identity();
-  const Float cos_a = cos(a);
-  const Float sin_a = sin(a);
+  const FAHFloat cos_a = cos(a);
+  const FAHFloat sin_a = sin(a);
   _11 = cos_a;  _12 = -sin_a;
   _21 = sin_a;  _22 =  cos_a;
   return *this;
@@ -208,13 +208,13 @@ Matrix4x4& Matrix4x4::rotationEuler(const Vector3& v) {
 }
 
 
-Matrix4x4& Matrix4x4::rotationEuler(Float x, Float y, Float z) {
-  const Float cx = cos(x);
-  const Float sx = sin(x);
-  const Float cy = cos(y);
-  const Float sy = sin(y);
-  const Float cz = cos(z);
-  const Float sz = sin(z);
+Matrix4x4& Matrix4x4::rotationEuler(FAHFloat x, FAHFloat y, FAHFloat z) {
+  const FAHFloat cx = cos(x);
+  const FAHFloat sx = sin(x);
+  const FAHFloat cy = cos(y);
+  const FAHFloat sy = sin(y);
+  const FAHFloat cz = cos(z);
+  const FAHFloat sz = sin(z);
   _11 = cz*cy;  _12 = cz*sy*sx - sz*cx;  _13 = cz*sy*cx + sz*sx;  _14 = 0;
   _21 = sz*cy;  _22 = sz*sy*sx + cz*cx;  _23 = sz*sy*cx - cz*sx;  _24 = 0;
   _31 = -sy;    _32 = cy*sx;             _33 = cy*cx;             _34 = 0;
@@ -223,7 +223,7 @@ Matrix4x4& Matrix4x4::rotationEuler(Float x, Float y, Float z) {
 }
 
 
-Matrix4x4& Matrix4x4::rotationAxisAngle(const Vector3& axis, Float angle) {
+Matrix4x4& Matrix4x4::rotationAxisAngle(const Vector3& axis, FAHFloat angle) {
   Quaternion q(axis, angle);
   return rotationQuaternion(q);
 
@@ -271,54 +271,54 @@ Matrix4x4& Matrix4x4::scaling(const Vector3& v) {
 }
 
 
-Matrix4x4& Matrix4x4::scaling(Float x, Float y, Float z) {
+Matrix4x4& Matrix4x4::scaling(FAHFloat x, FAHFloat y, FAHFloat z) {
   zero();
   _11 = x;
   _22 = y;
   _33 = z;
-  _44 = Float(1.0);
+  _44 = FAHFloat(1.0);
   return *this;
 }
 
 
 
-Matrix4x4& Matrix4x4::scalingUniform(Float s) {
+Matrix4x4& Matrix4x4::scalingUniform(FAHFloat s) {
   return scaling(s,s,s);
 }
 
 
 Matrix4x4& Matrix4x4::invert() {
-  Float t;
+  FAHFloat t;
   return invert(&t);
 }
 
 
-Matrix4x4& Matrix4x4::invert(Float* determinant) {
+Matrix4x4& Matrix4x4::invert(FAHFloat* determinant) {
   confirm (determinant) else return *this;
 
   // Since the values of the matrix will have to be read frequently, copy
   // them into a temporary local array for faster access.
-  Float v[16] = {
+  FAHFloat v[16] = {
     _11, _12, _13, _14,
     _21, _22, _23, _24,
     _31, _32, _33, _34,
     _41, _42, _43, _44,
   };
 
-  Float a0 = v[ 0]*v[ 5] - v[ 1]*v[ 4];
-  Float a1 = v[ 0]*v[ 6] - v[ 2]*v[ 4];
-  Float a2 = v[ 0]*v[ 7] - v[ 3]*v[ 4];
-  Float a3 = v[ 1]*v[ 6] - v[ 2]*v[ 5];
-  Float a4 = v[ 1]*v[ 7] - v[ 3]*v[ 5];
-  Float a5 = v[ 2]*v[ 7] - v[ 3]*v[ 6];
-  Float b0 = v[ 8]*v[13] - v[ 9]*v[12];
-  Float b1 = v[ 8]*v[14] - v[10]*v[12];
-  Float b2 = v[ 8]*v[15] - v[11]*v[12];
-  Float b3 = v[ 9]*v[14] - v[10]*v[13];
-  Float b4 = v[ 9]*v[15] - v[11]*v[13];
-  Float b5 = v[10]*v[15] - v[11]*v[14];
+  FAHFloat a0 = v[ 0]*v[ 5] - v[ 1]*v[ 4];
+  FAHFloat a1 = v[ 0]*v[ 6] - v[ 2]*v[ 4];
+  FAHFloat a2 = v[ 0]*v[ 7] - v[ 3]*v[ 4];
+  FAHFloat a3 = v[ 1]*v[ 6] - v[ 2]*v[ 5];
+  FAHFloat a4 = v[ 1]*v[ 7] - v[ 3]*v[ 5];
+  FAHFloat a5 = v[ 2]*v[ 7] - v[ 3]*v[ 6];
+  FAHFloat b0 = v[ 8]*v[13] - v[ 9]*v[12];
+  FAHFloat b1 = v[ 8]*v[14] - v[10]*v[12];
+  FAHFloat b2 = v[ 8]*v[15] - v[11]*v[12];
+  FAHFloat b3 = v[ 9]*v[14] - v[10]*v[13];
+  FAHFloat b4 = v[ 9]*v[15] - v[11]*v[13];
+  FAHFloat b5 = v[10]*v[15] - v[11]*v[14];
 
-  Float d = a0*b5-a1*b4+a2*b3+a3*b2-a4*b1+a5*b0;
+  FAHFloat d = a0*b5-a1*b4+a2*b3+a3*b2-a4*b1+a5*b0;
 
   confirm (!floatsEqual(d, 0)) else {
     // this matrix is uninvertible
@@ -326,7 +326,7 @@ Matrix4x4& Matrix4x4::invert(Float* determinant) {
     return *this;
   }
 
-  Float inverse_d = Float(1.0)/d;
+  FAHFloat inverse_d = FAHFloat(1.0)/d;
 
   // Each element of the final matrix should be divided by 'd', but we can
   // do this computation on these temporaries instead because multiplication
@@ -357,26 +357,26 @@ Matrix4x4& Matrix4x4::invert(Float* determinant) {
 }
 
 
-Float Matrix4x4::determinant() const {
-  Float a0 = _11*_22 - _12*_21;
-  Float a1 = _11*_23 - _13*_21;
-  Float a2 = _11*_24 - _14*_21;
-  Float a3 = _12*_23 - _13*_22;
-  Float a4 = _12*_24 - _14*_22;
-  Float a5 = _13*_24 - _14*_23;
-  Float b0 = _31*_42 - _32*_41;
-  Float b1 = _31*_43 - _33*_41;
-  Float b2 = _31*_44 - _34*_41;
-  Float b3 = _32*_43 - _33*_42;
-  Float b4 = _32*_44 - _34*_42;
-  Float b5 = _33*_44 - _34*_43;
+FAHFloat Matrix4x4::determinant() const {
+  FAHFloat a0 = _11*_22 - _12*_21;
+  FAHFloat a1 = _11*_23 - _13*_21;
+  FAHFloat a2 = _11*_24 - _14*_21;
+  FAHFloat a3 = _12*_23 - _13*_22;
+  FAHFloat a4 = _12*_24 - _14*_22;
+  FAHFloat a5 = _13*_24 - _14*_23;
+  FAHFloat b0 = _31*_42 - _32*_41;
+  FAHFloat b1 = _31*_43 - _33*_41;
+  FAHFloat b2 = _31*_44 - _34*_41;
+  FAHFloat b3 = _32*_43 - _33*_42;
+  FAHFloat b4 = _32*_44 - _34*_42;
+  FAHFloat b5 = _33*_44 - _34*_43;
 
   return a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
 }
 
 
 Matrix4x4& Matrix4x4::transpose() {
-  Float t;
+  FAHFloat t;
 #define swap(a,b) t = a; a = b; b = t;
   swap(_12, _21);
   swap(_13, _31);
@@ -389,14 +389,14 @@ Matrix4x4& Matrix4x4::transpose() {
 }
 
 
-Matrix4x4& Matrix4x4::glProjectionPerspective(Float fov, Float aspect, Float near_z, Float far_z) {
+Matrix4x4& Matrix4x4::glProjectionPerspective(FAHFloat fov, FAHFloat aspect, FAHFloat near_z, FAHFloat far_z) {
   zero();
-  Float f = Float(1.0) / tan(fov/2); // cot = 1.0f / tan
+  FAHFloat f = FAHFloat(1.0) / tan(fov/2); // cot = 1.0f / tan
   _11 = f / aspect;
   _22 = f;
-  Float near_minus_far = near_z - far_z;
+  FAHFloat near_minus_far = near_z - far_z;
   _33 = (far_z + near_z) / near_minus_far;
-  _34 = Float(-1.0);
+  _34 = FAHFloat(-1.0);
   _43 = 2 * far_z * near_z / near_minus_far;
   return *this;
 }

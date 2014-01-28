@@ -97,7 +97,7 @@ public:
   /**
    * Returns the average z coordinate in the loop
    */
-  Float getAverageZCoordinate() const;
+  FAHFloat getAverageZCoordinate() const;
 
   /**
    * Sets the z coordinate for every point to be the average z for over all
@@ -110,7 +110,7 @@ public:
    * rectangle created by the min/max coordinates.  The value will never be
    * lower than the true area.
    */
-  Float areaEstimate() const;
+  FAHFloat areaEstimate() const;
 
   /**
    * Returns lowest values from each dimension
@@ -180,7 +180,7 @@ public:
    * @note BE SURE before invoking this method that the loop has been simplified!  If
    *       at all possible, use the simplifyAndExpand function to call both.
    */
-  void expand(Float amount, QVector<LoopInXYPlane>* expanded_loops) const;
+  void expand(FAHFloat amount, QVector<LoopInXYPlane>* expanded_loops) const;
 
   /**
    * Eliminates consecutive points in the loop that are coincident and replaces N>2
@@ -191,7 +191,7 @@ public:
   /**
    * Invokes simplify(), then expand().  This is the safest way to call 'expand'.
    */
-  void simplifyAndExpand(Float amount, QVector<LoopInXYPlane>* expanded_loops);
+  void simplifyAndExpand(FAHFloat amount, QVector<LoopInXYPlane>* expanded_loops);
 };
 
 

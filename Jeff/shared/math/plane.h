@@ -43,7 +43,7 @@ namespace Math {
  */
 struct Plane {
 
-  Float a, b, c, d;
+  FAHFloat a, b, c, d;
 
   /**
    *  Create a plane taht contains the three given points. Ordering will

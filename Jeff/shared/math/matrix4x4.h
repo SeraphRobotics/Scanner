@@ -44,12 +44,12 @@ namespace Math {
   /// Members can be accessed either via array indices or through member
   /// variables.  Elements are stored in row-major order.
   union {
-    Float m[4][4];
+    FAHFloat m[4][4];
     struct {
-      Float _11, _12, _13, _14;
-      Float _21, _22, _23, _24;
-      Float _31, _32, _33, _34;
-      Float _41, _42, _43, _44;
+      FAHFloat _11, _12, _13, _14;
+      FAHFloat _21, _22, _23, _24;
+      FAHFloat _31, _32, _33, _34;
+      FAHFloat _41, _42, _43, _44;
     };
   };
 
@@ -71,7 +71,7 @@ namespace Math {
   /**
    * Build from set of float values
    */
-  explicit Matrix4x4(const Float v[16]);
+  explicit Matrix4x4(const FAHFloat v[16]);
 
   /**
    * Resets the contents of this matrix
@@ -103,22 +103,22 @@ namespace Math {
   /**
    * Fills this matrix with values from another matrix
    */
-  Matrix4x4& set(const Float v[16]);
+  Matrix4x4& set(const FAHFloat v[16]);
 
   /**
    * Accesses a row array by an index
    */
-  Float* operator [] (int ix);
+  FAHFloat* operator [] (int ix);
 
   /**
    * Accesses a row array by an index
    */
-  const Float* operator [] (int ix) const;
+  const FAHFloat* operator [] (int ix) const;
 
   /**
    * Returns the internal float array
    */
-  Float* array();
+  FAHFloat* array();
 
   /**
    * Sets this matrix to the result of (this * m).
@@ -146,26 +146,26 @@ namespace Math {
    * Initializes this structure as a rotation matrix about the X axis
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& rotationX(Float a);
+  Matrix4x4& rotationX(FAHFloat a);
 
   /**
    * Initializes this structure as a rotation matrix about the Y axis
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& rotationY(Float a);
+  Matrix4x4& rotationY(FAHFloat a);
 
   /**
    * Initializes this structure as a rotation matrix about the Z axis
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& rotationZ(Float a);
+  Matrix4x4& rotationZ(FAHFloat a);
 
   /**
    * Initializes this structure as a rotation matrix about the given axis
    * by the requested angle.  The axis must be normalized.
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& rotationAxisAngle(const Vector3& axis, Float angle);
+  Matrix4x4& rotationAxisAngle(const Vector3& axis, FAHFloat angle);
 
   /**
    * Initializes this structure as a rotation matrix defined by
@@ -185,7 +185,7 @@ namespace Math {
    * about each x/y/z axes
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& rotationEuler(Float x, Float y, Float z);
+  Matrix4x4& rotationEuler(FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Initializes this structure as a scaling matrix with individual x/y/z components
@@ -197,13 +197,13 @@ namespace Math {
    * Initializes this structure as a scaling matrix with individual x/y/z components
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& scaling(Float x, Float y, Float z);
+  Matrix4x4& scaling(FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Initializes this structure as a scaling matrix where x=y=z=s
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& scalingUniform(Float s);
+  Matrix4x4& scalingUniform(FAHFloat s);
 
   /**
    * Sets this matrix to the inverse of the current matrix.  If the matrix
@@ -220,12 +220,12 @@ namespace Math {
    * this matrix is uninvertible.
    * Returns a reference to this object to allow method chaining.
    */
-  Matrix4x4& invert(Float* determinant);
+  Matrix4x4& invert(FAHFloat* determinant);
 
   /**
    * Calculates the determinant of this matrix
    */
-  Float determinant() const;
+  FAHFloat determinant() const;
 
   /**
    * Swaps rows with columns in this matrix
@@ -240,7 +240,7 @@ namespace Math {
    * Returns a reference to this object to allow method chaining.
    * @see http://www.opengl.org/sdk/docs/man/xhtml/gluPerspective.xml
    */
-  Matrix4x4& glProjectionPerspective(Float fov, Float aspect, Float near_z, Float far_z);
+  Matrix4x4& glProjectionPerspective(FAHFloat fov, FAHFloat aspect, FAHFloat near_z, FAHFloat far_z);
 
   ///**
   // * Sets this matrix to a matrix that transforms vertices from camera space

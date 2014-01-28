@@ -99,7 +99,7 @@ Line Triangle::edge2() const {
 
 
 Vector3 Triangle::center() const {
-  static const Float kOneThird = 1.0 / 3.0;
+  static const FAHFloat kOneThird = 1.0 / 3.0;
   return v[0].copy().add(v[1]).add(v[2]).scale(kOneThird);
 }
 
@@ -125,7 +125,7 @@ void Triangle::set(const Vector3& a,
   v[2].set(c);
 }
 
-bool Triangle::intersectXYPlaneAtZ(Float z, Line* intersection) const {
+bool Triangle::intersectXYPlaneAtZ(FAHFloat z, Line* intersection) const {
 
   if ((v[0].z >= z && v[1].z >= z && v[2].z >= z) ||
       (v[0].z <= z && v[1].z <= z && v[2].z <= z)) {

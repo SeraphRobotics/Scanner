@@ -28,20 +28,20 @@
  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
-#include "float.h"
+#include "FAHfloat.h"
 
 namespace Math {
 
-Float toRadians(Float degrees) {
+FAHFloat toRadians(FAHFloat degrees) {
   return degrees / 180.0 * kPi;
 }
 
-Float toDegrees(Float radians) {
+FAHFloat toDegrees(FAHFloat radians) {
   return radians / kPi * 180.0;
 }
 
-bool floatsEqual(Float a, Float b) {
-  static const Float kEpsilon = 1e-6;
+bool floatsEqual(FAHFloat a, FAHFloat b) {
+  static const FAHFloat kEpsilon = 1e-6;
   return a + kEpsilon > b &&
          a - kEpsilon < b;
 }

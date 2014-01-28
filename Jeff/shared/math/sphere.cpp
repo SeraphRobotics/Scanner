@@ -39,7 +39,7 @@ namespace Math {
 Sphere::Sphere() {}
 
 
-Sphere::Sphere(const Vector3& v, Float r) {
+Sphere::Sphere(const Vector3& v, FAHFloat r) {
   set(v,r);
 }
 
@@ -54,7 +54,7 @@ Sphere::Sphere(const Sphere* s) {
 }
 
 
-Sphere& Sphere::set(const Vector3& v, Float r) {
+Sphere& Sphere::set(const Vector3& v, FAHFloat r) {
   center.set(v);
   radius = r;
   return *this;
@@ -102,10 +102,10 @@ int Sphere::intersectDistances(const Vector3& origin, const Vector3& ray,
 
   Vector3 distance;
   distance.set(origin).sub(center);
-  Float b = distance.dot(ray);
-  Float c = distance.magnitudeSq() - radius*radius;
-  Float d = b*b - c;
-  if (d > Float(0)) {
+  FAHFloat b = distance.dot(ray);
+  FAHFloat c = distance.magnitudeSq() - radius*radius;
+  FAHFloat d = b*b - c;
+  if (d > FAHFloat(0)) {
     d = sqrt(d);
     *enter_distance = -b - d;
     if (b > d) {

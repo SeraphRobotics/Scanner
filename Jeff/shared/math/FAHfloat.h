@@ -34,17 +34,17 @@
 namespace Math {
 
 /// This is the floating-point type used throughout the math namespace
-typedef double Float;
+typedef double FAHFloat;
 
-static const Float kPi = Float(3.14159265358979323846);
-static const Float k2Pi = Float(3.14159265358979323846 * 2);
+static const FAHFloat kPi = FAHFloat(3.14159265358979323846);
+static const FAHFloat k2Pi = FAHFloat(3.14159265358979323846 * 2);
 
-Float toRadians(Float degrees);
-Float toDegrees(Float radians);
+FAHFloat toRadians(FAHFloat degrees);
+FAHFloat toDegrees(FAHFloat radians);
 
 /**
  * Returns true only if the floats are within some epsilon of each other
  */
-bool floatsEqual(Float a, Float b);
+bool floatsEqual(FAHFloat a, FAHFloat b);
 
 }

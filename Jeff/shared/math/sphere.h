@@ -30,7 +30,7 @@
 \*---------------------------------------------------------------------------*/
 #pragma once
 
-#include "float.h"
+#include "FAHfloat.h"
 #include "structs.h"
 #include "vector3.h"
 
@@ -40,7 +40,7 @@ namespace Math {
 struct Sphere {
 
   Vector3 center;
-  Float radius;
+  FAHFloat radius;
 
   /**
    * Default initializer; does nothing
@@ -50,7 +50,7 @@ struct Sphere {
   /**
    * Initialize this sphere
    */
-  explicit Sphere(const Vector3& v, Float r);
+  explicit Sphere(const Vector3& v, FAHFloat r);
 
   /**
    * Copy values from the given sphere
@@ -65,7 +65,7 @@ struct Sphere {
   /**
    * Initialize this sphere
    */
-  Sphere& set(const Vector3& v, Float r);
+  Sphere& set(const Vector3& v, FAHFloat r);
 
   /**
    * Copy values from the given sphere

@@ -31,7 +31,7 @@
 #pragma once
 
 
-#include "float.h"
+#include "FAHfloat.h"
 #include "structs.h"
 #include "vector3.h"
 
@@ -95,7 +95,7 @@ namespace Math {
   /**
    * Returns the length of the line
    */
-  Float length() const;
+  FAHFloat length() const;
 
   /**
    * Switches the endpoints of this line
@@ -182,7 +182,7 @@ namespace Math {
    * would cause the length of the line to become negative, the line changes
    * its direction.
    */
-  Line& changeLength(Float amount);
+  Line& changeLength(FAHFloat amount);
 
   /**
    * Obtains the ray that points from the line's first coordinate to its
@@ -195,19 +195,19 @@ namespace Math {
    * Returns the value of the line equation evaluated at the given point,
    * ignoring the Z coordinate of this line and the input point
    */
-  Float evaluate2DLineXY(const Vector3& point) const;
+  FAHFloat evaluate2DLineXY(const Vector3& point) const;
 
   /**
    * Gets the distance from this segment to the given point, taking into
    * account that the line has finite length
    */
-  Float segmentDistanceTo2DXY(const Vector3& point) const;
+  FAHFloat segmentDistanceTo2DXY(const Vector3& point) const;
 
   /**
    * Calculates the distance from this line to the given point.  Ignores the
    * z-coordinate.
    */
-  Float lineDistanceTo2DXY(const Vector3& point) const;
+  FAHFloat lineDistanceTo2DXY(const Vector3& point) const;
 };
 
 }

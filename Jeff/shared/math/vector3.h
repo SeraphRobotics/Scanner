@@ -30,7 +30,7 @@
 \*---------------------------------------------------------------------------*/
 #pragma once
 
-#include "float.h"
+#include "FAHfloat.h"
 #include "structs.h"
 
 
@@ -44,7 +44,7 @@ namespace Math {
 struct Vector3 {
 
   // Coordinate values
-  Float x, y, z;
+  FAHFloat x, y, z;
 
   /**
    * Constructor, basic
@@ -66,44 +66,44 @@ struct Vector3 {
   /**
    * Sets this vector3's x, y, and z to the Floats in the input array
    */
-  explicit Vector3(const Float* v);
+  explicit Vector3(const FAHFloat* v);
 
   /**
    * Sets this vectors' x, y, and z to the respective inputs
    */
-  explicit Vector3(Float x, Float y, Float z);
+  explicit Vector3(FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Accesses an element by an index:  {0: x, 1: y, 2: z}
    */
-  Float& operator [] (int ix);
+  FAHFloat& operator [] (int ix);
 
   /**
    * Accesses an element by an index:  {0: x, 1: y, 2: z}
    */
-  Float operator [] (int ix) const;
+  FAHFloat operator [] (int ix) const;
 
   /**
    * Provides access to this vector as an array {x, y, z}
    */
-  Float* array();
+  FAHFloat* array();
 
   /**
    * Provides access to this vector as an array {x, y, z}
    */
-  const Float* array() const;
+  const FAHFloat* array() const;
 
   /**
    * Returns the magnitude of this vector.
    * This method involves taking a square root, which can be an expensive
    * operation, so substitute lengthSq whenever possible.
    */
-  Float length() const;
+  FAHFloat length() const;
 
   /**
    * Returns the square of the magnitude of this vector
    */
-  Float lengthSq() const;
+  FAHFloat lengthSq() const;
 
   /**
    * Returns 'true' if this vector has unit length
@@ -137,7 +137,7 @@ struct Vector3 {
   /**
    * Returns the dot product of this vector with the v vector
    */
-  Float dot(const Vector3& v) const;
+  FAHFloat dot(const Vector3& v) const;
 
   /**
    * Sets this object to the cross product of this vector with the provided
@@ -167,7 +167,7 @@ struct Vector3 {
    * Returns a reference to a newly created object
    * with x, y, and z set to the respective input params to allow method chaining.
    */
-  Vector3& set(Float x, Float y, Float z);
+  Vector3& set(FAHFloat x, FAHFloat y, FAHFloat z);
 
   /**
    * Sets this vector to the weighted combination of itself and the
@@ -194,23 +194,23 @@ struct Vector3 {
    * This method involves taking a square root, which can be an expensive
    * operation, so substitute distanceToSq whenever possible.
    */
-  Float distanceTo(const Vector3& v) const;
+  FAHFloat distanceTo(const Vector3& v) const;
 
   /**
    * Returns the square of the distance from this point in space to 'v'
    */
-  Float distanceToSq(const Vector3& v) const;
+  FAHFloat distanceToSq(const Vector3& v) const;
 
   /**
    * Returns the length of this vector.  This calculation involves a square-root
    * so prefer magnitudeSq whenever possible.
    */
-  Float magnitude() const;
+  FAHFloat magnitude() const;
 
   /**
    * Returns the square of the length of this vector
    */
-  Float magnitudeSq() const;
+  FAHFloat magnitudeSq() const;
 
   /**
    * Resets the Float to the origin
@@ -221,7 +221,7 @@ struct Vector3 {
    * Multiplies the magnitude of this vector by the given amount
    * Returns a reference to this object to allow method chaining.
    */
-  Vector3& scale(Float s);
+  Vector3& scale(FAHFloat s);
 
   /**
    * Multiplies each component in this vector by the corresponding one in the
@@ -254,30 +254,30 @@ struct Vector3 {
    * Rotates this location around the X-axis
    * Returns a reference to this object to allow method chaining.
    */
-  Vector3& rotateX(Float radians);
+  Vector3& rotateX(FAHFloat radians);
 
   /**
    * Rotates this location around the Y-axis
    * Returns a reference to this object to allow method chaining.
    */
-  Vector3& rotateY(Float radians);
+  Vector3& rotateY(FAHFloat radians);
 
   /**
    * Rotates this location around the Z-axis
    * Returns a reference to this object to allow method chaining.
    */
-  Vector3& rotateZ(Float radians);
+  Vector3& rotateZ(FAHFloat radians);
 
   /**
    * Rotates this location around the given arbitrary axis
    * Returns a reference to this object to allow method chaining.
    */
-  Vector3& rotateAxisAngle(const Vector3& axis, Float radians);
+  Vector3& rotateAxisAngle(const Vector3& axis, FAHFloat radians);
 
   /**
    * Radians of rotation between this vector and another
    */
-  Float angleTo(const Vector3& v) const;
+  FAHFloat angleTo(const Vector3& v) const;
 
   /**
    * In-place operator. Returns *this.
@@ -297,12 +297,12 @@ struct Vector3 {
   /**
    * In-place operator. Returns *this.
    */
-  Vector3& operator *= (Float s);
+  Vector3& operator *= (FAHFloat s);
 
   /**
    * In-place operator. Returns *this.
    */
-  Vector3& operator /= (Float s);
+  Vector3& operator /= (FAHFloat s);
 
   /**
    * Operators returning a temporary object
@@ -337,7 +337,7 @@ struct Vector3 {
 }
 
 
-Math::Vector3 operator * (const Math::Vector3& lhs, Math::Float s);
-Math::Vector3 operator / (const Math::Vector3& lhs, Math::Float s);
-Math::Vector3 operator * (Math::Float s, const Math::Vector3& v);
+Math::Vector3 operator * (const Math::Vector3& lhs, Math::FAHFloat s);
+Math::Vector3 operator / (const Math::Vector3& lhs, Math::FAHFloat s);
+Math::Vector3 operator * (Math::FAHFloat s, const Math::Vector3& v);
 

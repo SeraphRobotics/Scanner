@@ -113,7 +113,7 @@ namespace Math {
   /**
    * Calculates the area of this triangle
    */
-  Float area() const;
+  FAHFloat area() const;
 
   /**
    * Returns true and sets the values of 'line'
@@ -164,7 +164,7 @@ namespace Math {
    * @param intersection line that intersects the triangle
    * @return True if there is an intersection, False if not
    */
-  bool intersectXYPlaneAtZ(Float z, Line* intersection) const;
+  bool intersectXYPlaneAtZ(FAHFloat z, Line* intersection) const;
 
   /**
    * Returns true if the given ray intersects the interior of this triangle
