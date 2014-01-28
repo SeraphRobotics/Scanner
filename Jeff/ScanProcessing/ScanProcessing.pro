@@ -20,11 +20,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     scanprocessing.cpp\
-#    xygrid.cpp
+    xygrid.cpp
 
 HEADERS += \
     scanprocessing.h\
-#    xygrid.h
+    xygrid.h
 
 INCLUDEPATH += ../
 

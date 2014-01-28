@@ -12,6 +12,12 @@
 
 #include "shared/fabathome-constants.h"
 
+
+#include <QMap>
+#include <QVector>
+
+
+#include "xygrid.h"
 //struct FAHVector3{
 //    float x;
 //    float y;
@@ -30,9 +36,10 @@ signals:
 
 public slots:
     void processScan();
+    XYGrid<float>* makeGrid();
 
 public:
-    QVector < FAHVector3 > pointCloud;
+    QMap<float, QVector < FAHVector3 >* > pointCloud;
 
 //private:
     QStringList filenames_;

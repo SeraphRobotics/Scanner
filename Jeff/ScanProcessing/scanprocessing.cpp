@@ -1,13 +1,13 @@
 #include "scanprocessing.h"
 #include <QFileInfo>
 #include <QDebug>
-
+#include <math.h>
 
 ScanProcessing::ScanProcessing(QObject *parent) :
     QObject(parent)
 {
-//    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box1-sample1-Left";
-    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box2";
+    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box1-sample1-Left";
+//    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box2";
     QString extension_="jpeg";
     QStringList name_filters;
     name_filters<< "*"+extension_; //get from QSettings
@@ -105,6 +105,9 @@ void ScanProcessing::processScan(){
     QStringList ImagesPath = filenames_;
     // read the image
     for(int j=0; j<ImagesPath.count(); j++){
+
+        QVector< FAHVector3 >* row = new QVector< FAHVector3 >();
+
         QString location = dir_.path()+QString("//")+ImagesPath[j];
         qDebug()<<location;
         img = cv::imread(location.toStdString() , CV_LOAD_IMAGE_UNCHANGED);
@@ -158,7 +161,7 @@ void ScanProcessing::processScan(){
                         v.x=x;
                         v.y=y;
                         v.z=z;
-                        pointCloud.push_back(v);
+                        row->push_back(v);
 //                        m_pointCloud3d->push_back(pcl::PointXYZ(x,y,z));
                         metOne = true;
                     }
@@ -166,7 +169,9 @@ void ScanProcessing::processScan(){
             }
             metOne = false;
         }
+        pointCloud[row->at(0).x]=row;
     }
+
     // visualize the point cloud
 //    m_pv->addPointCloud(m_pointCloud3d);
 }
@@ -176,3 +181,50 @@ void ScanProcessing::processScan(){
 //    dbg.nospace()<<"(" <<v.x<<","<<v.y <<","<<v.z <<")";
 //    return dbg.space();
 //}
+
+XYGrid<float> *ScanProcessing::makeGrid(){
+    float GRID_SIZE = 2; /// need to save from elsewhere
+    float Tolerance = 0.2;
+    float max_x=0;
+    float min_x=0;
+    float max_y=0;
+    float min_y=0;
+
+    QList<float> xs= pointCloud.keys();
+    for (int i=0;i<xs.size();i++){
+        if (xs[i]<min_x){min_x = xs[i];}
+        if (xs[i]>max_x){max_x = xs[i];}
+
+        QVector< FAHVector3 >* row = pointCloud.value(xs[i]);
+        for(int j=0;j<row->size();j++){
+            if(max_y<row->at(j).y){max_y=row->at(j).y;}
+            if(min_y>row->at(j).y){min_y=row->at(j).y;}
+        }
+    }
+
+    int nx = ceil((max_x-min_x)/GRID_SIZE);
+    int ny = ceil((max_y-min_y)/GRID_SIZE);
+
+    qDebug()<<"NX: "<<nx<<" NY: "<<ny;
+    qDebug()<<"minX: "<<min_x<<" minY: "<<min_y;
+    qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
+
+    XYGrid<float>* grid = new XYGrid<float>(nx,ny,GRID_SIZE);
+
+    for(int i=0; i<nx;i++){
+        float x=-1;
+        for(int j=0;j<xs.size();j++){
+            if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE+Tolerance) )){
+                x=xs.at(j);
+            }
+        }
+
+        if(x<0){continue;}
+        QVector< FAHVector3 >* row = pointCloud.value(x);
+
+
+
+    }
+
+    return grid;
+}

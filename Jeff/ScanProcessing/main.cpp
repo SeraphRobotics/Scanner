@@ -13,11 +13,15 @@ int main(int argc, char *argv[])
 
     sp.processScan();
 
-    for(int i=0; i<sp.pointCloud.size();i++){
-        FAHVector3 v = sp.pointCloud[i];
-        qDebug()<<"(" <<v.x<<","<<v.y <<","<<v.z <<")";
+    for(int i=0; i<sp.pointCloud.keys().size();i++){
+        float x = sp.pointCloud.keys()[i];
+        int size = sp.pointCloud.value(x)->size();
+        qDebug()<<"{"<<x<<","<<size<<"}";
+//        qDebug()<<"(" <<v.x<<","<<v.y <<","<<v.z <<")";
     }
 
+
+    sp.makeGrid();
 
 
 
