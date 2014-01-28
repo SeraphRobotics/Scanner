@@ -3,7 +3,7 @@
 # Project created by QtCreator 2014-01-28T12:05:12
 #
 #-------------------------------------------------
-
+DEFINES += CONFIRM_ENABLED
 QT       += core\
          script\
          xml
@@ -20,19 +20,19 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     scanprocessing.cpp\
-#    xygrid.h
+    xygrid.cpp
 
 HEADERS += \
     scanprocessing.h\
-#    xygrid.h
+    xygrid.h
 
-#INCLUDEPATH += ../
+INCLUDEPATH += ../
 
-#include(common.pro)
-#include(shared.pro)
-#INCLUDEPATH += ../shared/math\
-#               ../shared/ \
-#               ../shared/utils
+include(common.pro)
+include(shared.pro)
+INCLUDEPATH += ../shared/math\
+               ../shared/ \
+               ../shared/utils
 
 
 INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
