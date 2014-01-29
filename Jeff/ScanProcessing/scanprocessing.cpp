@@ -4,12 +4,18 @@
 #include <math.h>
 
 ScanProcessing::ScanProcessing(QObject *parent) :
-    QObject(parent)
+    QObject(parent), dir_(QDir::currentPath()),extension_("")
 {
-//    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box1-sample1-Left";
-    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Build\\ScanProcessing\\Box1-sample1-Left";
-//    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box2";
-    QString extension_="jpeg";
+
+
+
+}
+
+void ScanProcessing::setDir(QString dir){
+
+    dir_=dir;
+
+    extension_="JPEG";
     QStringList name_filters;
     name_filters<< "*"+extension_; //get from QSettings
 
@@ -154,7 +160,7 @@ void ScanProcessing::processScan(){
                         z = h-((fv*h-(v0-v_undist)*b)/(fv*b+h*(v0-v_undist)))*b ;
                         y = (u_undist-u0)*sqrt(h*h+b*b)/fu;
 
-                        QString first = ImagesPath[j].replace(".JPEG","");
+                        QString first = ImagesPath[j].replace("."+extension_,"");
 //                        qDebug()<<first;
                         x = first.toFloat();//fileInfo.baseName().toDouble();
 
@@ -190,6 +196,7 @@ XYGrid<float> *ScanProcessing::makeGrid(){
     float min_x=0;
     float max_y=0;
     float min_y=0;
+    float min_z=0;
 
     QList<float> xs= pointCloud.keys();
     for (int i=0;i<xs.size();i++){
@@ -200,6 +207,7 @@ XYGrid<float> *ScanProcessing::makeGrid(){
         for(int j=0;j<row->size();j++){
             if(max_y<row->at(j).y){max_y=row->at(j).y;}
             if(min_y>row->at(j).y){min_y=row->at(j).y;}
+            if(min_z>row->at(j).z){min_z=row->at(j).z;}
         }
     }
 
@@ -209,6 +217,7 @@ XYGrid<float> *ScanProcessing::makeGrid(){
     qDebug()<<"NX: "<<nx<<" NY: "<<ny;
     qDebug()<<"minX: "<<min_x<<" minY: "<<min_y;
     qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
+    qDebug()<<"minZ: "<<min_z;
 
     XYGrid<float>* grid = new XYGrid<float>(nx,ny,GRID_SIZE);
 
@@ -220,7 +229,7 @@ XYGrid<float> *ScanProcessing::makeGrid(){
         for(int j=0;j<xs.size();j++){
             if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE-Tolerance) )){
                 x=xs.at(j);
-                qDebug()<<"x:"<<i*GRID_SIZE <<"\tx'"<<xs.at(j);
+//                qDebug()<<"x:"<<i*GRID_SIZE <<"\tx'"<<xs.at(j);
             }
         }
 
@@ -238,8 +247,8 @@ XYGrid<float> *ScanProcessing::makeGrid(){
                 float y_p = row->at(k).y-min_y; //compensate for negative min_y
 
                 if(   (y_p<(j*GRID_SIZE+Tolerance)) && (y_p>(j*GRID_SIZE-Tolerance) )){
-                    grid->operator ()(i,j)=row->at(k).z;
-                    qDebug()<<i<<","<<j<<":"<<row->at(k).z;
+                    grid->operator ()(i,j)=row->at(k).z-min_z;
+//                    qDebug()<<i<<","<<j<<":"<<row->at(k).z-min_z;
                     k=row->size();
                 }
 

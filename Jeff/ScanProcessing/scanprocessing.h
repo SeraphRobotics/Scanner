@@ -4,27 +4,15 @@
 #include <QObject>
 #include <QDir>
 #include <QVector>
-
 #include <float.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
 #include "shared/fabathome-constants.h"
-
-
 #include <QMap>
 #include <QVector>
-
-
 #include "xygrid.h"
-//struct FAHVector3{
-//    float x;
-//    float y;
-//    float z;
-//};
 
-//QDebug operator<<(QDebug dbg,FAHVector3 v );
 
 class ScanProcessing : public QObject
 {
@@ -35,6 +23,7 @@ public:
 signals:
 
 public slots:
+    void setDir(QString dir);
     void processScan();
     XYGrid<float>* makeGrid();
 
@@ -43,6 +32,7 @@ public:
 
 //private:
     QStringList filenames_;
+    QString extension_;
     QDir dir_;
 };
 

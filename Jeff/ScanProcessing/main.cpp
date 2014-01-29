@@ -9,31 +9,38 @@ int main(int argc, char *argv[])
 
     ScanProcessing sp;
 
-    qDebug()<<"files:\n"<<sp.filenames_;
+    QString basedir = "C:\\Users\\Jeffrey\\Dropbox\\Seraph Documents\\scans\\";
 
-    sp.processScan();
+    QStringList strings;
+    strings.append("Box1-sample1-Left");
+//    strings.append("Box1-sample2-Left");
+//    strings.append("Box1-sample3-Left");
+//    strings.append("Box1-sample4-Left");
+//    strings.append("Box1-sample1-Right");
+//    strings.append("Box1-sample2-Right");
+//    strings.append("Box1-sample3-Right");
+//    strings.append("Box1-sample4-Right");
 
-    for(int i=0; i<sp.pointCloud.keys().size();i++){
-        float x = sp.pointCloud.keys()[i];
-        int size = sp.pointCloud.value(x)->size();
-        qDebug()<<"{"<<x<<","<<size<<"}";
-//        qDebug()<<"(" <<v.x<<","<<v.y <<","<<v.z <<")";
+
+    for(int k=0; k<strings.size();k++){
+        QString dir  =basedir+strings.at(k);
+        sp.setDir(dir);
+        sp.processScan();
+        XYGrid<float>* grid = sp.makeGrid();
+        QFile f(strings.at(k)+".csv");
+        if (!f.open(QFile::WriteOnly)) {
+            printf("\nFAILED TO OPEN FILE\n");
+            return false;
+        }
+        QTextStream out(&f);
+//        grid->rotate90();
+        out<<grid->toCSV();
+    //    qDebug()<<grid->toCSV();
+        f.close();
+        qDebug()<<"Made: "<<strings.at(k);
     }
 
 
-    XYGrid<float>* grid = sp.makeGrid();
 
-    QFile f("dump.csv");
-    if (!f.open(QFile::WriteOnly)) {
-        printf("\nFAILED TO OPEN CONFIG FILE\n");
-        return false;
-    }
-    QTextStream out(&f);
-    grid->rotate90();
-    out<<grid->toCSV();
-//    qDebug()<<grid->toCSV();
-    f.close();
-    qDebug()<<"done";
-
-    return a.exec();
+    return 0;
 }
