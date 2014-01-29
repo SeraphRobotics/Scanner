@@ -29,8 +29,9 @@ int main(int argc, char *argv[])
         return false;
     }
     QTextStream out(&f);
+    grid->rotate90();
     out<<grid->toCSV();
-    qDebug()<<grid->toCSV();
+//    qDebug()<<grid->toCSV();
     f.close();
     qDebug()<<"done";
 

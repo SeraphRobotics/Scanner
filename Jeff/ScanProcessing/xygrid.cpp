@@ -246,6 +246,40 @@ T& XYGrid<T>::operator()(int I,int j){
 }
 //Returns the interger at I,j
 
+template <class T>
+void XYGrid<T>::rotate90(){
+    QVector<T> data(data_.size(),0);
+    for(int i=0;i<nx_;i++){
+        for(int j=0; j<ny_;j++){
+            float val = data_[(ny_*i+(ny_-j))];
+            if(val<-30){
+                val=0;
+            }
+            data[(nx_*j)+i] = val;
+        }
+    }
+    int nx = ny_;
+    int ny = nx_;
+    nx_=nx;
+    ny_=ny;
+    data_=data;
+}
+
+template <class T>
+void XYGrid<T>::parity(){
+    QVector<T> data(data_.size(),0);
+    for(int i=0;i<nx_;i++){
+        for(int j=0; j<ny_;j++){
+            data[(ny_*j)+i] = data_[(ny_*i+j)];
+        }
+    }
+    int nx = ny_;
+    int ny = nx_;
+    nx_=nx;
+    ny_=ny;
+    data_=data;
+}
+
 
 template <class T>
 QList<T> XYGrid<T>::getValueRange(){

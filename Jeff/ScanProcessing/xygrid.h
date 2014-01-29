@@ -70,6 +70,8 @@ public:
     XYGrid<T> getValueGrid( T i);
     //Retruns a grid with only the points at the value. Null grid if value not in grid
 
+    void rotate90();
+    void parity();
 
 private:
     QVector<T> data_;

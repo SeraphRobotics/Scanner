@@ -53,7 +53,7 @@ LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
     -lopencv_video245.dll
 
     #Build configuration
-    ParentDirectory = ./build
+    ParentDirectory = .
 
     RCC_DIR = "$$ParentDirectory\\RCCFiles"
     UI_DIR = "$$ParentDirectory\\UICFiles"
