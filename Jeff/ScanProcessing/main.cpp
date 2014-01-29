@@ -21,9 +21,18 @@ int main(int argc, char *argv[])
     }
 
 
-    sp.makeGrid();
+    XYGrid<float>* grid = sp.makeGrid();
 
-
+    QFile f("dump.csv");
+    if (!f.open(QFile::WriteOnly)) {
+        printf("\nFAILED TO OPEN CONFIG FILE\n");
+        return false;
+    }
+    QTextStream out(&f);
+    out<<grid->toCSV();
+    qDebug()<<grid->toCSV();
+    f.close();
+    qDebug()<<"done";
 
     return a.exec();
 }

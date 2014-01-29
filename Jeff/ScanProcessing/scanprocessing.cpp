@@ -6,7 +6,8 @@
 ScanProcessing::ScanProcessing(QObject *parent) :
     QObject(parent)
 {
-    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box1-sample1-Left";
+//    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box1-sample1-Left";
+    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Build\\ScanProcessing\\Box1-sample1-Left";
 //    dir_="C:\\Users\\Jeffrey\\Documents\\GitHub\\Scanner\\Builds\\ScanProcessing\\Box2";
     QString extension_="jpeg";
     QStringList name_filters;
@@ -184,7 +185,7 @@ void ScanProcessing::processScan(){
 
 XYGrid<float> *ScanProcessing::makeGrid(){
     float GRID_SIZE = 2; /// need to save from elsewhere
-    float Tolerance = 0.2;
+    float Tolerance = 0.3;
     float max_x=0;
     float min_x=0;
     float max_y=0;
@@ -212,16 +213,38 @@ XYGrid<float> *ScanProcessing::makeGrid(){
     XYGrid<float>* grid = new XYGrid<float>(nx,ny,GRID_SIZE);
 
     for(int i=0; i<nx;i++){
+
+        // Sort through each row and find the closest row to this grid.
+//        qDebug()<<"i:"<<i;
         float x=-1;
         for(int j=0;j<xs.size();j++){
-            if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE+Tolerance) )){
+            if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE-Tolerance) )){
                 x=xs.at(j);
+                qDebug()<<"x:"<<i*GRID_SIZE <<"\tx'"<<xs.at(j);
             }
         }
 
-        if(x<0){continue;}
+        if(x<0){continue;} /// If no row continue to next row
         QVector< FAHVector3 >* row = pointCloud.value(x);
 
+        // For that row find the point closest to the Y point
+        for(int j=0; j<ny; j++){
+//            float y = j*GRID_SIZE;// target point
+
+            grid->operator ()(i,j)=0;
+
+            for(int k=0;k<row->size();k++){
+
+                float y_p = row->at(k).y-min_y; //compensate for negative min_y
+
+                if(   (y_p<(j*GRID_SIZE+Tolerance)) && (y_p>(j*GRID_SIZE-Tolerance) )){
+                    grid->operator ()(i,j)=row->at(k).z;
+                    qDebug()<<i<<","<<j<<":"<<row->at(k).z;
+                    k=row->size();
+                }
+
+            }
+        }
 
 
     }
