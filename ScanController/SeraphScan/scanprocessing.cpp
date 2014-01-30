@@ -4,33 +4,17 @@
 #include <math.h>
 #include <qalgorithms.h>
 
-ScanProcessing::ScanProcessing(QObject *parent) :
-    QObject(parent), dir_(QDir::currentPath()),extension_("")
+ScanProcessing::ScanProcessing(float x, QPixmap image, QObject *parent) :
+    QObject(parent),x_(x), image_(image)
 {
 
-
-
 }
 
-void ScanProcessing::setDir(QString dir){
 
-    dir_=dir;
 
-    extension_="JPEG";
-    QStringList name_filters;
-    name_filters<< "*"+extension_; //get from QSettings
-
-    dir_.setFilter(QDir::Files|QDir::NoDotAndDotDot);
-    dir_.setNameFilters(name_filters);
-
-    filenames_ = dir_.entryList();
-    pointCloud.clear();
-}
-
-void ScanProcessing::processScan(){
+void ScanProcessing::process(){
     cv::Mat img;
     bool metOne = false;
-    QFileInfo fileInfo;
 
     /// ////////////////////////////////////////////////////////////////
     //set-up camera parameters
@@ -59,7 +43,7 @@ void ScanProcessing::processScan(){
 
     double z;                                       //  Z
     double y;                                       //  Y
-    double x;                                    //  X
+
 
 
     // Camera matrix
@@ -106,28 +90,14 @@ void ScanProcessing::processScan(){
                  0,    0,  1,   -h,
                  0,    0,  0,   1);
 
-    /// /////////////////////////////////////////////////////////////
 
-    // Clear the Vector
-//    m_pointCloud3d->clear();
 
-    QStringList ImagesPath = filenames_;
-    // read the image
-    for(int j=0; j<ImagesPath.count(); j++){
 
         QVector< FAHVector3 >* row = new QVector< FAHVector3 >();
 
-        QString location = dir_.path()+QString("//")+ImagesPath[j];
-        qDebug()<<location;
-        img = cv::imread(location.toStdString() , CV_LOAD_IMAGE_UNCHANGED);
-        fileInfo.setFile(ImagesPath[j]);
-        if(img.data == NULL){
-            qDebug() << "ERROR : IMG";
-            return;
-        }
 
-        //        u0 = img.cols/2;
-        //        v0 = img.rows/2;
+        img = QPixmapToCvMat(image_,true);
+
 
         /// ////////////////////////////////////////////
         cv::medianBlur ( img, img, 7 );
@@ -150,10 +120,16 @@ void ScanProcessing::processScan(){
 
                         double r = sqrt(pow(x_dist,2) + pow(y_dist,2));
 
-                        double x_undist = x_dist*(1 + k1*pow(r,2) + k2*pow(r,4)+ k3*pow(r,6))/(1 + k4*pow(r,2) + k5*pow(r,4) + + k6*pow(r,6))
-                                + 2*p1*x_dist*y_dist + p2*(pow(r,2) + 2*pow(x_dist,2));
-                        double y_undist = y_dist*(1 + k1*pow(r,2) + k2*pow(r,4)+ k3*pow(r,6))/(1 + k4*pow(r,2) + k5*pow(r,4) + + k6*pow(r,6))
-                                + p1*(pow(r,2)+2*pow(y_dist,2)) + 2*p2*x_dist*y_dist;
+
+                        double x_undist = x_dist*(1 + k1*pow(r,2) + k2*pow(r,4))/(1);
+
+//                        double x_undist = x_dist*(1 + k1*pow(r,2) + k2*pow(r,4)+ k3*pow(r,6))/(1 + k4*pow(r,2) + k5*pow(r,4) + + k6*pow(r,6))
+//                                + 2*p1*x_dist*y_dist + p2*(pow(r,2) + 2*pow(x_dist,2));
+
+                        double y_undist = y_dist*(1 + k1*pow(r,2) + k2*pow(r,4))/(1);
+
+//                        double y_undist = y_dist*(1 + k1*pow(r,2) + k2*pow(r,4)+ k3*pow(r,6))/(1 + k4*pow(r,2) + k5*pow(r,4) + + k6*pow(r,6))
+//                                + p1*(pow(r,2)+2*pow(y_dist,2)) + 2*p2*x_dist*y_dist;
 
                         double u_undist = fu*x_undist + u0;
                         double v_undist = fv*y_undist + v0;
@@ -162,126 +138,67 @@ void ScanProcessing::processScan(){
                         z = h-((fv*h-(v0-v_undist)*b)/(fv*b+h*(v0-v_undist)))*b ;
                         y = (u_undist-u0)*sqrt(h*h+b*b)/fu;
 
-                        QString first = ImagesPath[j].replace("."+extension_,"");
-//                        qDebug()<<first;
-                        x = first.toFloat();//fileInfo.baseName().toDouble();
 
                         FAHVector3 v;
-                        v.x=x;
+                        v.x=x_;
                         v.y=y;
                         v.z=z;
                         row->push_back(v);
-//                        m_pointCloud3d->push_back(pcl::PointXYZ(x,y,z));
+
                         metOne = true;
                     }
                 }
             }
             metOne = false;
         }
-        pointCloud[row->at(0).x]=row;
-    }
-
-    // visualize the point cloud
-//    m_pv->addPointCloud(m_pointCloud3d);
+        emit processed(x_,row);
+        emit finished();
 }
 
 
-//QDebug operator<<(QDebug dbg,FAHVector3 v ){
-//    dbg.nospace()<<"(" <<v.x<<","<<v.y <<","<<v.z <<")";
-//    return dbg.space();
-//}
 
-XYGrid<float> *ScanProcessing::makeGrid(){
-    float GRID_SIZE = 2; /// need to save from elsewhere
-    float Tolerance = 0.3;
-    float max_x=0;
-    float min_x=0;
-    float max_y=0;
-    float min_y=0;
-    float min_z=0;
+cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData = true ){
+      switch ( inImage.format() )
+      {
+         // 8-bit, 4 channel
+         case QImage::Format_RGB32:
+         {
+            cv::Mat  mat( inImage.height(), inImage.width(), CV_8UC4, const_cast<uchar*>(inImage.bits()), inImage.bytesPerLine() );
 
-    QList<float> xs= pointCloud.keys();
-    for (int i=0;i<xs.size();i++){
-        if (xs[i]<min_x){min_x = xs[i];}
-        if (xs[i]>max_x){max_x = xs[i];}
+            return (inCloneImageData ? mat.clone() : mat);
+         }
 
-        QVector< FAHVector3 >* row = pointCloud.value(xs[i]);
-        for(int j=0;j<row->size();j++){
-            if(max_y<row->at(j).y){max_y=row->at(j).y;}
-            if(min_y>row->at(j).y){min_y=row->at(j).y;}
-            if(min_z>row->at(j).z){min_z=row->at(j).z;}
-        }
-    }
+         // 8-bit, 3 channel
+         case QImage::Format_RGB888:
+         {
+            if ( !inCloneImageData )
+               qWarning() << "ASM::QImageToCvMat() - Conversion requires cloning since we use a temporary QImage";
 
-    int nx = ceil((max_x-min_x)/GRID_SIZE);
-    int ny = ceil((max_y-min_y)/GRID_SIZE);
+            QImage   swapped = inImage.rgbSwapped();
 
-    qDebug()<<"NX: "<<nx<<" NY: "<<ny;
-    qDebug()<<"minX: "<<min_x<<" minY: "<<min_y;
-    qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
-    qDebug()<<"minZ: "<<min_z;
+            return cv::Mat( swapped.height(), swapped.width(), CV_8UC3, const_cast<uchar*>(swapped.bits()), swapped.bytesPerLine() ).clone();
+         }
 
-    XYGrid<float>* grid = new XYGrid<float>(nx,ny,GRID_SIZE);
+         // 8-bit, 1 channel
+         case QImage::Format_Indexed8:
+         {
+            cv::Mat  mat( inImage.height(), inImage.width(), CV_8UC1, const_cast<uchar*>(inImage.bits()), inImage.bytesPerLine() );
 
-    for(int i=0; i<nx;i++){
+            return (inCloneImageData ? mat.clone() : mat);
+         }
 
-        // Sort through each row and find the closest row to this grid.
-//        qDebug()<<"i:"<<i;
-        float x=-1;
-        for(int j=0;j<xs.size();j++){
-            if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE-Tolerance) )){
-                x=xs.at(j);
-//                qDebug()<<"x:"<<i*GRID_SIZE <<"\tx'"<<xs.at(j);
-            }
-        }
+         default:
+            qDebug() << "ASM::QImageToCvMat() - QImage format not handled in switch:" << inImage.format();
+            break;
+      }
 
-        if(x<0){continue;} /// If no row continue to next row
-        QVector< FAHVector3 >* row = pointCloud.value(x);
+      return cv::Mat();
+   }
 
-        // For that row find the point closest to the Y point
-        for(int j=0; j<ny; j++){
-//            float y = j*GRID_SIZE;// target point
+   // If inPixmap exists for the lifetime of the resulting cv::Mat, pass false to inCloneImageData to share inPixmap's data
+   // with the cv::Mat directly
+   //    NOTE: Format_RGB888 is an exception since we need to use a local QImage and thus must clone the data regardless
+cv::Mat QPixmapToCvMat( const QPixmap &inPixmap, bool inCloneImageData = true ){
+      return QImageToCvMat( inPixmap.toImage(), inCloneImageData );
+   }
 
-            grid->operator ()(i,j)=0;
-
-            for(int k=0;k<row->size();k++){
-
-                float y_p = row->at(k).y-min_y; //compensate for negative min_y
-
-                if(   (y_p<(j*GRID_SIZE+Tolerance)) && (y_p>(j*GRID_SIZE-Tolerance) )){
-                    grid->operator ()(i,j)=row->at(k).z-min_z;
-//                    qDebug()<<i<<","<<j<<":"<<row->at(k).z-min_z;
-                    k=row->size();
-                }
-
-            }
-        }
-
-
-    }
-
-    return grid;
-}
-
-
-QString ScanProcessing::cloudCSV(){
-    QString csv = "";
-    QTextStream stream(&csv);
-
-    QList<float> xs= pointCloud.keys();
-    qSort(xs);
-    for(int i=0;i<xs.size();i++){
-        stream<<xs.at(i)<<"\n";
-        QVector< FAHVector3 >* row = pointCloud.value(xs.at(i));
-        for(int j=0;j<row->size();j++){
-            stream<<row->at(j).y<<",";
-        }
-        stream<<"\n";
-        for(int j=0;j<row->size();j++){
-            stream<<row->at(j).z<<",";
-        }
-        stream<<"\n\n";
-
-    }
-    return csv;
-}

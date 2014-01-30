@@ -26,6 +26,7 @@ void ScanController::loadVM(VirtualPrinter* vm)
 
 void ScanController::loadScanData(ScanData* sd){
     SD_=sd;
+    connect(this,SIGNAL(image(float,QPixmap)),SD_,SLOT(addImage(float,QPixmap)));
 }
 
 
@@ -166,7 +167,8 @@ void ScanController::ScanStep()
         cv::Mat dest;
         cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
         QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888));
-        SD_->addImage(position_,m);
+        emit image(position_,m);
+//        SD_->addImage(position_,m);
 
         emit update(position_);
         emit updateStatus(QString("Position is now ")+QString::number(position_));

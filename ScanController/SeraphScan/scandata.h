@@ -19,6 +19,7 @@ class ScanData : public QObject
     Q_OBJECT
 public:
     explicit ScanData(QObject *parent = 0);
+    ~ScanData();
     QList<float> getXRange();
 
 signals:
@@ -26,6 +27,7 @@ signals:
 public slots:
     void addImage(float x, QPixmap pxmap);
     XYGrid<float>* makeGrid();
+    void processedImage(float x, QVector < FAHVector3 >* row);
 
 public:
     QMap<float, QVector < FAHVector3 >* > pointCloud;
@@ -36,8 +38,7 @@ public:
 
 
 
-cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData);
-cv::Mat QPixmapToCvMat( const QPixmap &inPixmap, bool inCloneImageData);
+
 
 
 #endif // SCANDATA_H

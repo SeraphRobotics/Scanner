@@ -38,6 +38,7 @@ signals:
     void scanRunning(bool s);
     void scanComplete();
     void error(QString s);
+    void image(float x, QPixmap px);
 
 
 

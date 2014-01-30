@@ -9,35 +9,33 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "shared/fabathome-constants.h"
-#include <QMap>
-#include <QVector>
-#include "xygrid.h"
+//#include <QMap>
+//#include "xygrid.h"
+#include <QPixmap>
 
 
 class ScanProcessing : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScanProcessing(QObject *parent = 0);
+    explicit ScanProcessing(float x, QPixmap image, QObject *parent = 0);
 
 signals:
+    void processed(float x, QVector < FAHVector3 >* );
+    void finished();
 
 public slots:
-    void setDir(QString dir);
-    void processScan();
-    XYGrid<float>* makeGrid();
-    QString cloudCSV();
+    void process();
 
-public:
-    QMap<float, QVector < FAHVector3 >* > pointCloud;
 
-//private:
-    QStringList filenames_;
-    QString extension_;
-    QDir dir_;
+private:
+    QPixmap image_;
+    float x_;
+
 };
 
 
-
+cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData);
+cv::Mat QPixmapToCvMat( const QPixmap &inPixmap, bool inCloneImageData);
 
 #endif // SCANPROCESSING_H
