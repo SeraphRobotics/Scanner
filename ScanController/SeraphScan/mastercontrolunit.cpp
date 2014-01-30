@@ -214,8 +214,8 @@ void MasterControlUnit::scanState(bool b){
       if(!l.isEmpty()){
         qSort(l.begin(),l.end());
         float lastx = l.last();
-        QPixmap img = SD_->getImageFromX(lastx);
-        emit image(img);
+//        QPixmap img = SD_->getImageFromX(lastx);
+//        emit image(img);
       }
     }
 }

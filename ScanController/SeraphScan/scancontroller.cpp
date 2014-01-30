@@ -134,7 +134,7 @@ void ScanController::StopScan()
     QVector<double> p=vm_->currentPosition();
     vm_->move(-p[0],-p[1],-p[2],speed);
     emit updateStatus("Writing to disk");
-    SD_->writeToDisk();
+//    SD_->writeToDisk();
     emit updateStatus("Writing complete");
     vm_->waitMove();
     emit scanRunning(false);
@@ -156,7 +156,7 @@ void ScanController::ScanStep()
 
     qDebug()<<"position: "<<position_<<"error: "<<p_error<<"\ttarget:"<<targetposition_;
 
-    if(fabs(p_error)<tolerance){
+    if(fabs(p_error)<tolerance || (position_>targetposition_)){
         targetposition_+=stepsize_;
         ///CAPTURE DATA////
         capwebcam.read(matOriginal);

@@ -20,19 +20,32 @@ SOURCES += \
     mainwindow.cpp \
     scancontroller.cpp \
     mastercontrolunit.cpp \
-    scandata.cpp
+    scandata.cpp\
+	scanprocessing.cpp\
+    xygrid.cpp
 
 
 HEADERS += \
     mainwindow.h \
     scancontroller.h \
     mastercontrolunit.h \
-    scandata.h
+    scandata.h\
+	scanprocessing.h\
+    xygrid.h
 
 
 FORMS += \
     mainwindow.ui
 
+	
+INCLUDEPATH += ../
+
+include(common.pro)
+include(shared.pro)
+INCLUDEPATH += ../shared/math\
+               ../shared/ \
+               ../shared/utils
+	
 
 INCLUDEPATH += FabConLib
 include(FabConLib/FabConLib/include.pro)
