@@ -26,6 +26,7 @@ public slots:
     void setDir(QString dir);
     void processScan();
     XYGrid<float>* makeGrid();
+    QString cloudCSV();
 
 public:
     QMap<float, QVector < FAHVector3 >* > pointCloud;
@@ -35,5 +36,8 @@ public:
     QString extension_;
     QDir dir_;
 };
+
+
+
 
 #endif // SCANPROCESSING_H

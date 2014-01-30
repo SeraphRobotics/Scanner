@@ -13,13 +13,13 @@ int main(int argc, char *argv[])
 
     QStringList strings;
     strings.append("Box1-sample1-Left");
-//    strings.append("Box1-sample2-Left");
-//    strings.append("Box1-sample3-Left");
-//    strings.append("Box1-sample4-Left");
-//    strings.append("Box1-sample1-Right");
-//    strings.append("Box1-sample2-Right");
-//    strings.append("Box1-sample3-Right");
-//    strings.append("Box1-sample4-Right");
+    strings.append("Box1-sample2-Left");
+    strings.append("Box1-sample3-Left");
+    strings.append("Box1-sample4-Left");
+    strings.append("Box1-sample1-Right");
+    strings.append("Box1-sample2-Right");
+    strings.append("Box1-sample3-Right");
+    strings.append("Box1-sample4-Right");
 
 
     for(int k=0; k<strings.size();k++){
@@ -34,8 +34,10 @@ int main(int argc, char *argv[])
         }
         QTextStream out(&f);
 //        grid->rotate90();
-        out<<grid->toCSV();
+        out<< grid->toCSV();
     //    qDebug()<<grid->toCSV();
+//        out<<sp.cloudCSV();
+//        qDebug()<<sp.cloudCSV();
         f.close();
         qDebug()<<"Made: "<<strings.at(k);
     }

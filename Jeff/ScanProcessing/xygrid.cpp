@@ -252,7 +252,7 @@ void XYGrid<T>::rotate90(){
     for(int i=0;i<nx_;i++){
         for(int j=0; j<ny_;j++){
             float val = data_[(ny_*i+(ny_-j))];
-            if(val<-30){
+            if( (val<-30) || (val>200) ){
                 val=0;
             }
             data[(nx_*j)+i] = val;

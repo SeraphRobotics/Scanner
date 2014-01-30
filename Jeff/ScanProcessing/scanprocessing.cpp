@@ -2,6 +2,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <math.h>
+#include <qalgorithms.h>
 
 ScanProcessing::ScanProcessing(QObject *parent) :
     QObject(parent), dir_(QDir::currentPath()),extension_("")
@@ -23,6 +24,7 @@ void ScanProcessing::setDir(QString dir){
     dir_.setNameFilters(name_filters);
 
     filenames_ = dir_.entryList();
+    pointCloud.clear();
 }
 
 void ScanProcessing::processScan(){
@@ -259,4 +261,27 @@ XYGrid<float> *ScanProcessing::makeGrid(){
     }
 
     return grid;
+}
+
+
+QString ScanProcessing::cloudCSV(){
+    QString csv = "";
+    QTextStream stream(&csv);
+
+    QList<float> xs= pointCloud.keys();
+    qSort(xs);
+    for(int i=0;i<xs.size();i++){
+        stream<<xs.at(i)<<"\n";
+        QVector< FAHVector3 >* row = pointCloud.value(xs.at(i));
+        for(int j=0;j<row->size();j++){
+            stream<<row->at(j).y<<",";
+        }
+        stream<<"\n";
+        for(int j=0;j<row->size();j++){
+            stream<<row->at(j).z<<",";
+        }
+        stream<<"\n\n";
+
+    }
+    return csv;
 }
