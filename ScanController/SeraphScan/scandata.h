@@ -31,7 +31,7 @@ public slots:
 
 public:
     QMap<float, QVector < FAHVector3 >* > pointCloud;
-
+    QString id_;
 
 
 };

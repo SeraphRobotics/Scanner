@@ -210,13 +210,13 @@ void MasterControlUnit::scanState(bool b){
 
     //When Done scanning, post the last image to the Main Window.
     if(!b){
-      QList<float> l = SD_->getXRange();
-      if(!l.isEmpty()){
-        qSort(l.begin(),l.end());
-        float lastx = l.last();
-//        QPixmap img = SD_->getImageFromX(lastx);
-//        emit image(img);
-      }
+        QFile f(SD_->id_+QString(".csv"));
+        if (!f.open(QFile::WriteOnly)) {
+            return;
+        }
+        QTextStream out(&f);
+        out<<SD_->makeGrid()->toCSV();
+        f.close();
     }
 }
 

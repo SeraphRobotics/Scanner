@@ -2,11 +2,12 @@
 #include <QSettings>
 #include "scanprocessing.h"
 #include <QThread>
+#include <QUuid>
 
 ScanData::ScanData(QObject *parent) :
     QObject(parent)
 {
-
+    id_=QUuid::createUuid().toString();
 }
 
 ScanData::~ScanData(){
