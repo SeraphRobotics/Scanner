@@ -18,12 +18,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     glscanobject.cpp \
     vtkwidget.cpp \
-	xygrid.cpp
+	xygrid.cpp \
+	scannerfunctions.cpp
 
 HEADERS  += mainwindow.h \
     glscanobject.h \
     vtkwidget.h \
-	xygrid.h
+	xygrid.h \
+	scannerfunctions.h
 
 FORMS    += mainwindow.ui
 include(common.pro)
