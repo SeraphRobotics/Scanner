@@ -3,8 +3,11 @@
 # Project created by QtCreator 2013-11-28T13:25:27
 #
 #-------------------------------------------------
-
-QT       += core gui
+QT += \
+    core \
+    gui \
+    xml\
+    script
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,13 +17,20 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     glscanobject.cpp \
-    vtkwidget.cpp
+    vtkwidget.cpp \
+	xygrid.cpp
 
 HEADERS  += mainwindow.h \
     glscanobject.h \
-    vtkwidget.h
+    vtkwidget.h \
+	xygrid.h
 
 FORMS    += mainwindow.ui
+include(common.pro)
+include(shared.pro)
+INCLUDEPATH += shared/math\
+               shared/ \
+               shared/utils
 
 
 
