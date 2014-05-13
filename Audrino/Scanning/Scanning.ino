@@ -78,8 +78,10 @@ void scanFoward(){
 	
 
         laserOn();
+        ledOff();
 	rotate(DIR_PIN,STEP_PIN,distanceInSteps);
         laserOff();
+        ledOn();
 }
 
 void findHome(){
@@ -105,6 +107,10 @@ void laserOff(){
 
 void ledOn(){
   digitalWrite(BUTTON_LED_PIN, HIGH);
+}
+
+void ledOff(){
+  digitalWrite(BUTTON_LED_PIN, LOW);
 }
 
 
