@@ -48,18 +48,24 @@ void setup() {
 
 void loop(){ 
   findHome();
-  ledOn();
   if(Serial.available()){
     char input = (char)Serial.read();
-    if(input == 'w'){
-      rotate(DIR_PIN,STEP_PIN,64);
+    if(input == 's'){
+      scanFoward();
     }
-    if(input == 'a'){
-      rotate(-DIR_PIN,STEP_PIN,64);    
+    if(input == 'h'){
+      findHome();    
+    }
+    if(input == 'o'){
+      ledOn();
     }
     if(input == 'e'){
       error();    
     } 
+  }
+  
+  if(digitalRead(SCANBUTTON_PIN)==HIGH){
+    Serial.write("B")//Button pressed
   }
 }
 
