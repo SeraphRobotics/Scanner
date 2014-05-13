@@ -20,15 +20,21 @@
 #define DIR_PIN 4
 #define STEP_PIN 5
 
+#define HOME_PIN 6
+#define END_PIN 7
+
 
 void setup() { 
   Serial.begin (9600); //com port communication
   pinMode(DIR_PIN, OUTPUT); 
   pinMode(STEP_PIN, OUTPUT); 
+  pinMode(HOME_PIN,INPUT);
+  pinMode(END_PIN,INPUT); 
 } 
 
 
 void loop(){ 
+  findHome();
   if(Serial.available()){
     char input = (char)Serial.read();
     if(input == 'w'){
@@ -36,6 +42,7 @@ void loop(){
     }
     if(input == 'a'){
       rotate(-DIR_PIN,STEP_PIN,64);
+    
   } 
 }
 
@@ -54,6 +61,15 @@ void scanFoward(){
 	
 	rotate(DIR_PIN,STEP_PIN,distanceInSteps);
 }
+
+void findHome(){
+  bool stop = false;
+  float steps = 10;
+  while(digitalRead(HOME_PIN) == HIGH && !stop){
+    rotate(DIR_PIN,STEP_PIN,steps)
+  }
+}
+  
 
 
 
