@@ -48,6 +48,7 @@ void setup() {
 
 void loop(){ 
   findHome();
+  ledOn();
   if(Serial.available()){
     char input = (char)Serial.read();
     if(input == 'w'){
@@ -75,7 +76,10 @@ void scanFoward(){
 	float stepsPRev = 200;
 	float distInSteps = stepPRev*distInRev;
 	
+
+        laserOn();
 	rotate(DIR_PIN,STEP_PIN,distanceInSteps);
+        laserOff();
 }
 
 void findHome(){
@@ -86,6 +90,22 @@ void findHome(){
   }
 }
   
+
+//// Laser
+void laserOn(){
+  digitalWrite(LASER_PIN,HIGH);
+}
+
+void laserOff(){
+  digitalWrite(LASER_PIN,LOW);
+}
+
+
+//// LED CONTROLLS
+
+void ledOn(){
+  digitalWrite(BUTTON_LED_PIN, HIGH);
+}
 
 
 void error(){
@@ -108,6 +128,7 @@ void error(){
 
 
 
+/////STEPPER CONTROLLER
 
 void rotate(int const dir_p, int const stp_p, int steps){ 
   //rotate a specific number of microsteps (8 microsteps per step) - (negitive for reverse movement)
