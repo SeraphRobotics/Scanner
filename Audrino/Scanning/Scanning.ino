@@ -23,13 +23,26 @@
 #define HOME_PIN 6
 #define END_PIN 7
 
+#define LASER_PIN 8
+
+#define SCANBUTTON_PIN 9
+
+#define BUTTON_LED_PIN 10
+
 
 void setup() { 
   Serial.begin (9600); //com port communication
   pinMode(DIR_PIN, OUTPUT); 
-  pinMode(STEP_PIN, OUTPUT); 
+  pinMode(STEP_PIN, OUTPUT);
+  
   pinMode(HOME_PIN,INPUT);
   pinMode(END_PIN,INPUT); 
+  
+  pinMode(LASERPIN,OUTPUT);
+  
+  pinMode(SCANBUTTON_PIN,INPUT);
+  
+  pinMode(BUTTON_LED_PIN,OUTPUT);
 } 
 
 
