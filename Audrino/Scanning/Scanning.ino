@@ -54,9 +54,12 @@ void loop(){
       rotate(DIR_PIN,STEP_PIN,64);
     }
     if(input == 'a'){
-      rotate(-DIR_PIN,STEP_PIN,64);
-    
-  } 
+      rotate(-DIR_PIN,STEP_PIN,64);    
+    }
+    if(input == 'e'){
+      error();    
+    } 
+  }
 }
 
 
@@ -83,6 +86,25 @@ void findHome(){
   }
 }
   
+
+
+void error(){
+  int brightness = 0;    // how bright the LED is
+  int fadeAmount = 5;
+  int led =  BUTTON_LED_PIN;
+  
+  while(true){// THIS CLAUSES THE LED TO SLOWLY BLINK FOREVER
+    analogWrite(led, brightness);    
+    // change the brightness for next time through the loop:
+    brightness = brightness + fadeAmount;
+    // reverse the direction of the fading at the ends of the fade: 
+    if (brightness == 0 || brightness == 255) {
+      fadeAmount = -fadeAmount ; 
+    }     
+    // wait for 30 milliseconds to see the dimming effect    
+    delay(30);   
+  }
+}
 
 
 
