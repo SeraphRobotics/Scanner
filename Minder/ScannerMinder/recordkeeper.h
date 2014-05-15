@@ -14,14 +14,9 @@ class recordkeeper : public QObject
 public:
     explicit recordkeeper(QObject *parent = 0);
 
-    QDomDocument getAndClearRecords();
-
-public slots:
-    void scanStarted();
-
 private slots:
     void updateTime();
-    void appendTime(kTimeType type,int timeInMSSinceEpoch);
+    void appendTime(kTimeType type,qint64 timeInMSSinceEpoch);
 
 private:
     QDomDocument xmlrecord_;
