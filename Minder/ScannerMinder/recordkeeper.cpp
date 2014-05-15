@@ -20,6 +20,10 @@ recordkeeper::recordkeeper(QObject *parent) :
     timer_->start();
     xmlrecord_ = QDomDocument("times");
 
+    if(!settings.contains("time/file")){
+            settings.setValue("time/file","records.xml");
+    }
+
     appendTime(kOff,settings.value("time/currentTime",QDateTime::currentMSecsSinceEpoch()).toLongLong());
     appendTime(kOn, QDateTime::currentMSecsSinceEpoch());
     qDebug()<<"Time "<<QDateTime::currentMSecsSinceEpoch();
