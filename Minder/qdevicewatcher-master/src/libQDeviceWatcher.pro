@@ -12,11 +12,12 @@ win32 {
 }
 macx {
     LIBS += -framework DiskArbitration -framework Foundation
+    SOURCES += qdevicewatcher_mac.cpp
 }
 
 SOURCES += qdevicewatcher.cpp \
-	qdevicechangeevent.cpp \
-    qdevicewatcher_mac.cpp
+        qdevicechangeevent.cpp
+
 
 HEADERS += \
 	qdevicewatcher_p.h \
