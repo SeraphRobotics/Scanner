@@ -15,9 +15,14 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+include(../qdevicewatcher-master/src/libQDeviceWatcher.pri)
+
+win32:!wince*:LIBS += -lUser32
 
 SOURCES += main.cpp \
-    recordkeeper.cpp
+    recordkeeper.cpp \
+    usbminder.cpp
 
 HEADERS += \
-    recordkeeper.h
+    recordkeeper.h \
+    usbminder.h

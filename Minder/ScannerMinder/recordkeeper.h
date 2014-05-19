@@ -17,6 +17,7 @@ public:
 private slots:
     void updateTime();
     void appendTime(kTimeType type,qint64 timeInMSSinceEpoch);
+    void USBAdded(QString addr);
 
 private:
     QDomDocument xmlrecord_;

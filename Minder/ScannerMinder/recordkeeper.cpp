@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include <QStringList>
+#include <QDir>
 
 recordkeeper::recordkeeper(QObject *parent) :
     QObject(parent)
@@ -83,9 +85,40 @@ void recordkeeper::appendTime(kTimeType type, qint64 timeInMSSinceEpoch){
 
 void recordkeeper::updateTime(){
     QSettings settings;
-    qDebug()<<"called";
+    qDebug()<<"time updated";
     settings.setValue("time/currentTime",QDateTime::currentMSecsSinceEpoch());
 }
+
+void recordkeeper::USBAdded(QString addr){
+    QSettings settings;
+
+    QString path = settings.value("time/file","records.xml").toString();
+
+    QFile* command = new QFile(path);
+
+    if(command->open(QIODevice::ReadWrite)){
+
+        QString str = command->fileName();
+        QStringList parts = str.split("/");
+        QString simpleName = parts.at(parts.size()-1);
+
+        QString newPath = addr+ QDir::separator() + simpleName;
+
+        qDebug() << newPath;
+        if(!command->copy(newPath)){
+            qDebug()<<"Error copying the code.";
+        }else{
+            command->remove();
+        }
+
+    }
+    else{
+        qDebug()<<"Error opening the file.";
+    }
+
+
+}
+
 
 /**
 <times>

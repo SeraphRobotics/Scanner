@@ -2,6 +2,7 @@ TEMPLATE = lib
 QT -= gui
 CONFIG *= qdevicewatcher-buildlib
 
+
 !include(libQDeviceWatcher.pri): error(could not find ibQDeviceWatcher.pri)
 
 #src
@@ -24,5 +25,4 @@ HEADERS += \
 	qdevicewatcher.h \
 	qdevicechangeevent.h \
 	qdevicewatcher_global.h
-
 
