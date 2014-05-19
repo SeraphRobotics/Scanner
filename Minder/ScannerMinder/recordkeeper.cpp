@@ -105,10 +105,45 @@ void recordkeeper::USBAdded(QString addr){
         QString newPath = addr+ QDir::separator() + simpleName;
 
         qDebug() << newPath;
-        if(!command->copy(newPath)){
-            qDebug()<<"Error copying the code.";
-        }else{
-            command->remove();
+        bool write_bool = true;
+
+        if(QFile::exists(newPath)){
+            write_bool = false;
+            //there are records on the USB already
+            xmlrecord_.setContent(command);
+            QDomDocument usbRecord;
+            QFile* usbRecordFile = new QFile(newPath);
+            if(!usbRecordFile->open(QIODevice::ReadOnly)){
+                write_bool = true;
+            }else{
+                usbRecord.setContent(usbRecordFile);
+                usbRecordFile->close();
+                usbRecordFile->open(QIODevice::WriteOnly);
+
+                QDomElement root = usbRecord.documentElement();
+                QDomElement element = xmlrecord_.documentElement();
+                int i=0;
+                for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
+                {
+                    i++;
+                    qDebug()<<"Node: "<<i;
+                    root.appendChild(n.cloneNode(true));
+                }
+
+                QTextStream ss(usbRecordFile);
+                ss<<usbRecord.toString();
+                usbRecordFile->close();
+                command->remove();
+            }
+
+        }
+
+        if(true==write_bool){
+            if(!command->copy(newPath)){
+                qDebug()<<"Error copying the code.";
+            }else{
+                command->remove();
+            }
         }
 
     }
