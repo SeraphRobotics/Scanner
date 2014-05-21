@@ -17,17 +17,17 @@
 /////////////////////////////////////////////////////////////////
 
 
-#define DIR_PIN 4
-#define STEP_PIN 5
+#define DIR_PIN 5
+#define STEP_PIN 3
 
-#define HOME_PIN 6
-#define END_PIN 7
+#define HOME_PIN 7
+#define END_PIN 8
 
-#define LASER_PIN 8
+#define LASER_PIN 9
 
-#define SCANBUTTON_PIN 9
+#define SCANBUTTON_PIN 10
 
-#define BUTTON_LED_PIN 10
+#define BUTTON_LED_PIN 11
 
 
 void setup() { 
@@ -38,7 +38,7 @@ void setup() {
   pinMode(HOME_PIN,INPUT);
   pinMode(END_PIN,INPUT); 
   
-  pinMode(LASERPIN,OUTPUT);
+  pinMode(LASER_PIN,OUTPUT);
   
   pinMode(SCANBUTTON_PIN,INPUT);
   
@@ -47,7 +47,7 @@ void setup() {
 
 
 void loop(){ 
-  findHome();
+  //findHome();
   if(Serial.available()){
     char input = (char)Serial.read();
     if(input == 's'){
@@ -65,7 +65,7 @@ void loop(){
   }
   
   if(digitalRead(SCANBUTTON_PIN)==HIGH){
-    Serial.write("B")//Button pressed
+    Serial.write("B");//Button pressed
   }
 }
 
@@ -76,16 +76,16 @@ void scanFoward(){
 	float mmPs = rate*60;
 	float revPmm = 1;
 	float revPs = revPmm*mmPs;
-	float distance = 200;/mm
+	float distance = 200;//mm
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
 	float stepsPRev = 200;
-	float distInSteps = stepPRev*distInRev;
+	float distInSteps = stepsPRev*distInRev;
 	
 
-        laserOn();
+        laserOn(); 
         ledOff();
-	rotate(DIR_PIN,STEP_PIN,distanceInSteps);
+	rotate(DIR_PIN,STEP_PIN,distInSteps);
         laserOff();
         ledOn();
 }
@@ -94,7 +94,7 @@ void findHome(){
   bool stop = false;
   float steps = 10;
   while(digitalRead(HOME_PIN) == HIGH && !stop){
-    rotate(DIR_PIN,STEP_PIN,steps)
+    rotate(DIR_PIN,STEP_PIN,steps);
   }
 }
   
@@ -122,7 +122,7 @@ void ledOff(){
 
 void error(){
   int brightness = 0;    // how bright the LED is
-  int fadeAmount = 5;
+  int fadeAmount = 5*3;
   int led =  BUTTON_LED_PIN;
   
   while(true){// THIS CLAUSES THE LED TO SLOWLY BLINK FOREVER
