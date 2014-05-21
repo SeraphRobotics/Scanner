@@ -29,6 +29,7 @@
 
 #define BUTTON_LED_PIN 11
 
+bool PRESSED = false;
 
 void setup() { 
   Serial.begin (9600); //com port communication
@@ -52,20 +53,24 @@ void loop(){
     char input = (char)Serial.read();
     if(input == 's'){
       scanFoward();
+      PRESSED=false;
     }
     if(input == 'h'){
-      findHome();    
+      findHome();
+      PRESSED=false;    
     }
     if(input == 'o'){
       ledOn();
+      PRESSED=false;
     }
     if(input == 'e'){
       error();    
     } 
   }
   
-  if(digitalRead(SCANBUTTON_PIN)==HIGH){
+  if( !PRESSED && digitalRead(SCANBUTTON_PIN)==HIGH){
     Serial.write("B");//Button pressed
+    PRESSED=true;
   }
 }
 
