@@ -19,7 +19,7 @@
 
 #define DIR_PIN 5
 #define STEP_PIN 3
-#define ENABLE_PIN 12
+#define ENABLE_PIN 4
 
 #define HOME_PIN 7
 #define END_PIN 8
@@ -170,11 +170,11 @@ void ledOff(){
 
 void fast_Blink(){
   int brightness = 0;    // how bright the LED is
-  int fadeAmount = 5*5;
+  int fadeAmount = 5*2;
   int led =  BUTTON_LED_PIN;
   
   int n=0;
-  while(n<4){// THIS CLAUSES THE LED TO SLOWLY BLINK FOREVER
+  while(n<25){// THIS CLAUSES THE LED TO SLOWLY BLINK FOREVER
     analogWrite(led, brightness);    
     // change the brightness for next time through the loop:
     brightness = brightness + fadeAmount;
@@ -185,9 +185,9 @@ void fast_Blink(){
     }     
     // wait for 30 milliseconds to see the dimming effect    
     delay(30);
-    n=n+1;    
+    n=n+1;   
   }
-  ledOff();
+  
 }
 
 void error(){
