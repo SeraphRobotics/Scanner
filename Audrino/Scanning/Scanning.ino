@@ -19,6 +19,7 @@
 
 #define DIR_PIN 5
 #define STEP_PIN 3
+#define ENABLE_PIN 12
 
 #define HOME_PIN 7
 #define END_PIN 8
@@ -44,11 +45,14 @@ void setup() {
   pinMode(SCANBUTTON_PIN,INPUT);
   
   pinMode(BUTTON_LED_PIN,OUTPUT);
+  pinMode(ENABLE_PIN,OUTPUT);
+  
+  digitalWrite(ENABLE_PIN, HIGH);// oin is !ENabl
+  fast_Blink();
 } 
 
 
 void loop(){ 
-  //findHome();
   if(Serial.available()){
     char input = (char)Serial.read();
     if(input == 's'){
@@ -56,11 +60,17 @@ void loop(){
       PRESSED=false;
     }
     if(input == 'h'){
+      ledOff();
       findHome();
+      ledOn();
       PRESSED=false;    
     }
     if(input == 'o'){
       ledOn();
+      PRESSED=false;
+    }
+    if(input == 'f'){
+      ledOff();
       PRESSED=false;
     }
     if(input == 'e'){
@@ -72,6 +82,15 @@ void loop(){
     Serial.write("B");//Button pressed
     PRESSED=true;
   }
+  if(digitalRead(HOME_PIN)==HIGH){
+    //Serial.write("H");//Button pressed
+  }
+  if(digitalRead(END_PIN)==HIGH){
+    //Serial.write("E");//Button pressed
+  }
+  
+  
+  
 }
 
 
@@ -88,11 +107,34 @@ void scanFoward(){
 	float distInSteps = stepsPRev*distInRev;
 	
 
+        bool end_hit = false;
+        float steps = 0;
+        float step_increment=100;
+
         laserOn(); 
         ledOff();
-	rotate(DIR_PIN,STEP_PIN,distInSteps);
+        digitalWrite(DIR_PIN,HIGH);
+        
+        
+        
+        digitalWrite(ENABLE_PIN, LOW);
+        //while(!end_hit && (steps<distInSteps) ){
+        //  steps= steps+step_increment;
+        //  rotate(DIR_PIN,STEP_PIN,step_increment);
+        //  if(digitalRead(END_PIN)==HIGH){
+        //    end_hit=true;
+        //    laserOff();
+        // } 
+        //}
+        rotateDeg(360,0.5);
+        
+        rotateDeg(-360,0.5);
+        digitalWrite(ENABLE_PIN, HIGH);
         laserOff();
         ledOn();
+        if (end_hit){
+          error();
+        }
 }
 
 void findHome(){
@@ -124,6 +166,28 @@ void ledOff(){
   digitalWrite(BUTTON_LED_PIN, LOW);
 }
 
+
+void fast_Blink(){
+  int brightness = 0;    // how bright the LED is
+  int fadeAmount = 5*5;
+  int led =  BUTTON_LED_PIN;
+  
+  int n=0;
+  while(n<4){// THIS CLAUSES THE LED TO SLOWLY BLINK FOREVER
+    analogWrite(led, brightness);    
+    // change the brightness for next time through the loop:
+    brightness = brightness + fadeAmount;
+    // reverse the direction of the fading at the ends of the fade: 
+    if (brightness == 0 || brightness == 255) {
+      fadeAmount = -fadeAmount ; 
+      
+    }     
+    // wait for 30 milliseconds to see the dimming effect    
+    delay(30);
+    n=n+1;    
+  }
+  ledOff();
+}
 
 void error(){
   int brightness = 0;    // how bright the LED is
