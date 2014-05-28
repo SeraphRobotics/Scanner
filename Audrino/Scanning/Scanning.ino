@@ -98,18 +98,19 @@ void loop(){
 void scanFoward(){
 	float rate = 1; // mm/min
 	float mmPs = rate*60;
-	float revPmm = 1;
+	float revPmm = .01;
 	float revPs = revPmm*mmPs;
 	float distance = 200;//mm
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
-	float stepsPRev = 200;
-	float distInSteps = stepsPRev*distInRev;
+
+	float distInDeg = distInRev*360.0; 
 	
 
         bool end_hit = false;
-        float steps = 0;
-        float step_increment=100;
+        float deg = 0;
+        float deg_increment=15;
+        float rot_speed = 0.5;
 
         laserOn(); 
         ledOff();
@@ -118,17 +119,17 @@ void scanFoward(){
         
         
         digitalWrite(ENABLE_PIN, LOW);
-        //while(!end_hit && (steps<distInSteps) ){
-        //  steps= steps+step_increment;
-        //  rotate(DIR_PIN,STEP_PIN,step_increment);
-        //  if(digitalRead(END_PIN)==HIGH){
-        //    end_hit=true;
-        //    laserOff();
-        // } 
-        //}
-        rotateDeg(360,0.5);
+        while(!end_hit && (deg<distInDeg) ){
+          deg= deg+deg_increment;
+          rotateDeg(deg_increment,rot_speed);
+          if(digitalRead(END_PIN)==HIGH){
+            end_hit=true;
+            laserOff();
+         } 
+        }
         
-        rotateDeg(-360,0.5);
+        
+        rotateDeg(-distInDeg,rot_speed);
         digitalWrite(ENABLE_PIN, HIGH);
         laserOff();
         ledOn();
