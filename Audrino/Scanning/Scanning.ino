@@ -96,7 +96,7 @@ void scanFoward(){
 	float mmPs = rate/60;
 	float revPmm = .0303*0.88*.98; //33mm circumrence
 	float revPs = revPmm*mmPs;
-	float distance = 200;//mm
+	float distance = 300;//mm
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
 
