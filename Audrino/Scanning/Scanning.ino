@@ -1,18 +1,6 @@
-//////////////////////////////////////////////////////////////////
-//©2011 bildr
-//Released under the MIT License - Please reuse change and share
-//Using the easy stepper with your arduino
-//use rotate and/or rotateDeg to controll stepper motor
-//speed is any number from .01 -> 1 with 1 being fastest - 
-//Slower Speed == Stronger movement
+  //////////////////////////////////////////////////////////////////
+//©2014 Seraph Robotics, all rights reserved
 
-
-//rotate a specific number of microsteps (8 microsteps per step)
-//a 200 step stepper would take 1600 micro steps for one full revolution
-//rotate(1600, .5); 
-//delay(1000); 
-//rotate(-1600, .25); //reverse
-//delay(1000); 
 
 /////////////////////////////////////////////////////////////////
 
@@ -24,11 +12,13 @@
 #define HOME_PIN 7
 #define END_PIN 8
 
-#define LASER_PIN 9
 
-#define SCANBUTTON_PIN 10
 
-#define BUTTON_LED_PIN 11
+#define SCANBUTTON_PIN 9
+
+#define BUTTON_LED_PIN 10
+
+#define LASER_PIN 11
 
 bool PRESSED = false;
 
@@ -76,6 +66,12 @@ void loop(){
     if(input == 'e'){
       error();    
     } 
+    if(input == 'l'){
+         laserOn();
+    } 
+    if(input == 'k'){
+         laserOff();
+    } 
   }
   
   if( !PRESSED && digitalRead(SCANBUTTON_PIN)==HIGH){
@@ -96,9 +92,9 @@ void loop(){
 
 
 void scanFoward(){
-	float rate = 1; // mm/min
-	float mmPs = rate*60;
-	float revPmm = .01;
+	float rate = 60; // mm/min
+	float mmPs = rate/60;
+	float revPmm = .0303*0.88*.98; //33mm circumrence
 	float revPs = revPmm*mmPs;
 	float distance = 200;//mm
 	float distInRev = distance*revPmm;
@@ -110,7 +106,7 @@ void scanFoward(){
         bool end_hit = false;
         float deg = 0;
         float deg_increment=15;
-        float rot_speed = 0.5;
+        float rot_speed = 0.25*0.075;
 
         laserOn(); 
         ledOff();
@@ -122,14 +118,14 @@ void scanFoward(){
         while(!end_hit && (deg<distInDeg) ){
           deg= deg+deg_increment;
           rotateDeg(deg_increment,rot_speed);
-          if(digitalRead(END_PIN)==HIGH){
+          if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
             end_hit=true;
             laserOff();
          } 
         }
         
         
-        rotateDeg(-distInDeg,rot_speed);
+        //rotateDeg(-deg,rot_speed);
         digitalWrite(ENABLE_PIN, HIGH);
         laserOff();
         ledOn();
@@ -139,11 +135,25 @@ void scanFoward(){
 }
 
 void findHome(){
-  bool stop = false;
-  float steps = 10;
-  while(digitalRead(HOME_PIN) == HIGH && !stop){
-    rotate(DIR_PIN,STEP_PIN,steps);
+  bool end_hit = false;
+  float deg_increment = 10;
+  float rot_speed = .5;
+
+  if(digitalRead(HOME_PIN)==HIGH){
+        end_hit=true;
   }
+
+
+  digitalWrite(ENABLE_PIN, LOW);
+  while(!end_hit){
+      rotateDeg(-deg_increment,rot_speed);
+      if(digitalRead(HOME_PIN)==HIGH){
+        end_hit=true;
+     } 
+  }
+  digitalWrite(ENABLE_PIN, HIGH);
+  
+  
 }
   
 
@@ -237,7 +247,7 @@ void rotateDeg(float deg, float speed){
   int dir = (deg > 0)? HIGH:LOW;
   digitalWrite(DIR_PIN,dir); 
 
-  int steps = abs(deg)*(1/0.225);
+  int steps = abs(deg)*(1/1.8);//(1/0.225);
   float usDelay = 700;
 
   for(int i=0; i < steps; i++){ 
