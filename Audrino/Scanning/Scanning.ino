@@ -92,11 +92,11 @@ void loop(){
 
 
 void scanFoward(){
-	float rate = 60; // mm/min
-	float mmPs = rate/60;
+	//float rate = 300; // mm/min
+	float mmPs = 10;//rate/60;
 	float revPmm = .0303*0.88*.98; //33mm circumrence
 	float revPs = revPmm*mmPs;
-	float distance = 300;//mm
+	float distance = 275;//mm
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
 
@@ -105,8 +105,8 @@ void scanFoward(){
 
         bool end_hit = false;
         float deg = 0;
-        float deg_increment=15;
-        float rot_speed = 0.25*0.075;
+        float deg_increment=1;
+        float rot_speed = revPs; // rev/second
 
         laserOn(); 
         ledOff();
@@ -120,24 +120,28 @@ void scanFoward(){
           rotateDeg(deg_increment,rot_speed);
           if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
             end_hit=true;
+            Serial.write("E");
             laserOff();
          } 
         }
-        
-        
-        rotateDeg(-deg,rot_speed);
-        digitalWrite(ENABLE_PIN, HIGH);
+        delay(1);
+        Serial.write("RETURN");
+        Serial.print(deg);  
         laserOff();
+        findHome();
+        digitalWrite(ENABLE_PIN, HIGH);
+        
         ledOn();
         if (end_hit){
           error();
         }
+        Serial.write("\nDone");
 }
 
 void findHome(){
   bool end_hit = false;
   float deg_increment = 10;
-  float rot_speed = .5;
+  float rot_speed = 1.0;
 
   if(digitalRead(HOME_PIN)==HIGH){
         end_hit=true;
@@ -241,18 +245,20 @@ void rotate(int const dir_p, int const stp_p, int steps){
   } 
 } 
 
-void rotateDeg(float deg, float speed){ 
+void rotateDeg(float deg, float rot_speed){ 
   //rotate a specific number of degrees (negitive for reverse movement)
-  //speed is any number from .01 -> 1 with 1 being fastest - Slower is stronger
+  //rotational speed is in revolutions per second
   int dir = (deg > 0)? HIGH:LOW;
   digitalWrite(DIR_PIN,dir); 
 
-  int steps = abs(deg)*(1/1.8);//(1/0.225);
-  float usDelay = 700;
+  int microsteps = 32;
+
+  int steps = microsteps*abs(deg)*(1/1.8);//(1/0.225);
+  float usDelay = 1000000.0/(microsteps*200.0*rot_speed);
 
   for(int i=0; i < steps; i++){ 
     digitalWrite(STEP_PIN, HIGH); 
-    delayMicroseconds(usDelay); 
+    delayMicroseconds(10); 
 
     digitalWrite(STEP_PIN, LOW); 
     delayMicroseconds(usDelay); 
