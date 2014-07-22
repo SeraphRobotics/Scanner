@@ -125,7 +125,7 @@ void scanFoward(){
         }
         
         
-        //rotateDeg(-deg,rot_speed);
+        rotateDeg(-deg,rot_speed);
         digitalWrite(ENABLE_PIN, HIGH);
         laserOff();
         ledOn();
