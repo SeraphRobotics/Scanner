@@ -125,7 +125,7 @@ void scanFoward(){
          } 
         }
         delay(1);
-        Serial.write("RETURN");
+
         Serial.print(deg);  
         laserOff();
         findHome();
@@ -135,7 +135,7 @@ void scanFoward(){
         if (end_hit){
           error();
         }
-        Serial.write("\nDone");
+        Serial.write("D");
 }
 
 void findHome(){
