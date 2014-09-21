@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from PySide.QtCore import *
 from ScannerInterface import *
 import cv2
@@ -10,24 +11,33 @@ class ScannerController(QObject):
     def __init__(self):
         super(ScannerController, self).__init__()
         self.interface = ScannerInterface()
-        self.interface.connectport("COM6",9600)
+        self.interface.connectport("/dev/ttyACM0",9600)
         self.capwebcam = cv2.VideoCapture(0)
         self.width_ = 1920
         self.height_= 1080
         self.timer = QTimer();
-        self.framerate = 5
+        self.framerate = 2
         self.timer.setInterval(1000.00/self.framerate)
         
         self.time = 0.0
         self.maxtime = 30.0*1000.0
         self.speed = 10.0 ##mm/s
         self.imformat = ".jpeg"
+        self.directory = "/media/846F-4403/"
         
         
         self.timer.timeout.connect(self.ontimeout)
+
+        #QTimer.singleShot(1000,sc.buttonPressed)
+        QTimer.singleShot(0,self.__setupCamera)
+        #self.__setupCamera()
+
+        self.interface.pressed.connect(self.buttonPressed)
         
-        self.__setupCamera()
+
         
+
+    @Slot()    
     def __setupCamera(self):
         
         if not self.capwebcam.isOpened():
@@ -53,7 +63,7 @@ class ScannerController(QObject):
         self.time = self.time + 1000.00/self.framerate
         dist = self.speed*self.time/1000.0
         ret, frame = self.capwebcam.read()
-        cv2.imwrite('%s'%dist+self.imformat,frame)
+        cv2.imwrite(self.directory+'%s'%dist+self.imformat,frame)
         if self.time>self.maxtime:
             self.timer.stop()
             self.time = 0
@@ -63,6 +73,6 @@ if __name__ == '__main__':
     import sys
     app = QCoreApplication(sys.argv)
     sc = ScannerController()
-	QTimer.singleShot(1000,sc.buttonPressed)
-    sc.errored.connect(sc.interface.error)
+    #QTimer.singleShot(1000,sc.buttonPressed)
+    #sc.errored.connect(sc.interface.error)
     sys.exit(app.exec_())

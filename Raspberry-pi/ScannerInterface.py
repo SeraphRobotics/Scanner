@@ -10,8 +10,10 @@ class ScannerInterface(QObject):
     def __init__(self):
         super(ScannerInterface, self).__init__()
         self.ser = serial.Serial()
-        self.timer = QTimer();
+        self.timer = QTimer()
         self.timer.setInterval(100)
+        self.timer.start()
+	self.timer.timeout.connect(self._checkBuffer)
     
     def __del__(self):
         self.ser.close()
@@ -39,10 +41,13 @@ class ScannerInterface(QObject):
                 char = self.ser.read();
                 if char == "B":
                     self.pressed.emit();
+                    print "recevied: B"
                 elif char =="D":
                     self.scanCompleted.emit();
                 elif char =="E":
                     self.errored.emit();
+                else:
+                    print "received "+char
     
     @Slot()
     def error(self):
@@ -74,9 +79,10 @@ class ScannerInterface(QObject):
     
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    import sys
+    app = QCoreApplication(sys.argv)
     ir = ScannerInterface()
-    ir.connectport("COM6",9600)
+    ir.connectport("/dev/ttyACM0",9600) 
     print ir.isready()
     loopVar=True
     while(loopVar):
@@ -84,3 +90,4 @@ if __name__ == '__main__':
         ir._write(val)
         if (val == 'N'):
             loopVar = False
+            #app.exec_()
