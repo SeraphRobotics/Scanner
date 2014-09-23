@@ -23,8 +23,9 @@ public slots:
     void slotDeviceRemoved(const QString& dev);
     void slotDeviceChanged(const QString& dev);
 
-//protected:
-//    virtual bool event(QEvent *e);
+
+protected:
+    virtual bool event(QEvent *e);
 
 private:
     QDeviceWatcher* watcher;

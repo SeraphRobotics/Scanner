@@ -26,23 +26,23 @@ void USBMinder::slotDeviceRemoved(const QString& dev){
 }
 void USBMinder::slotDeviceChanged(const QString& dev){qDebug()<<"changed: "<<dev;}
 
-//bool USBMinder::event(QEvent *e){
-//    qDebug()<<"event Called"<<e->type();
+bool USBMinder::event(QEvent *e){
+    qDebug()<<"event Called"<<e->type();
 
-//    if (e->type() == QDeviceChangeEvent::registeredType()) {
-//        qDebug()<<"event registered";
-//        QDeviceChangeEvent *event = (QDeviceChangeEvent*)e;
-//        QString action("Change");
-//        if (event->action() == QDeviceChangeEvent::Add)
-//            action = "Add";
-//        else if (event->action() == QDeviceChangeEvent::Remove)
-//            action = "Remove";
-//        qDebug()<<"USBMinder: "<<action;
-////        qDebug("tid=%#x event=%d %s: %s %s", (unsigned int)QThread::currentThreadId(), e->type(), __PRETTY_FUNCTION__, qPrintable(action), qPrintable(event->device()));
-//        event->accept();
-//        return true;
-//    }else{
-//        qDebug()<<"event unregistered";
-//    }
-//    return QObject::event(e);
-//}
+    if (e->type() == QDeviceChangeEvent::registeredType()) {
+        qDebug()<<"event registered";
+        QDeviceChangeEvent *event = (QDeviceChangeEvent*)e;
+        QString action("Change");
+        if (event->action() == QDeviceChangeEvent::Add)
+            action = "Add";
+        else if (event->action() == QDeviceChangeEvent::Remove)
+            action = "Remove";
+        qDebug()<<"USBMinder: "<<action;
+//        qDebug("tid=%#x event=%d %s: %s %s", (unsigned int)QThread::currentThreadId(), e->type(), __PRETTY_FUNCTION__, qPrintable(action), qPrintable(event->device()));
+        event->accept();
+        return true;
+    }else{
+        qDebug()<<"event unregistered";
+    }
+    return QObject::event(e);
+}

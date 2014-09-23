@@ -21,8 +21,13 @@ win32:!wince*:LIBS += -lUser32
 
 SOURCES += main.cpp \
     recordkeeper.cpp \
-    usbminder.cpp
+    usbminder.cpp \
+    scannerarduinointerface.cpp
 
 HEADERS += \
     recordkeeper.h \
-    usbminder.h
+    usbminder.h \
+    scannerarduinointerface.h
+
+include("qextserial-win.pro")
+INCLUDEPATH += ../qextserial/
