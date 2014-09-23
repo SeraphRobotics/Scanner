@@ -20,6 +20,6 @@ int main(int argc, char *argv[])
 //    rk.connect(&um,SIGNAL(usbadded(QString)),&rk,SLOT(USBAdded(QString)));
 
     ScannerArduinoInterface sai("COM5",BAUD9600);
-    QTimer::singleShot(0,&sai,SLOT(laserOn()));
+    QTimer::singleShot(1000,&sai,SLOT(ledOn()));
     return a.exec();
 }

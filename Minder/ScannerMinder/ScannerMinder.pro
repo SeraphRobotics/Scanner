@@ -29,5 +29,5 @@ HEADERS += \
     usbminder.h \
     scannerarduinointerface.h
 
-include("qextserial-win.pro")
-INCLUDEPATH += ../qextserial/
+include("../qextserialport-1.2rc/src/qextserialport.pri")
+INCLUDEPATH += ../qextserialport/

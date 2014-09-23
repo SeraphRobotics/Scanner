@@ -4,11 +4,14 @@
 ScannerArduinoInterface::ScannerArduinoInterface(QString port, BaudRateType baudrate, QObject *parent) :
     QObject(parent)
 {
-    port_ = new QextSerialPort(port);
+    port_ = new QextSerialPort(port,QextSerialPort::Polling);
     port_->setBaudRate(baudrate);
+//    port_->set
     timer_ = new QTimer();
     timer_->setInterval(100);
+    port_->open(QIODevice::ReadWrite);
     connect(timer_,SIGNAL(timeout()),this,SLOT(_checkBuffer()));
+    timer_->start();
 }
 
 
@@ -45,12 +48,14 @@ void ScannerArduinoInterface::home(){
 
 void ScannerArduinoInterface::_write(QString s){
     if (!isReady() ){return;}
-    port_->write(s.toStdString().c_str(),s.size());
+    qDebug()<<"writing: "<<s.toStdString().c_str();
+    qint64 received = port_->write(s.toStdString().c_str());
+    qDebug()<<"bytes"<<received;
 }
 
 void ScannerArduinoInterface::_checkBuffer(){
-    if (port_->isOpen()){
-        if(port_->bytesAvailable()>1){
+//    if (port_->isOpen()){
+        if(port_->bytesAvailable()>0){
             char char_in = port_->read(&char_in,1);
             QString c = QChar(char_in);
             if ("B"==c){
@@ -64,5 +69,5 @@ void ScannerArduinoInterface::_checkBuffer(){
             }
             qDebug()<<"received: "+c;
         }
-    }
+//    }
 }
