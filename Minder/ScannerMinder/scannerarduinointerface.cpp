@@ -6,8 +6,6 @@
 ScannerArduinoInterface::ScannerArduinoInterface()
 {
     port_ = new QextSerialPort();
-    timer_ = new QTimer();
-    timer_->setInterval(100);
     connect(port_, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
 }
 
@@ -20,8 +18,6 @@ ScannerArduinoInterface::ScannerArduinoInterface(QString port, BaudRateType baud
     port_->setParity(PAR_NONE);
     port_->open(QIODevice::ReadWrite);
     //    port_->set
-    timer_ = new QTimer();
-    timer_->setInterval(100);
     connect(port_, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
 }
 
@@ -58,11 +54,15 @@ void ScannerArduinoInterface::home(){
     _write("h");
 }
 
+void ScannerArduinoInterface::disconnect(){
+    port_->close();
+}
+
 
 void ScannerArduinoInterface::_write(QString s){
 
     if (!isReady() ){return;}
-    qDebug()<<"writing: "<<s.toStdString().c_str();
+//    qDebug()<<"writing: "<<s.toStdString().c_str();
 
     QChar c = s.at(0);
 //    QChar c(100);
@@ -72,29 +72,9 @@ void ScannerArduinoInterface::_write(QString s){
     qint64 l = ba.length();
     qDebug()<<"writing: "<<ba.toHex();
     qint64 received  = port_->write(ba,l);
-    qDebug()<<"wrote:"<<received;
+//    qDebug()<<"wrote:"<<received;
 }
 
-void ScannerArduinoInterface::_checkBuffer(){
-    if (port_->isOpen()){
-        if(port_->bytesAvailable()>0){
-            char char_in;
-            port_->read( &char_in,1);
-//            qDebug()<<"read: "<<readbytes;
-            QString c = QChar(char_in);
-            if ("B"==c){
-                emit buttonPressed();
-            }else if ("D"==c){
-                emit scanMovementCompleted();
-            }else if ("E"==c){
-                emit errored();
-            }else{
-                //qDebug()<<"received: "+c;
-            }
-            qDebug()<<"received: "+char_in;
-        }
-    }
-}
 
 void ScannerArduinoInterface::onDataAvailable(){
     QByteArray data = port_->readAll();

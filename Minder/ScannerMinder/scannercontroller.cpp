@@ -15,8 +15,28 @@ ScannerController::ScannerController(QObject *parent) :
 
 }
 
-void ScannerController::portSelected(QString port){
+void ScannerController::disconnected(){
+    capwebcam.release();
+    sai_->disconnect();
     delete sai_;
+    sai_=  new ScannerArduinoInterface();
+    timer_->stop();
+}
+
+void ScannerController::portSelected(QString port){
+//    sai_->disconnect();
+    delete sai_;
+    sai_=  new ScannerArduinoInterface(port,BAUD9600);
+    connect(sai_,SIGNAL(buttonPressed()),this,SLOT(buttonPress()));
+    connect(sai_,SIGNAL(errored()),this,SLOT(scannerError()));
+    connect(sai_,SIGNAL(scanMovementCompleted()),this,SLOT(scanComplete()));
+
+    qDebug()<<"selected: "<<port<<" opened:"<<sai_->isReady();
+//    QTimer::singleShot(3000,this,SLOT( setupCamera() ));
+    QTimer::singleShot(2000,sai_,SLOT(ledOn()));
+}
+
+void ScannerController::setupCamera(){
     capwebcam.open(camNumber_);
     bool state=true;
     state = state && capwebcam.set(CV_CAP_PROP_FRAME_WIDTH,width_);
@@ -26,23 +46,28 @@ void ScannerController::portSelected(QString port){
         qDebug()<< QString("Error setting capture sizes)");
     }
 
-
-    sai_=  new ScannerArduinoInterface(port,BAUD9600);
-    connect(sai_,SIGNAL(buttonPressed()),this,SLOT(buttonPress()));
-    connect(sai_,SIGNAL(errored()),this,SLOT(scannerError()));
-    connect(sai_,SIGNAL(scanMovementCompleted()),this,SLOT(scanComplete()));
+    if ( capwebcam.isOpened() ){
+        qDebug()<<"opened camera";
+    }else{
+        qDebug()<<"is opened";
+    }
 }
 
 void ScannerController::buttonPress(){
-    sai_->startScan();
-    timer_->start();
-    dist=0;
+    if (!timer_->isActive() ){
+        sai_->startScan();
+        timer_->start();
+        dist=0;
+        setupCamera();
+    }
 }
 void ScannerController::scannerError(){}
-void ScannerController::scanComplete(){}
+void ScannerController::scanComplete(){
+
+}
 
 void ScannerController::ScanStep(){
-
+    if(!capwebcam.isOpened()){return;}
     capwebcam.read(matOriginal);
 
 
@@ -59,6 +84,7 @@ void ScannerController::ScanStep(){
     m.save(QString::number(dist)+".jpeg","JPEG");
     if (dist>scandistance_){
         timer_->stop();
+        capwebcam.release();
     }
 
 }

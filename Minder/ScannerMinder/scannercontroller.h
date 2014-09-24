@@ -6,7 +6,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "scannerarduinointerface.h"
-
+#include <QTimer>
 
 class ScannerController : public QObject
 {
@@ -18,12 +18,14 @@ signals:
 
 public slots:
     void portSelected(QString port);
+    void disconnected();
 
 
 private slots:
     void buttonPress();
     void scannerError();
     void scanComplete();
+    void setupCamera();
 
     void ScanStep();
 

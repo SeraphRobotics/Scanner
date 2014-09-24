@@ -26,9 +26,10 @@ int main(int argc, char *argv[])
 //    QTimer::singleShot(2000,&sai,SLOT(laserOn()));
     ScannerWatcher* sw = new ScannerWatcher();
     ScannerController* sc = new ScannerController();
-    QTimer::singleShot(2000,sc,SLOT(buttonPress()));
+
 
     sc->connect(sw,SIGNAL(scannerPort(QString)),sc,SLOT(portSelected(QString)));
+    sc->connect(sw,SIGNAL(disconnected()),sc,SLOT(disconnected()));
 
     return a.exec();
 }

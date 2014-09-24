@@ -2,7 +2,6 @@
 #define SCANNERARDUINOINTERFACE_H
 
 #include <QObject>
-#include <QTimer>
 #include "qextserialport.h"
 
 class ScannerArduinoInterface : public QObject
@@ -26,15 +25,15 @@ public slots:
     void ledOn();
     void ledOff();
     void home();
+    void disconnect();
 
 private slots:
     void _write(QString s);
-    void _checkBuffer();
     void onDataAvailable();
 
 private:
-    QTimer* timer_;
     QextSerialPort* port_;
+//    bool Pressed
 };
 
 #endif // SCANNERARDUINOINTERFACE_H
