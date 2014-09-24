@@ -29,6 +29,7 @@ public slots:
 private slots:
     void _write(QString s);
     void _checkBuffer();
+    void onDataAvailable();
 
 private:
     QTimer* timer_;
