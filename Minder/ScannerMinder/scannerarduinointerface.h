@@ -9,7 +9,8 @@ class ScannerArduinoInterface : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScannerArduinoInterface(QString port, BaudRateType baudrate, QObject *parent = 0);
+    explicit ScannerArduinoInterface();
+    ScannerArduinoInterface(QString port, BaudRateType baudrate, QObject *parent = 0);
 
 signals:
     void buttonPressed();

@@ -8,6 +8,7 @@
 #include "../qdevicewatcher-master/src/qdevicechangeevent.h"
 
 #include "scannerwatcher.h"
+#include "scannercontroller.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +25,10 @@ int main(int argc, char *argv[])
 //    ScannerArduinoInterface sai("COM5",BAUD9600);
 //    QTimer::singleShot(2000,&sai,SLOT(laserOn()));
     ScannerWatcher* sw = new ScannerWatcher();
+    ScannerController* sc = new ScannerController();
+    QTimer::singleShot(2000,sc,SLOT(buttonPress()));
 
+    sc->connect(sw,SIGNAL(scannerPort(QString)),sc,SLOT(portSelected(QString)));
 
     return a.exec();
 }

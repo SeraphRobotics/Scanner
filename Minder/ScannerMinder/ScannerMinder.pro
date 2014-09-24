@@ -7,7 +7,7 @@
 QT       += core\
             xml
 
-QT       -= gui
+QT       += gui
 
 TARGET = ScannerMinder
 CONFIG   += console

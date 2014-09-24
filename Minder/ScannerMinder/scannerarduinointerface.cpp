@@ -1,20 +1,27 @@
 #include "scannerarduinointerface.h"
 #include <QDebug>
 
+
+
+ScannerArduinoInterface::ScannerArduinoInterface()
+{
+    port_ = new QextSerialPort();
+    timer_ = new QTimer();
+    timer_->setInterval(100);
+    connect(port_, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
+}
+
 ScannerArduinoInterface::ScannerArduinoInterface(QString port, BaudRateType baudrate, QObject *parent) :
     QObject(parent)
 {
     port_ = new QextSerialPort(port);//,QextSerialPort::Polling
-    port_->setBaudRate(BAUD9600);
+    port_->setBaudRate( baudrate);
     port_->setFlowControl(FLOW_OFF);
     port_->setParity(PAR_NONE);
     port_->open(QIODevice::ReadWrite);
     //    port_->set
     timer_ = new QTimer();
     timer_->setInterval(100);
-
-    connect(timer_,SIGNAL(timeout()),this,SLOT(_checkBuffer()));
-//    timer_->start();
     connect(port_, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
 }
 
@@ -23,7 +30,7 @@ bool ScannerArduinoInterface::connectPort(QString port, BaudRateType baudrate){
     if (port_->isOpen()){port_->close();}
     delete port_;
     port_ = new QextSerialPort(port);
-    port_->setBaudRate(BAUD9600);
+    port_->setBaudRate(baudrate);
     port_->setFlowControl(FLOW_OFF);
     port_->setParity(PAR_NONE);
     return port_->isOpen();
