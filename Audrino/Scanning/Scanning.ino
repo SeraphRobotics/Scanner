@@ -74,7 +74,7 @@ void loop(){
     } 
   }
   
-  if( !PRESSED && digitalRead(SCANBUTTON_PIN)==HIGH){
+  if( !PRESSED && digitalRead(SCANBUTTON_PIN)==LOW){
     Serial.write("B");//Button pressed
     PRESSED=true;
   }
@@ -93,10 +93,10 @@ void loop(){
 
 void scanFoward(){
 	//float rate = 300; // mm/min
-	float mmPs = 10;//rate/60;
-	float revPmm = .0303*0.88*.98; //33mm circumrence
+	float mmPs = 5;//rate/60;
+	float revPmm = .0303*0.88*.98*.9; //33mm circumrence
 	float revPs = revPmm*mmPs;
-	float distance = 275;//mm
+	float distance = 335;//mm
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
 
@@ -125,8 +125,8 @@ void scanFoward(){
          } 
         }
         delay(1);
-        Serial.write("RETURN");
-        Serial.print(deg);  
+        //Serial.write("RETURN");
+        //Serial.print(deg);  
         laserOff();
         findHome();
         digitalWrite(ENABLE_PIN, HIGH);
@@ -135,7 +135,7 @@ void scanFoward(){
         if (end_hit){
           error();
         }
-        Serial.write("\nDone");
+        Serial.write("D");
 }
 
 void findHome(){

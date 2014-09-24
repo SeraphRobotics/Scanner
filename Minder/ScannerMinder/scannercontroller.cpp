@@ -3,11 +3,11 @@
 #include <QDebug>
 
 ScannerController::ScannerController(QObject *parent) :
-    QObject(parent),camNumber_(0),scandistance_(250),stepsize_(1),framerate_(5),width_(1920),height_(1080),dist(0)
+    QObject(parent),camNumber_(1),scandistance_(334),stepsize_(1),framerate_(5),width_(1920),height_(1080),dist(0)
 {
     sai_=  new ScannerArduinoInterface();
     timer_ = new QTimer();
-    timer_->setInterval(1000.0/framerate_);
+    timer_->setInterval(1000.0/framerate_*0.925);
     connect(timer_,SIGNAL(timeout()),this,SLOT(ScanStep()));
 
 
@@ -33,7 +33,7 @@ void ScannerController::portSelected(QString port){
 
     qDebug()<<"selected: "<<port<<" opened:"<<sai_->isReady();
 //    QTimer::singleShot(3000,this,SLOT( setupCamera() ));
-    QTimer::singleShot(2000,sai_,SLOT(ledOn()));
+//    QTimer::singleShot(2000,sai_,SLOT(ledOn()));
 }
 
 void ScannerController::setupCamera(){
