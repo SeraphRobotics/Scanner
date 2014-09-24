@@ -25,7 +25,7 @@ public slots:
 
 
 protected:
-    virtual bool event(QEvent *e);
+//    virtual bool event(QEvent *e);
 
 private:
     QDeviceWatcher* watcher;
