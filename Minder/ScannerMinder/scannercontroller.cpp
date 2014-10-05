@@ -1,10 +1,13 @@
 #include "scannercontroller.h"
 #include <QPixmap>
 #include <QDebug>
+#include <QSettings>
 
 ScannerController::ScannerController(QObject *parent) :
     QObject(parent),camNumber_(1),scandistance_(334),stepsize_(1),framerate_(5),width_(1920),height_(1080),dist(0)
 {
+    QSettings s;
+    camNumber_ = s.value("camNumber",1).toInt();
     sai_=  new ScannerArduinoInterface();
     timer_ = new QTimer();
     timer_->setInterval(1000.0/framerate_*0.925);

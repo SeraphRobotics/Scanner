@@ -17,6 +17,12 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("seraphrobotics.com");
     QCoreApplication::setApplicationName("ScannerMinder");
     QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings s;
+
+    int cn = s.value("camNumber",-1).toInt();
+    if(cn ==-1){
+        s.setValue("camNumber",1);
+    }
 
 //    recordkeeper rk;
     //USBMinder* um = new USBMinder();
