@@ -2,9 +2,13 @@
 #include <QPixmap>
 #include <QDebug>
 #include <QSettings>
+#include <QUuid>
+#include <QDir>
+#include <QDomDocument>
+#include <QDateTime>
 
 ScannerController::ScannerController(QObject *parent) :
-    QObject(parent),camNumber_(1),scandistance_(334),stepsize_(1),framerate_(5),width_(1920),height_(1080),dist(0)
+    QObject(parent),camNumber_(1),scandistance_(334),stepsize_(1),framerate_(5),width_(1920),height_(1080),dist(0),uuid_(".")
 {
     QSettings s;
     camNumber_ = s.value("camNumber",1).toInt();
@@ -58,6 +62,13 @@ void ScannerController::setupCamera(){
 
 void ScannerController::buttonPress(){
     if (!timer_->isActive() ){
+        uuid_ = QUuid::createUuid().toString();
+        QDir d;
+        if(!d.mkdir(uuid_)){
+            qDebug()<<"Could Not open UUID dir "<< uuid_;
+            return;
+        }
+
         sai_->startScan();
         timer_->start();
         dist=0;
@@ -66,6 +77,52 @@ void ScannerController::buttonPress(){
 }
 void ScannerController::scannerError(){}
 void ScannerController::scanComplete(){
+    QString filename = "ScanData.xml";
+    QDomDocument d;
+    QDomElement root;
+
+    // if the file exists, read the file
+    QDir dir;
+    if(dir.exists(filename)){
+        QFile usbdata(filename);
+
+        if (!usbdata.open(QFile::ReadOnly)) {
+            qDebug() << "Could not open ScanData file.";
+        }
+
+        if (!d.setContent(&usbdata)) {
+            usbdata.close();
+            qDebug()<<"Could not load Data from ScanData.xml";
+            return;
+        }
+        usbdata.close();
+        root = d.documentElement();
+
+    }else{
+        //If the file doesnt exist make a new root.
+        root = d.createElement("ScanData");
+    }
+
+    QDomElement node = d.createElement("Scan");
+    QDomElement Folder = d.createElement("Folder");
+    Folder.appendChild(d.createTextNode(uuid_));
+    node.appendChild(Folder);
+
+    QDomElement datetime = d.createElement("DateTime");
+    datetime.appendChild(d.createTextNode(QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch())));
+    node.appendChild(datetime);
+
+    root.appendChild(node);
+    d.appendChild(root);
+
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)){
+        qDebug()<<"could not open file: "<< filename;
+        return;
+    }
+    QTextStream f(&file);
+    f<<d.toString();
+    file.close();
 
 }
 
@@ -84,10 +141,12 @@ void ScannerController::ScanStep(){
     cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
 
     QImage m = QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
-    m.save(QString::number(dist)+".jpeg","JPEG");
+    QString writename = uuid_ + "//"+QString::number(dist)+".jpeg";
+    m.save(writename,"JPEG");
     if (dist>scandistance_){
         timer_->stop();
         capwebcam.release();
+        scanComplete();
     }
 
 }
