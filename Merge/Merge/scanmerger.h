@@ -8,6 +8,6 @@
 
 
 void scanmerger();
-
+void scanpurge();
 
 #endif // SCANMERGER_H
