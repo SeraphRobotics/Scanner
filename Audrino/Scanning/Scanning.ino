@@ -1,43 +1,37 @@
-  //////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
 //©2014 Seraph Robotics, all rights reserved
-
-
 /////////////////////////////////////////////////////////////////
 
-
+////////////// Electrical configuration Data////////////
 #define DIR_PIN 5
 #define STEP_PIN 3
 #define ENABLE_PIN 4
-
 #define HOME_PIN 7
 #define END_PIN 8
-
-
-
 #define SCANBUTTON_PIN 9
-
 #define BUTTON_LED_PIN 10
-
 #define LASER_PIN 11
 
+//////////////////Global Variables/////////////////////
 bool PRESSED = false;
+bool DEBUGGING = false;
+///////////////////////////////////////////////////////
+
 
 void setup() { 
   Serial.begin (9600); //com port communication
   pinMode(DIR_PIN, OUTPUT); 
   pinMode(STEP_PIN, OUTPUT);
-  
-  pinMode(HOME_PIN,INPUT);
-  pinMode(END_PIN,INPUT); 
+  pinMode(ENABLE_PIN,OUTPUT)  
   
   pinMode(LASER_PIN,OUTPUT);
-  
+  pinMode(BUTTON_LED_PIN,OUTPUT);
+
+  pinMode(HOME_PIN,INPUT);
+  pinMode(END_PIN,INPUT);  
   pinMode(SCANBUTTON_PIN,INPUT);
   
-  pinMode(BUTTON_LED_PIN,OUTPUT);
-  pinMode(ENABLE_PIN,OUTPUT);
-  
-  digitalWrite(ENABLE_PIN, HIGH);// oin is !ENabl
+  digitalWrite(ENABLE_PIN, HIGH);// on is !ENabl
   fast_Blink();
 } 
 
@@ -49,7 +43,14 @@ void loop(){
       scanFoward();
       PRESSED=false;
     }
-    if(input == 'h'){
+	if(input == 'e'){
+      error();    
+    } 
+	// Debuging and Settup functions
+    if(input == 'd'){
+		DEBUGGING = !DEBUGGING
+	}
+	if(input == 'h'){
       ledOff();
       findHome();
       ledOn();
@@ -63,33 +64,111 @@ void loop(){
       ledOff();
       PRESSED=false;
     }
-    if(input == 'e'){
-      error();    
-    } 
     if(input == 'l'){
          laserOn();
     } 
     if(input == 'k'){
          laserOff();
     } 
+	if(input == 'q'){
+         jogFoward();
+    }
+	if(input == 'w'){
+         jogBackward();
+    }
   }
   
   if( !PRESSED && digitalRead(SCANBUTTON_PIN)==LOW){
     Serial.write("B");//Button pressed
     PRESSED=true;
   }
-  if(digitalRead(HOME_PIN)==HIGH){
-    //Serial.write("H");//Button pressed
+  if(digitalRead(HOME_PIN)==HIGH && DEBUGGING){
+    Serial.write("H");//Button pressed
   }
-  if(digitalRead(END_PIN)==HIGH){
-    //Serial.write("E");//Button pressed
+  if(digitalRead(END_PIN)==HIGH && DEBUGGING){
+    Serial.write("E");//Button pressed
   }
   
   
   
 }
 
+void jogFoward(){
+    float mmPs = 10;//rate/60;
+	float revPmm = .0303*0.88*.98; //33mm circumrence
+	float revPs = revPmm*mmPs;
+	float distance = 10;//mm
+	float distInRev = distance*revPmm;
+	float time = distInRev/revPs;
 
+	float distInDeg = distInRev*360
+	
+	
+	bool end_hit = false;
+	float deg = 0;
+	float deg_increment=1;
+	float rot_speed = revPs; // rev/second
+
+	ledOff();
+	digitalWrite(DIR_PIN,HIGH);
+	digitalWrite(ENABLE_PIN, LOW);
+	while(!end_hit && (deg<distInDeg) ){
+	  deg= deg+deg_increment;
+	  rotateDeg(deg_increment,rot_speed);
+	  if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
+		end_hit=true;
+		Serial.write("E");
+	 } 
+	}
+	delay(1);
+	//Serial.write("RETURN");
+	//Serial.print(deg);  
+	digitalWrite(ENABLE_PIN, HIGH);
+	
+	ledOn();
+	if (end_hit){
+	  error();
+	}
+	Serial.write("D");
+}
+void jobBackward(){
+    float mmPs = 10;//rate/60;
+	float revPmm = .0303*0.88*.98; //33mm circumrence
+	float revPs = revPmm*mmPs;
+	float distance = 10;//mm
+	float distInRev = distance*revPmm;
+	float time = distInRev/revPs;
+
+	float distInDeg = distInRev*360
+	
+	
+	bool end_hit = false;
+	float deg = 0;
+	float deg_increment=1;
+	float rot_speed = revPs; // rev/second
+
+	ledOff();
+	digitalWrite(DIR_PIN,HIGH);
+	digitalWrite(ENABLE_PIN, LOW);
+	while(!end_hit && (deg<distInDeg) ){
+	  deg= deg-deg_increment;
+	  rotateDeg(-deg_increment,rot_speed);
+	  if( (digitalRead(END_PIN)==HIGH) ||(digitalRead(HOME_PIN)==HIGH)){ //||(digitalRead(HOME_PIN)==HIGH)
+		end_hit=true;
+		Serial.write("E");
+	 } 
+	}
+	delay(1);
+	//Serial.write("RETURN");
+	//Serial.print(deg);  
+	digitalWrite(ENABLE_PIN, HIGH);
+	
+	ledOn();
+	if (end_hit){
+	  error();
+	}
+	Serial.write("D");
+}
 
 void scanFoward(){
 	//float rate = 300; // mm/min
