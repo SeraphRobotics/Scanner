@@ -15,22 +15,33 @@ void scanmerger(){
     qDebug()<<"Files: \n"<<files;
     qDebug()<<"Filter:"<<filters;
     QString first = s+"//"+files.takeFirst();
+    int numsize = files.size()+1;
+
     cv::Mat baseImg = cv::imread( first.toStdString() );
 
+//    int numsize = files.size()+1;
+
+
+    int i=1;
     foreach(QString filename, files){
         QString file = s+"//"+filename;
         cv::Mat nextimg = cv::imread(file.toStdString() );
         baseImg = baseImg+nextimg;
+        i++;
+        if (i>35){break;}
+//        cv::addWeighted(baseImg,alpha,nextimg,beta,0.0,baseImg);
     }
 
+//    baseImg = baseImg/numsize;
     std::vector<int> params;
     params.push_back(CV_IMWRITE_JPEG_QUALITY);
     params.push_back(99);
-    cv::imwrite("summed.jpeg",baseImg,params);
+    cv::imwrite("summed2.jpeg",baseImg,params);
+    qDebug()<<"Done";
 }
 
 void scanpurge(){
-    QString indir = "scan3";
+    QString indir = "Correct_Foot";
     QString outdir = "cleanscan";
 
 
@@ -44,7 +55,7 @@ void scanpurge(){
 
 
     // Load offest
-    QString toSubtract = "summed.jpeg";
+    QString toSubtract = "summed2.jpeg";
     cv::Mat baseImg = cv::imread( toSubtract.toStdString() );
 
     foreach(QString filename, infiles){
