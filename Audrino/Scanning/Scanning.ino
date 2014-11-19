@@ -173,7 +173,7 @@ void jogBackward(){
 void scanFoward(){
 	//float rate = 300; // mm/min
 	float mmPs = 5;//rate/60;
-	float revPmm = .0303*0.88*.98; //33mm circumrence
+	float revPmm = .0303*0.88*.98*1.0/1.15/1.50; //33mm circumrence
 	float revPs = revPmm*mmPs;
 	float distance = 335;//mm
 	float distInRev = distance*revPmm;
