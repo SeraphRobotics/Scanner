@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////
 //©2014 Seraph Robotics, all rights reserved
 /////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ void setup() {
   Serial.begin (9600); //com port communication
   pinMode(DIR_PIN, OUTPUT); 
   pinMode(STEP_PIN, OUTPUT);
-  pinMode(ENABLE_PIN,OUTPUT)  
+  pinMode(ENABLE_PIN,OUTPUT);  
   
   pinMode(LASER_PIN,OUTPUT);
   pinMode(BUTTON_LED_PIN,OUTPUT);
@@ -48,9 +48,9 @@ void loop(){
     } 
 	// Debuging and Settup functions
     if(input == 'd'){
-		DEBUGGING = !DEBUGGING
+		DEBUGGING = !DEBUGGING;
 	}
-	if(input == 'h'){
+   if(input == 'h'){
       ledOff();
       findHome();
       ledOn();
@@ -70,10 +70,10 @@ void loop(){
     if(input == 'k'){
          laserOff();
     } 
-	if(input == 'q'){
+    if(input == 'q'){
          jogFoward();
     }
-	if(input == 'w'){
+    if(input == 'w'){
          jogBackward();
     }
   }
@@ -101,7 +101,7 @@ void jogFoward(){
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
 
-	float distInDeg = distInRev*360
+	float distInDeg = distInRev*360;
 	
 	
 	bool end_hit = false;
@@ -131,7 +131,7 @@ void jogFoward(){
 	}
 	Serial.write("D");
 }
-void jobBackward(){
+void jogBackward(){
     float mmPs = 10;//rate/60;
 	float revPmm = .0303*0.88*.98; //33mm circumrence
 	float revPs = revPmm*mmPs;
@@ -139,7 +139,7 @@ void jobBackward(){
 	float distInRev = distance*revPmm;
 	float time = distInRev/revPs;
 
-	float distInDeg = distInRev*360
+	float distInDeg = distInRev*360;
 	
 	
 	bool end_hit = false;
@@ -151,7 +151,7 @@ void jobBackward(){
 	digitalWrite(DIR_PIN,HIGH);
 	digitalWrite(ENABLE_PIN, LOW);
 	while(!end_hit && (deg<distInDeg) ){
-	  deg= deg-deg_increment;
+	  deg= deg+deg_increment;
 	  rotateDeg(-deg_increment,rot_speed);
 	  if( (digitalRead(END_PIN)==HIGH) ||(digitalRead(HOME_PIN)==HIGH)){ //||(digitalRead(HOME_PIN)==HIGH)
 		end_hit=true;
