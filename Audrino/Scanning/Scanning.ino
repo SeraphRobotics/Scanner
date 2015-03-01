@@ -15,7 +15,26 @@
 //////////////////Global Variables/////////////////////
 bool PRESSED = false;
 bool DEBUGGING = false;
+bool SCANNING = false;
+float STEPINDEG=0;
+float STEPSPEED=0;
+
 ///////////////////////////////////////////////////////
+
+void defineStepSize(){
+    float mmPs = 5;//rate/60;
+    float revPmm = .0303*0.88*.98*1.0/1.15/1.50; //33mm circumrence
+    float revPs = revPmm*mmPs;
+    float distance = 335;//mm
+    float distInRev = distance*revPmm;
+    float time = distInRev/revPs;
+
+    float distInDeg = distInRev*360.0; 
+    STEPINDEG = distInDeg*2.0/distance;
+    STEPSPEED = revPs;
+    
+}
+
 
 
 void setup() { 
@@ -40,16 +59,25 @@ void loop(){
   if(Serial.available()){
     char input = (char)Serial.read();
     if(input == 's'){
-      scanFoward();
+      startScan();
       PRESSED=false;
+      SCANNING = true;
     }
-	if(input == 'e'){
+    if(input =='i'){
+        scanStepFoward();
+    }
+    if(input =='x'){
+        endScan();
+        SCANNING = false;
+    }
+    
+    if(input == 'e'){
       error();    
     } 
-	// Debuging and Settup functions
+    // Debuging and Settup functions
     if(input == 'd'){
-		DEBUGGING = !DEBUGGING;
-	}
+        DEBUGGING = !DEBUGGING;
+    }
    if(input == 'h'){
       ledOff();
       findHome();
@@ -95,106 +123,105 @@ void loop(){
 
 void jogFoward(){
     float mmPs = 10;//rate/60;
-	float revPmm = .0303*0.88*.98; //33mm circumrence
-	float revPs = revPmm*mmPs;
-	float distance = 10;//mm
-	float distInRev = distance*revPmm;
-	float time = distInRev/revPs;
+    float revPmm = .0303*0.88*.98; //33mm circumrence
+    float revPs = revPmm*mmPs;
+    float distance = 10;//mm
+    float distInRev = distance*revPmm;
+    float time = distInRev/revPs;
 
-	float distInDeg = distInRev*360;
-	
-	
-	bool end_hit = false;
-	float deg = 0;
-	float deg_increment=1;
-	float rot_speed = revPs; // rev/second
+    float distInDeg = distInRev*360;
+    
+    
+    bool end_hit = false;
+    float deg = 0;
+    float deg_increment=1;
+    float rot_speed = revPs; // rev/second
 
-	ledOff();
-	digitalWrite(DIR_PIN,HIGH);
-	digitalWrite(ENABLE_PIN, LOW);
-	while(!end_hit && (deg<distInDeg) ){
-	  deg= deg+deg_increment;
-	  rotateDeg(deg_increment,rot_speed);
-	  if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
-		end_hit=true;
-		Serial.write("E");
-	 } 
-	}
-	delay(1);
-	//Serial.write("RETURN");
-	//Serial.print(deg);  
-	digitalWrite(ENABLE_PIN, HIGH);
-	
-	ledOn();
-	if (end_hit){
-	  error();
-	}
-	Serial.write("D");
+    ledOff();
+    digitalWrite(DIR_PIN,HIGH);
+    digitalWrite(ENABLE_PIN, LOW);
+    while(!end_hit && (deg<distInDeg) ){
+      deg= deg+deg_increment;
+      rotateDeg(deg_increment,rot_speed);
+      if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
+        end_hit=true;
+        Serial.write("E");
+     } 
+    }
+    delay(1);
+    //Serial.write("RETURN");
+    //Serial.print(deg);  
+    digitalWrite(ENABLE_PIN, HIGH);
+    
+    ledOn();
+    if (end_hit){
+      error();
+    }
+    Serial.write("D");
 }
 void jogBackward(){
     float mmPs = 10;//rate/60;
-	float revPmm = .0303*0.88*.98; //33mm circumrence
-	float revPs = revPmm*mmPs;
-	float distance = 10;//mm
-	float distInRev = distance*revPmm;
-	float time = distInRev/revPs;
+    float revPmm = .0303*0.88*.98; //33mm circumrence
+    float revPs = revPmm*mmPs;
+    float distance = 10;//mm
+    float distInRev = distance*revPmm;
+    float time = distInRev/revPs;
 
-	float distInDeg = distInRev*360;
-	
-	
-	bool end_hit = false;
-	float deg = 0;
-	float deg_increment=1;
-	float rot_speed = revPs; // rev/second
+    float distInDeg = distInRev*360;
+    
+    
+    bool end_hit = false;
+    float deg = 0;
+    float deg_increment=1;
+    float rot_speed = revPs; // rev/second
 
-	ledOff();
-	digitalWrite(DIR_PIN,HIGH);
-	digitalWrite(ENABLE_PIN, LOW);
-	while(!end_hit && (deg<distInDeg) ){
-	  deg= deg+deg_increment;
-	  rotateDeg(-deg_increment,rot_speed);
-	  if( (digitalRead(END_PIN)==HIGH) ||(digitalRead(HOME_PIN)==HIGH)){ //||(digitalRead(HOME_PIN)==HIGH)
-		end_hit=true;
-		Serial.write("E");
-	 } 
-	}
-	delay(1);
-	//Serial.write("RETURN");
-	//Serial.print(deg);  
-	digitalWrite(ENABLE_PIN, HIGH);
-	
-	ledOn();
-	if (end_hit){
-	  error();
-	}
-	Serial.write("D");
+    ledOff();
+    digitalWrite(DIR_PIN,HIGH);
+    digitalWrite(ENABLE_PIN, LOW);
+    while(!end_hit && (deg<distInDeg) ){
+      deg= deg+deg_increment;
+      rotateDeg(-deg_increment,rot_speed);
+      if( (digitalRead(END_PIN)==HIGH) ||(digitalRead(HOME_PIN)==HIGH)){ //||(digitalRead(HOME_PIN)==HIGH)
+        end_hit=true;
+        Serial.write("E");
+     } 
+    }
+    delay(1);
+    //Serial.write("RETURN");
+    //Serial.print(deg);  
+    digitalWrite(ENABLE_PIN, HIGH);
+    
+    ledOn();
+    if (end_hit){
+      error();
+    }
+    Serial.write("D");
 }
 
-void scanFoward(){
-	//float rate = 300; // mm/min
-	float mmPs = 5;//rate/60;
-	float revPmm = .0303*0.88*.98*1.0/1.15/1.50; //33mm circumrence
-	float revPs = revPmm*mmPs;
-	float distance = 335;//mm
-	float distInRev = distance*revPmm;
-	float time = distInRev/revPs;
+void startScan(){
+    defineStepSize();
+    laserOn(); 
+    ledOff();
+    digitalWrite(DIR_PIN,HIGH);
+    digitalWrite(ENABLE_PIN, LOW);
+}
 
-	float distInDeg = distInRev*360.0; 
-	
+void endScan(){
+    laserOff();
+    findHome();
+    digitalWrite(ENABLE_PIN, HIGH);
+    ledOn();
+}
+
+void scanStepFoward(){
 
         bool end_hit = false;
         float deg = 0;
         float deg_increment=1;
-        float rot_speed = revPs; // rev/second
+        float rot_speed = STEPSPEED; // rev/second
 
-        laserOn(); 
-        ledOff();
-        digitalWrite(DIR_PIN,HIGH);
-        
-        
-        
-        digitalWrite(ENABLE_PIN, LOW);
-        while(!end_hit && (deg<distInDeg) ){
+
+        while(!end_hit && (deg<STEPINDEG) ){
           deg= deg+deg_increment;
           rotateDeg(deg_increment,rot_speed);
           if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
@@ -204,17 +231,9 @@ void scanFoward(){
          } 
         }
         delay(1);
-        //Serial.write("RETURN");
-        //Serial.print(deg);  
-        laserOff();
-        findHome();
-        digitalWrite(ENABLE_PIN, HIGH);
-        
-        ledOn();
         if (end_hit){
           error();
         }
-        Serial.write("D");
 }
 
 void findHome(){
