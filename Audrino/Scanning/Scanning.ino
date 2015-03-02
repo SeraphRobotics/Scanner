@@ -23,7 +23,7 @@ float STEPSPEED=0;
 
 void defineStepSize(){
     float mmPs = 5;//rate/60;
-    float revPmm = .0303*0.88*.98*1.0/1.15/1.50; //33mm circumrence
+    float revPmm = .0303*0.88*.98*1.0; //33mm circumrence 303*0.88*.98*1.0/1.15/1.50
     float revPs = revPmm*mmPs;
     float distance = 335;//mm
     float distInRev = distance*revPmm;
