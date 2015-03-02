@@ -234,6 +234,7 @@ void scanStepFoward(){
         if (end_hit){
           error();
         }
+        Serial.write("I");//incremented pressed
 }
 
 void findHome(){
