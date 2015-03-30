@@ -18,7 +18,7 @@ bool DEBUGGING = false;
 bool SCANNING = false;
 float STEPINDEG=0;
 float STEPSPEED=0;
-
+float STEPAMOUNT=0; //UNITS IN MM FOR STEP 
 ///////////////////////////////////////////////////////
 
 void defineStepSize(){
@@ -30,7 +30,7 @@ void defineStepSize(){
     float time = distInRev/revPs;
 
     float distInDeg = distInRev*360.0; 
-    STEPINDEG = distInDeg*2.0/distance;
+    STEPINDEG = distInDeg*STEPAMOUNT/distance;
     STEPSPEED = revPs;
     
 }
@@ -59,6 +59,12 @@ void loop(){
   if(Serial.available()){
     char input = (char)Serial.read();
     if(input == 's'){
+      int n=0;
+      while(!Serial.available() && n<1000 ){
+        n++;
+        delay(50);
+      }
+      if(Serial.available()){STEPAMOUNT = Serial.read();}
       startScan();
       PRESSED=false;
       SCANNING = true;
@@ -145,7 +151,7 @@ void jogFoward(){
       rotateDeg(deg_increment,rot_speed);
       if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
         end_hit=true;
-        Serial.write("E");
+        //Serial.write("E");
      } 
     }
     delay(1);
@@ -183,7 +189,7 @@ void jogBackward(){
       rotateDeg(-deg_increment,rot_speed);
       if( (digitalRead(END_PIN)==HIGH) ||(digitalRead(HOME_PIN)==HIGH)){ //||(digitalRead(HOME_PIN)==HIGH)
         end_hit=true;
-        Serial.write("E");
+        //Serial.write("E");
      } 
     }
     delay(1);
@@ -199,6 +205,7 @@ void jogBackward(){
 }
 
 void startScan(){
+    if(STEPAMOUNT==0){error();}
     defineStepSize();
     laserOn(); 
     ledOff();
@@ -226,7 +233,7 @@ void scanStepFoward(){
           rotateDeg(deg_increment,rot_speed);
           if( (digitalRead(END_PIN)==HIGH) ){ //||(digitalRead(HOME_PIN)==HIGH)
             end_hit=true;
-            Serial.write("E");
+            //Serial.write("E");
             laserOff();
          } 
         }
@@ -304,6 +311,7 @@ void fast_Blink(){
 }
 
 void error(){
+  Serial.write("E");
   int brightness = 0;    // how bright the LED is
   int fadeAmount = 5*3;
   int led =  BUTTON_LED_PIN;
