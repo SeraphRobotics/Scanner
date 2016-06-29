@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings s;
 
+    s.setValue("camNumber",1);
     int cn = s.value("camNumber",-1).toInt();
     if(cn ==-1){
         s.setValue("camNumber",1);
